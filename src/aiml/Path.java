@@ -4,7 +4,7 @@ import java.util.*;
 import aiml.context.*;
 
 /**
- * <p>This class keeps a collection of context patterns that represent a single match.
+ * <p>This class keeps a collection of context definitions that represent a single category.
  * In AIML, this is often referred to as the "context of the category" (in
  * opposition to a single context like the input, or topic). It uses the
  * "deprecated" name Path instead of something like CategoryContext, mainly
