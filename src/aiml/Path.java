@@ -105,6 +105,8 @@ public class Path {
    * Adds a single context pattern to the path.
    * @param context the context
    * @param pattern the pattern
+   *
+   * @throws MultipleContextsException
    */
   public void add(String context, String pattern) {
     //if (context.equals("input") && pattern.equals("64 F *"))
