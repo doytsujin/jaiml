@@ -1,0 +1,1 @@
+java.exe -sourcepath .\src\ -d .\classes\ -verbose @classlist
