@@ -4,6 +4,8 @@ import java.util.*;
 
 /**
  * This context encapsulates the data associated with each path.
+ *
+ * Todo: Rename to LeafContextNode or TemplateContextNode, create superclass ContextNode
  * @author Kim Sullivan
  * @version 1.0
  */

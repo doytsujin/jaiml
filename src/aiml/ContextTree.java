@@ -13,6 +13,8 @@ import aiml.node.*;
  * be supported (this applies mainly to the add() method and the way paths are
  * currently handled - jumping back and forth with using a ListIterator doesn't
  * seem too elegant)</p>
+ *
+ * Todo: Rename to PatternContextNode, create superclass ContextNode
  * @author Kim Sullivan
  * @version 1.0
  */
