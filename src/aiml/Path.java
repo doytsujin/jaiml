@@ -29,6 +29,9 @@ public class Path {
   /** An internal linked list to represent the priority queue */
   private LinkedList contextQueue = new LinkedList();
 
+  /** An internal stack of previous path states (used for loading)*/
+  private LinkedList historyStack = new LinkedList();
+
   /**
    * A wrapper for a context pattern.
    * @author Kim Sullivan
@@ -127,6 +130,22 @@ public class Path {
       i.add(p);
     }
 
+  }
+
+  /**
+   * Saves the current path onto a stack (used for loading nested context groups)
+   */
+  public void save() {
+    historyStack.addFirst(contextQueue.clone());
+  }
+
+  /**
+   * Restores the last path.
+   *
+   * @throws NoSuchElementException
+   */
+  public void restore() {
+    contextQueue=(LinkedList)historyStack.removeFirst();
   }
 
   /**
