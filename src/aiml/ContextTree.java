@@ -28,48 +28,36 @@ import aiml.node.*;
  * currently handled - jumping back and forth with using a ListIterator doesn't
  * seem too elegant)</p>
  *
- * Todo: Rename to PatternContextNode, create superclass ContextNode
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class ContextTree {
-  /** The context this tree applies to */
-  private int context;
-
+public class PatternContextNode extends ContextNode {
   /** The subtree of pattern nodes */
   private PatternNode tree;
-
-  /**
-   * the next lower context (subcontext), used when we fail matching to this
-   * context's pattern tree or if there wasn't any pattern tree in the first place
-   * (the latter shouldn't happen - if there are no patterns, there should not
-   * be a context tree for them)
-   */
-  private ContextTree next;
 
   /**
    * Create a new context tree with no subcontexts.
    * @param context the context ID
    */
-  public ContextTree(int context) {
+  public PatternContextNode(int context) {
     this.context = context;
   }
 
   /**
    * Create a new context tree from the current pattern in the path. Adds all
    * it's substructures (subcontexts and pattern trees), together
-   * wit the final object.
+   * with the final object.
    * @param path the path
    * @param o Object
    */
-  public ContextTree(ListIterator path, Object o) {
+  public PatternContextNode(ListIterator path, Object o) {
     if (!path.hasNext()) {
       throw new UnsupportedOperationException(
-          "Can't add an empty path to a regular ContextTree");
+          "Can't add an empty path to a PatternContextNode");
     }
     Path.Pattern pattern = (Path.Pattern) path.next();
-    this.context = pattern.getContext();
+    context = pattern.getContext();
     path.previous();
     try {
       add(path, o);
@@ -84,77 +72,41 @@ public class ContextTree {
    * @param context the context ID
    * @param subcontext the subcontext tree
    */
-  public ContextTree(int context, ContextTree subcontext) {
+  public PatternContextNode(int context, ContextNode subcontext) {
     this.context = context;
     this.next = subcontext;
   }
 
   /**
-   * Adds the path (from the current position) to itself. Creates all necessary
-   * pattern subtrees and subcontexts, ensures that the proper order of contexts
-   * is maintained.
-   * @param path the path
-   * @param o the object to be added to the tree
-   * @throws DuplicatePathException
-   * @return the resulting context tree, with all modifications applied and the correct ordering.
+   * Adds a pattern to this context.
+   *
+   * <i>Note:</i> This method will be reworked once generalized context types
+   * are implemented (i.e. it will be replaced by an addGeneralContextType() method.
+   * @param pattern Pattern
    */
-  public ContextTree add(ListIterator path, Object o) throws
-      DuplicatePathException {
-    /*check the context order, if it's OK to add the current path to this context
-     *or if we need to add a new context somewhere.
-     *if we're adding it here, run the rootnode's add() method and
-     * recursively construct the pattern tree for this context.
-     */
-    if (path.hasNext()) { //We're in the middle of the path
-      Path.Pattern pattern = (Path.Pattern) path.next();
-      if (pattern.getContext() > context) {
-        //add as next
-        path.previous();
-        if (next == null) {
-          next = new ContextTree(pattern.getContext());
-        }
-        next = next.add(path, o);
-        return this;
-      }
-      else if (pattern.getContext() < context) {
-        //add instead of self
-        ContextTree ct = new ContextTree(pattern.getContext(), this);
-        path.previous();
-        return ct.add(path, o); //actually, just ct should be sufficient, but let's not make any assumptions
-      }
-      else {
-        //add the pattern into the current tree.
-        String s = pattern.getPattern();
-        if (tree == null) {
-          tree = PatternNodeFactory.getInstance(0, s);
-        }
-        PatternNode.AddResult result = tree.add(0, s);
-        //sanity check:
-        while (result.newDepth < s.length()) {
-          //this should actually never happen, add() should recursively process the whole pattern
-          result = result.leaf.add(result.newDepth, s);
-          throw new RuntimeException("Damn...");
-        }
-        /*still continuing sanity check, due to the above loop, can never be true, but
-          I might remove the loop later*/
-        if (result.newDepth != s.length()) {
-          throw new RuntimeException("Failure when adding pattern \"" + s +
-                                     "\" to context " + context);
-        }
-        tree = result.root; //update the pattern subtree
-        result.leaf.addContext(path, o);
-        return this;
-      }
+  public PatternNode addPattern(Path.Pattern pattern) {
+    //add the pattern into the current tree.
+    String s = pattern.getPattern();
+    if (tree == null) {
+      tree = PatternNodeFactory.getInstance(0, s);
     }
-    else { //we're at the end of the path, so we can add a Leaf node
-      if (next == null) {
-        next = new LeafContextTree(o);
-      }
-      else {
-        next = next.add(path, o);
-      }
-      return this;
+    PatternNode.AddResult result = tree.add(0, s);
+    //sanity check:
+    while (result.newDepth < s.length()) {
+      //this should actually never happen, add() should recursively process the whole pattern
+      result = result.leaf.add(result.newDepth, s);
+      throw new RuntimeException("Damn...");
     }
+    /*still continuing sanity check, due to the above loop, can never be true, but
+      I might remove the loop later*/
+    if (result.newDepth != s.length()) {
+      throw new RuntimeException("Failure when adding pattern \"" + s +
+                                 "\" to context " + context);
+    }
+    tree = result.root; //update the pattern subtree
+    //result.leaf.addContext(path, o);
+    return result.leaf;
+
   }
 
   /**

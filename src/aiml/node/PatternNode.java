@@ -60,7 +60,7 @@ public abstract class PatternNode {
    * Points to the next subcontext. Applicalble if this node terminates a
    * pattern, otherwise <code>null</code>
    */
-  protected ContextTree subContext;
+  protected ContextNode subContext;
 
   /**
    * <p>This inner class is a wrapper for the
@@ -133,10 +133,10 @@ public abstract class PatternNode {
     }
     else {
       if (path.hasNext()) {
-        subContext = new ContextTree(path, o);
+        subContext = new PatternContextNode(path, o);
       }
       else {
-        subContext = new LeafContextTree(o);
+        subContext = new LeafContextNode(o);
       }
     }
   }

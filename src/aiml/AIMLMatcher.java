@@ -26,7 +26,7 @@ import java.util.*;
 
 public class AIMLMatcher {
   /** The root context tree */
-  private static ContextTree tree;
+  private static ContextNode tree;
 
   /** The number of paths in the tree */
   private static int count = 0;
@@ -63,10 +63,10 @@ public class AIMLMatcher {
   public static void add(Path path, Object o) throws DuplicatePathException {
     if (tree == null) {
       if (path.getLength() != 0) {
-        tree = new ContextTree(path.iterator(), path);
+        tree = new PatternContextNode(path.iterator(), path);
       }
       else {
-        tree = new LeafContextTree(o);
+        tree = new LeafContextNode(o);
       }
     }
     else {

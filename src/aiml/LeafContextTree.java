@@ -15,7 +15,7 @@
 package aiml;
 
 import java.util.*;
-
+import aiml.node.*;
 /**
  * This context encapsulates the data associated with each path.
  *
@@ -24,16 +24,16 @@ import java.util.*;
  * @version 1.0
  */
 
-public class LeafContextTree
-    extends ContextTree {
+public class LeafContextNode
+    extends ContextNode {
   private Object result;
 
   /**
    * Create a new leaf context, and associate an object with it.
    * @param o the stored object
    */
-  public LeafContextTree(Object o) {
-    super(Integer.MAX_VALUE);
+  public LeafContextNode(Object o) {
+    context=Integer.MAX_VALUE;
     result = o;
   }
 
@@ -48,6 +48,17 @@ public class LeafContextTree
   }
 
   /**
+   * Adds a pattern to this context.
+   *
+   * <i>Note:</i> This method will be reworked once generalized context types
+   * are implemented (i.e. it will be replaced by an addGeneralContextType() method.
+   * @param pattern Pattern
+   */
+  public PatternNode addPattern(Path.Pattern pattern) {
+    throw new UnsupportedOperationException("Can't add a pattern to a leaf context");
+  }
+
+  /**
    * Add the path to itself. If there are no patterns in this path to add, throw
    * a DuplicatePathException.
    * @param path the path
@@ -55,7 +66,7 @@ public class LeafContextTree
    * @throws DuplicatePathException
    * @return the resulting context tree, with all modifications applied and the correct ordering
    */
-  public ContextTree add(ListIterator path, Object o) throws
+  public ContextNode add(ListIterator path, Object o) throws
       DuplicatePathException {
     if (!path.hasNext()) {
       throw new DuplicatePathException();
