@@ -155,24 +155,23 @@ public class MatchState {
   };
 
   /**
-   * Creates a new MatchState object
+   * Creates a new MatchState object, makes a snapshot of the context variables.
    */
   public MatchState() {
     if (ContextInfo.getCount() <= 0) {
       throw new NoContextPresentException();
     }
-
+    for (int i=0;i<ContextInfo.getCount();i++)
+      contextValues[i] = ContextInfo.getContext(i).getValue();
   };
 
   /**
-   * Adds a new context to the match state, and creates a snapshot of the
-   * context's current value (for wildcards).
+   * Adds a new context to the match state.
    * @param context The new context
    */
   public void addContext(int context) {
     contextStack.addLast(new Integer(this.context));
     this.context = context;
-    contextValues[context] = ContextInfo.getContext(context).getValue();
     depth = 0;
   }
 
@@ -180,11 +179,6 @@ public class MatchState {
    * <p>Drops the current context and restores the last. The reason why this isn't
    * called removeContext() is that the context's cached value is retained.</p>
    *
-   * <p><i>Note to self:</i>Why am I keeping the old contexts value,
-   * since it's overwritten every time this contexts get's added anyway?</p>
-   *
-   * <p><i>Note to self II:</i> Cache them. Returning a context value might not be a cheap operation.
-   * </p>
    * <p><i>Note to self III:</i> More a side note, really...a Context classes
    * backed by an array might be interesting in some cases.</p>
    */
@@ -199,6 +193,17 @@ public class MatchState {
    * @return Wildcard
    */
   public Wildcard addWildcard() {
+    return addWildcard(context,depth);
+  }
+
+  /**
+   * Add a new wildcard to s context at a certain depth
+   * @param context the context
+   * @param depth the depth (the starting index of the wildcard)
+   * @return Wildcard
+   */
+
+  public Wildcard addWildcard(int context, int depth) {
     Wildcard wc = new Wildcard(context, depth);
     if (wildcards[context] == null) {
       wildcards[context] = new ArrayList();
@@ -213,7 +218,7 @@ public class MatchState {
    * @return Wildcard
    */
   public Wildcard getWildcard() {
-    return (Wildcard) wildcards[context].get(wildcards.length - 1);
+    return getWildcard(context,wildcards[context].size() - 1);
   }
 
   /**
@@ -221,9 +226,8 @@ public class MatchState {
    * contexts, even when it hasn't), it is natural to want acess to all the
    * matched wildcards.</p>
    *
-   * <p>Currently, this method returns null for wildcards that havent been
-   * defined, and for contexts that haven't been processed. It should probably
-   * throw an exception for contexts out of range, and construct a "full"
+   * <p>Currently, this method returns null for wildcards out of range. It should probably
+   * throw an exception for contexts out of range. It constructs a "full"
    * wildcard for contexts that haven't been matched.</p>
    * @param context The context
    * @param index The index of the wildcard
@@ -231,7 +235,10 @@ public class MatchState {
    */
   public Wildcard getWildcard(int context, int index) {
     if (wildcards[context] == null) {
-      return null;
+      if (index!=1) return null;
+      Wildcard wc = addWildcard(context,0);
+      wc.growRest();
+      return wc;
     }
     if (index > wildcards[context].size() || index < 0) {
       return null;
