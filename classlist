@@ -1,12 +1,13 @@
 src\aiml\AIMLMatcher.java
-src\aiml\ContextTree.java
+src\aiml\ContextNode.java
 src\aiml\DuplicatePathException.java
-src\aiml\LeafContextTree.java
+src\aiml\LeafContextNode.java
 src\aiml\MatchState.java
 src\aiml\MultipleContextsException.java
 src\aiml\NoContextPresentException.java
 src\aiml\Path.java
 src\aiml\Pattern.java
+src\aiml\PatternContextNode.java
 src\aiml\context\Context.java
 src\aiml\context\ContextInfo.java
 src\aiml\context\DuplicateContextException.java
