@@ -5,6 +5,10 @@ package aiml.context;
  * order and most importantly it provides a method to query the context's current
  * value. Classes that inherit from Context must implement the getValue() method
  * so that it returns meaningful values.
+ *
+ * To do: Rename to ContextDeclaration
+ *        Add a type
+ *        Add multiuser functionality
  * @author Kim Sullivan
  * @version 1.0
  */
