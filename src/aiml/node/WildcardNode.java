@@ -68,6 +68,12 @@ public class WildcardNode
     }
 
     depth++;
+
+    //if we're at the end of the pattern, don't create unnecessary EOS nodes
+    if (depth == pattern.length()) {
+      return new AddResult(this,this,depth);
+    }
+
     if (next == null) {
       next = PatternNodeFactory.getInstance(depth, pattern);
     }
@@ -92,45 +98,25 @@ public class WildcardNode
         if (next.match(match)) {
           return true;
         }
-
-      }
-      if (subContext != null) {
-        if (subContext.match(match)) {
-          return true;
-        }
-        else {
-          match.removeWildcard();
-          return false;
-
-        }
-      } //if (subContext != null)
-      else { //subContext==null
-        match.depth -= w.getLength();
-        match.removeWildcard();
-        return false;
       }
     } // if (next!=null)
     else { //this wildcard is "trailing" - add the rest of the input to it
-      if (subContext != null) {
-        w.growRest();
-        if (subContext.match(match)) {
-          return true;
-        }
-        else {
-          match.depth -= w.getLength();
-          match.removeWildcard();
-          return false;
-        }
+      w.growRest();
+      match.depth +=w.getLength();
+    }
 
-      }
-      else {
-        match.depth -= w.getLength();
-        match.removeWildcard();
-        return false;
+    if (subContext != null) {
+      if (subContext.match(match)) {
+        return true;
       }
     }
 
+    match.depth -= w.getLength();
+    match.removeWildcard();
+    return false;
+
   }
+
 
   /**
    * Register this node type in PatternNodeFactory. This actually registers 2
