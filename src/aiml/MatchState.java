@@ -116,7 +116,7 @@ public class MatchState {
     }
 
     public void growRest() {
-      endIndex = contextValues[context].length() - 1;
+      endIndex = contextValues[context].length();
     }
 
     /**
