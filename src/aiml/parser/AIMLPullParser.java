@@ -89,7 +89,8 @@ public class AIMLPullParser {
   }
 
   private void resetState() {
-    lineNumber=colNumber=0;
+    lineNumber=1;
+    colNumber=0;
     readCR=false;
     setDefaultEntityReplacementText();
     attributeMap.clear();
