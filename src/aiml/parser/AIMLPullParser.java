@@ -56,6 +56,7 @@ public class AIMLPullParser {
   private int lineNumber;
   private int colNumber;
 
+
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
   public static final char LF='\n';
@@ -86,6 +87,23 @@ public class AIMLPullParser {
   public static final int DOCTYPE_START =12;      // '<!doctype'
 
   public AIMLPullParser() {
+  }
+
+  public void setProperty(String name, Object value) throws XmlPullParserException {
+    if (name==null) throw new IllegalArgumentException("Property name cannot be null");
+    throw new XmlPullParserException("Property "+name+" not supported");
+  }
+
+  public Object getProperty(String name) {
+    return null;
+  }
+
+  public void setFeature(String name, boolean state) throws XmlPullParserException {
+    if (state) throw new XmlPullParserException("This feature can't be activated");
+  }
+
+  public boolean getFeature(java.lang.String name) {
+    return false;
   }
 
   private void resetState() {
