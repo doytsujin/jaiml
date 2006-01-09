@@ -140,35 +140,31 @@ public class AIMLPullParser {
     return encoding;
   }
 
-  public char nextChar() throws XmlPullParserException{
-    try {
-      ch = (char) in.read();
-      colNumber++;
-      switch (ch) {
-        case LF:
-          if (readCR) { // Processing CRLF, so silently skip the LF
-            ch = (char) in.read();
-          }
-          else {
-            lineNumber++;
-            colNumber = 0;
-          }
-          readCR = false;
-          break;
-        case CR:
-          ch = LF;
+  public char nextChar() throws XmlPullParserException, IOException{
+    ch = (char) in.read();
+    colNumber++;
+    switch (ch) {
+      case LF:
+        if (readCR) { // Processing CRLF, so silently skip the LF
+          ch = (char) in.read();
+        }
+        else {
           lineNumber++;
           colNumber = 0;
-          readCR = true;
-          break;
-        default:
-          readCR = false;
-      }
-
-      return ch;
-    } catch (IOException e) {
-      throw new XmlPullParserException("IO Exception",null,e);
+        }
+        readCR = false;
+        break;
+      case CR:
+        ch = LF;
+        lineNumber++;
+        colNumber = 0;
+        readCR = true;
+        break;
+      default:
+        readCR = false;
     }
+
+    return ch;
   }
   public char getChar() {
     return ch;
@@ -184,10 +180,10 @@ public class AIMLPullParser {
 
     }
   }
-  public void skipS() throws XmlPullParserException {
+  public void skipS() throws XmlPullParserException, IOException {
     while (isS()) nextChar();
   }
-  public void nextS() throws XmlPullParserException {
+  public void nextS() throws XmlPullParserException, IOException {
     if (!isS()) throw new XmlPullParserException("Syntax error, expecting production\n[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+");
     skipS();
   }
@@ -554,7 +550,7 @@ public class AIMLPullParser {
    return (isLetter() || ch=='_' || ch==':');
   }
 
-  public String nextName() throws XmlPullParserException {
+  public String nextName() throws XmlPullParserException, IOException {
     //[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*
     if (!isNameFirst()) throw new XmlPullParserException("Syntax error, expecting production\n[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*");
     StringBuffer result=new StringBuffer();
@@ -563,7 +559,7 @@ public class AIMLPullParser {
       result.append(ch);
     return result.toString();
   }
-  public void nextEq() throws XmlPullParserException {
+  public void nextEq() throws XmlPullParserException, IOException {
     // [25]   	Eq	   ::=   	S? '=' S?
     if (!isS()&&ch!=EQ)
       throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?");
@@ -588,7 +584,7 @@ public class AIMLPullParser {
     // [0-9a-fA-F]
     return ((ch>='0' && ch <='9') || (ch>='a' && ch<='f') || (ch>='A' && ch<='F'));
   }
-  public String nextReference() throws XmlPullParserException{
+  public String nextReference() throws XmlPullParserException, IOException{
     //[67]   	Reference	   ::=   	EntityRef | CharRef
     if (ch!=AMP) throw new XmlPullParserException("Syntax error, production [67] Referencee must start with &");
     nextChar();
@@ -642,7 +638,7 @@ public class AIMLPullParser {
 
   }
 
-  public String nextAttValue() throws XmlPullParserException{
+  public String nextAttValue() throws XmlPullParserException, IOException{
     //[10]   	AttValue	   ::=   	'"' ([^<&"] | Reference)* '"' |  "'" ([^<&'] | Reference)* "'"
     if ((ch!=QUOT) && (ch!=APOS)) {
       System.out.println("((["+ch+"]!=["+QUOT+"]) || ([["+ch+"]!=["+APOS+"]))");
@@ -676,7 +672,7 @@ public class AIMLPullParser {
 
   }
 
-  public void nextAttribute() throws XmlPullParserException{
+  public void nextAttribute() throws XmlPullParserException, IOException{
     String name=nextName();
     nextEq();
     String value=nextAttValue();
