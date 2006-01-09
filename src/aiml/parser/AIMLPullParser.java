@@ -29,7 +29,7 @@ public class AIMLPullParser {
       this.name=name;
       this.value=value;
     }
-    String getNameSpace() {
+    String getNamespace() {
       return "";
     }
     String getName() {
@@ -691,6 +691,9 @@ public class AIMLPullParser {
   }
   public String getAttributeName(int index) {
     return attributeList.get(index).getName();
+  }
+  public String getAttributeNamespace(int index) {
+    return attributeList.get(index).getNamespace();
   }
 
   public String getAttributePrefix(int index) {
