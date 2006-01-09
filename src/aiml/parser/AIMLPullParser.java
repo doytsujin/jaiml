@@ -55,7 +55,7 @@ public class AIMLPullParser {
   private boolean readCR;
   private int lineNumber;
   private int colNumber;
-
+  private int depth;
 
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
@@ -106,9 +106,42 @@ public class AIMLPullParser {
     return false;
   }
 
+  public int getNamespaceCount(int depth) throws XmlPullParserException{
+    return 0;
+  }
+
+  public String getNamespacePrefix(int pos) throws XmlPullParserException {
+    return null;
+  }
+
+  public String getNamespaceUri(int pos)  throws XmlPullParserException {
+    return null;
+  }
+
+  public String getNamespace(String prefix) {
+    return null;
+  }
+
+  public int getDepth() {
+    return depth;
+  }
+
+  public String getPositionDescription() {
+    return "@"+getLineNumber()+":"+getColumnNumber();
+  }
+
+  public String getNamespace() {
+    return "";
+  }
+
+  public String getPrefix() {
+    return null;
+  }
+
   private void resetState() {
     lineNumber=1;
     colNumber=0;
+    depth=0;
     readCR=false;
     setDefaultEntityReplacementText();
     attributeMap.clear();
