@@ -763,7 +763,57 @@ public class AIMLPullParser {
     assert (namespace==null): "Namespaces not supported";
     return attributeMap.get(name).getValue();
   }
+  private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException{
+    if (ch!=what) throw new XmlPullParserException(failMessage);
+    nextChar();
+  }
+  public String nextPIContent() throws XmlPullParserException, IOException{
+    //[16]   	PI	   ::=   	'<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
+    //assumes we already have parsed '<?'PITarget and are on the character after that
+    if (isS()){
+      //(S (Char* - (Char* '?>' Char*)))
+      /*This is a bit tricky. The notation says we're looking for strings that begin with
+       * whitespace, and DON'T contain the '?>' marker. What we have to do is the opposite:
+       * actually LOOK for the marker. The translational grammar for it looks like this:
+       * S ::= '?' A | '>' S {out('>')} | C S {out(C)}
+       * A ::= '?' A {out('?')} | '>' {break} | C S {out('?') out (C)}
+       * C ::= Char - ('>' | '?')
+      */
+      StringBuffer result=new StringBuffer();
+      boolean seenQ=false;
+PIContent:
+      do {
+        if (!isChar()) {
+          if (ch==EOF) throw new EOFException("Unexpected end of input while parsing PI");
+          else throw new XmlPullParserException("Syntax error, invalid character while parsing PI");
+        }
+        if (!seenQ) {
+          //S ::= '?' A | '>' S {out('>')} | C S {out(C)}
+          if (ch=='?')
+            seenQ=true;
+          else
+            result.append(ch);
+        } else {
+          //A ::= '?' A {out('?')} | '>' {break} | C S {out('?') out (C)}
+          switch (ch) {
+            case '?':result.append('?');break;      //what we're outputting here is not this '?' but the one before that
+            case '>':break PIContent;   //a simple break would just terminate the switch, not the do {} while block.
+            default :result.append('?').append(ch);
+                     seenQ=false;
+          }
+        }
+        nextChar();
+      } while (true);
+      nextChar();
+      return result.toString();
+    } else {
+      //'?>'
+      requireChar(QUES, "Syntax error, in production [16] PI: PITarget must be followed by whitespace, or immediately terminated with '?>'");
+      requireChar(GT, "Syntax error, in production [16] PI: PITarget must be followed by whitespace, or immediately terminated with '?>'");
+      return "";
+    }
 
+  }
   public static void main(String[] args) throws Exception{
     AIMLPullParser pp = new AIMLPullParser();
     System.out.println("\nj00 fail\n");
@@ -784,7 +834,7 @@ public class AIMLPullParser {
       System.out.print(pp.getChar()+chcl+"["+pp.lineNumber+":"+pp.colNumber+"]");
     }
     */
-    pp.setInput(new StringReader("&fooBar;&#64;&lt;&amp;ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'"));
+    pp.setInput(new StringReader("&fooBar;&#64;&lt;&amp;ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'?> bla??? >>>>??? ? > ?hblah?>"));
     pp.nextChar();
     System.out.print(pp.nextReference());
     System.out.print(pp.nextReference());
@@ -799,6 +849,9 @@ public class AIMLPullParser {
     for (int i=0;i<pp.getAttributeCount();i++) {
       System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
     }
+    System.out.println(pp.nextPIContent());
+    System.out.println(pp.nextPIContent());
+
   }
 
 }
