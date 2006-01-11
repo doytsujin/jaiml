@@ -56,6 +56,7 @@ public class AIMLPullParser {
   private int lineNumber;
   private int colNumber;
   private int depth;
+  private int state;
 
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
@@ -71,6 +72,8 @@ public class AIMLPullParser {
   public static final char QUES='?';
   public static final char EQ='=';
   public static final char SEMICOLON=';';
+  public static final char DASH='-';
+  public static final char RAB=']';
 
   public static final int PI_START      = 0;      // '<?'PITarget
   public static final int XMLDECL_START = 1;      // '<?xml'
@@ -87,6 +90,7 @@ public class AIMLPullParser {
   public static final int DOCTYPE_START =12;      // '<!doctype'
 
   public AIMLPullParser() {
+    resetState();
   }
 
   public void setProperty(String name, Object value) throws XmlPullParserException {
@@ -192,7 +196,7 @@ public class AIMLPullParser {
     return encoding;
   }
 
-  public char nextChar() throws XmlPullParserException, IOException{
+  public char nextChar() throws IOException{
     ch = (char) in.read();
     colNumber++;
     switch (ch) {
@@ -789,15 +793,15 @@ PIContent:
         }
         if (!seenQ) {
           //S ::= '?' A | '>' S {out('>')} | C S {out(C)}
-          if (ch=='?')
+          if (ch==QUES)
             seenQ=true;
           else
             result.append(ch);
         } else {
           //A ::= '?' A {out('?')} | '>' {break} | C S {out('?') out (C)}
           switch (ch) {
-            case '?':result.append('?');break;      //what we're outputting here is not this '?' but the one before that
-            case '>':break PIContent;   //a simple break would just terminate the switch, not the do {} while block.
+            case QUES:result.append('?');break;      //what we're outputting here is not this '?' but the one before that
+            case GT:break PIContent;   //a simple break would just terminate the switch, not the do {} while block.
             default :result.append('?').append(ch);
                      seenQ=false;
           }
@@ -814,6 +818,141 @@ PIContent:
     }
 
   }
+
+  public String nextCommentContent() throws IOException,XmlPullParserException {
+    //[15]   	Comment	   ::=   	'<!--' ((Char - '-') | ('-' (Char - '-')))* '-->'
+    //Assumes we already read '<!--'
+    //As with PI's we're actually looking for the terminating '--'
+    //(notice that the gramar doesn't allow the string '--' except as the terminating '-->'
+    /*
+    * S ::= '-' A | C S {out(C)}
+    * A ::= '-' {break} | C S {out('-') out (C)}
+    * C ::= Char - ('-')
+    */
+    StringBuffer result=new StringBuffer();
+    boolean seenDash=false;
+    do {
+      if (!isChar()) {
+        if (ch==EOF) throw new EOFException("Unexpected end of input while parsing Comment");
+        else throw new XmlPullParserException("Syntax error, invalid character while parsing Comment");
+      }
+      if (!seenDash) {
+        if (ch==DASH) seenDash=true;
+        else
+          result.append(ch);
+      } else {
+        if (ch==DASH) break;
+        else {
+          result.append('-').append(ch);
+          seenDash=false;
+        }
+      }
+      nextChar();
+    } while (true);
+    nextChar();
+    requireChar(GT,"Syntax error, comment must be terminated with '-->'");
+    return result.toString();
+  }
+
+  public String nextCDataContent()throws IOException,XmlPullParserException {
+    //[20]   	CData	   ::=   	(Char* - (Char* ']]>' Char*))
+    //[21]   	CDEnd	   ::=   	']]>'
+    //Assumes we already read '<![CDATA['
+    //So, we're looking for the terminating ']]>'
+    /* S::= ']' A | '>' S {out('>')} | C S {out(C)}
+     * A::= ']' B | '>' S {out(']') out('>')} | C S {out(']') out(C)}
+     * B::= ']' B {out(']')} | '>' S {break} | C S {out(']') out(']') out(C)}
+     */
+    StringBuffer result=new  StringBuffer();
+    int seenRAB=0;
+CDContent:
+    do {
+      if (!isChar()) {
+        if (ch==EOF) throw new EOFException("Unexpected end of input while parsing Comment");
+        else throw new XmlPullParserException("Syntax error, invalid character while parsing Comment");
+      }
+      switch (seenRAB) {
+        case 0:
+          if (ch==RAB) {
+            seenRAB=1;
+          } else
+            result.append(ch);
+          break;
+        case 1:
+          if (ch==RAB) {
+            seenRAB=2;
+          } else {
+            seenRAB = 0;
+            result.append(']').append(ch);
+          }
+          break;
+        case 2:
+          switch(ch) {
+            case RAB:result.append(']');break;
+            case GT:break CDContent;
+            default:seenRAB=0;
+                    result.append(']').append(']').append(ch);
+          }
+          break;
+      }
+      nextChar();
+    } while (true);
+    nextChar();
+    return result.toString();
+  }
+  public String nextCharData() throws IOException, XmlPullParserException{
+    //[14]   	CharData	   ::=   	[^<&]* - ([^<&]* ']]>' [^<&]*)
+    //It is interesting to note, that, while the characters '<' and '&' do not
+    //belong into this production they only signal the end of it, while the
+    //CDATA-section-close delimiter ']]>' actually signals a syntax error.
+    /* S::= ']' A | '>' S {out('>')} | C S {out(C)} | '&' {break} | '<' {break}
+     * A::= ']' B | '>' S {out(']') out('>')} | C S {out(']') out(C)} | '&' {out(']') break} | '<' {out(']') break}
+     * B::= ']' B {out(']')} | '>' S {error} | C S {out(']') out(']') out(C)} | '&' {out(']') out(']') break} | '<' {out(']') out(']') break}
+     */
+    StringBuffer result=new  StringBuffer();
+    int seenRAB=0;
+CharData:
+    do {
+      if (!isChar()) {
+        if (ch==EOF) throw new EOFException("Unexpected end of input while parsing Character data");
+        else throw new XmlPullParserException("Syntax error, invalid character while parsing Character data");
+      }
+      switch (seenRAB) {
+        case 0:
+          switch(ch) {
+            case(RAB): seenRAB=1;break;
+            case(AMP):
+            case(LT): break CharData;
+            default: result.append(ch);
+          }
+          break;
+        case 1:
+          switch(ch) {
+            case(RAB): seenRAB=2;break;
+            case(AMP):
+            case(LT): result.append(']');
+                      break CharData;
+            default: seenRAB=0;
+                     result.append(']').append(ch);
+          }
+          break;
+        case 2:
+          switch(ch) {
+            case RAB:result.append(']');break;
+            case GT:throw new XmlPullParserException("Syntax error, the CDATA-sesction-close delimiter ']]>' must not occur in Character data;");
+            case(AMP):
+            case(LT): result.append(']').append(']');
+                      break CharData;
+            default:seenRAB=0;
+                    result.append(']').append(']').append(ch);
+          }
+          break;
+      }
+      nextChar();
+    } while (true);
+    return result.toString();
+  }
+
   public static void main(String[] args) throws Exception{
     AIMLPullParser pp = new AIMLPullParser();
     System.out.println("\nj00 fail\n");
@@ -834,7 +973,7 @@ PIContent:
       System.out.print(pp.getChar()+chcl+"["+pp.lineNumber+":"+pp.colNumber+"]");
     }
     */
-    pp.setInput(new StringReader("&fooBar;&#64;&lt;&amp;ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'?> bla??? >>>>??? ? > ?hblah?>"));
+    pp.setInput(new StringReader("&fooBar;&#64;&lt;&amp;ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
     pp.nextChar();
     System.out.print(pp.nextReference());
     System.out.print(pp.nextReference());
@@ -851,6 +990,44 @@ PIContent:
     }
     System.out.println(pp.nextPIContent());
     System.out.println(pp.nextPIContent());
+    System.out.println(pp.nextCommentContent());
+    System.out.println(pp.nextCommentContent());
+    System.out.println(pp.nextCommentContent());
+    try {
+      System.out.println(pp.nextCommentContent());
+    } catch (XmlPullParserException e) {
+      System.out.println("Test succesfull: "+e.getMessage());
+    }
+    System.out.println(pp.nextCommentContent());
+    try {
+      System.out.println(pp.nextCommentContent());
+    } catch (XmlPullParserException e) {
+      System.out.println("Test succesfull: "+e.getMessage());
+    }
+    pp.setInput(new StringReader("]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
+    pp.nextChar();
+    System.out.println(pp.nextCDataContent());
+    pp.setInput(new StringReader("asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
+    pp.nextChar();
+    System.out.println(pp.nextCharData());
+    pp.nextChar();
+    System.out.println(pp.nextCharData());
+    pp.nextChar();
+    System.out.println(pp.nextCharData());
+    pp.nextChar();
+    System.out.println(pp.nextCharData());
+    pp.nextChar();
+    try {
+      System.out.println(pp.nextCharData());
+    } catch (XmlPullParserException e) {
+      System.out.println("Test succesfull: "+e.getMessage());
+    }
+    pp.nextChar();
+    try {
+      System.out.println(pp.nextCharData());
+    } catch (XmlPullParserException e) {
+      System.out.println("Test succesfull: "+e.getMessage());
+    }
 
   }
 
