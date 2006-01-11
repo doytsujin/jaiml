@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.*;
 import org.xmlpull.v1.*;
 
-public class AIMLPullParser {
+public class AIMLPullParser implements XmlPullParser{
   InputStream is; //in case the requested encoding doesn't match the detected encoding, and we need to re-open the stream
   Reader in;
   String encoding;
@@ -56,7 +56,7 @@ public class AIMLPullParser {
   private int lineNumber;
   private int colNumber;
   private int depth;
-  private int state;
+  private int eventType;
 
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
@@ -153,6 +153,7 @@ public class AIMLPullParser {
     is=null;
     in=null;
     encoding=null;
+    eventType=START_DOCUMENT;
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
@@ -240,7 +241,7 @@ public class AIMLPullParser {
     while (isS()) nextChar();
   }
   public void nextS() throws XmlPullParserException, IOException {
-    if (!isS()) throw new XmlPullParserException("Syntax error, expecting production\n[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+");
+    if (!isS()) throw new XmlPullParserException("Syntax error, expecting production\n[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+",this,null);
     skipS();
   }
 
@@ -608,7 +609,7 @@ public class AIMLPullParser {
 
   public String nextName() throws XmlPullParserException, IOException {
     //[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*
-    if (!isNameFirst()) throw new XmlPullParserException("Syntax error, expecting production\n[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*");
+    if (!isNameFirst()) throw new XmlPullParserException("Syntax error, expecting production\n[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*",this,null);
     StringBuffer result=new StringBuffer();
     result.append(ch);
     while ((nextChar()!=EOF)&& isNameChar())
@@ -618,10 +619,10 @@ public class AIMLPullParser {
   public void nextEq() throws XmlPullParserException, IOException {
     // [25]   	Eq	   ::=   	S? '=' S?
     if (!isS()&&ch!=EQ)
-      throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?");
+      throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?",this,null);
     skipS();
     if (ch!=EQ)
-      throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?");
+      throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?",this,null);
     nextChar();
     skipS();
   }
@@ -642,7 +643,7 @@ public class AIMLPullParser {
   }
   public String nextReference() throws XmlPullParserException, IOException{
     //[67]   	Reference	   ::=   	EntityRef | CharRef
-    if (ch!=AMP) throw new XmlPullParserException("Syntax error, production [67] Referencee must start with &");
+    if (ch!=AMP) throw new XmlPullParserException("Syntax error, production [67] Referencee must start with &",this,null);
     nextChar();
     StringBuffer result= new StringBuffer();
     if (isNameFirst()) { //[68]   	EntityRef	   ::=   	'&' Name ';'
@@ -662,7 +663,7 @@ public class AIMLPullParser {
           if (isHexDigit())
             codepointBuffer.append(ch);
           else
-            throw new XmlPullParserException("Syntax error, invalid hexadecimal digit '"+ch+"' in character reference");
+            throw new XmlPullParserException("Syntax error, invalid hexadecimal digit '"+ch+"' in character reference",this,null);
           nextChar();
         } while (isHexDigit());
       } else {//[66]   	CharRef	   ::=   	'&#' [0-9]+ ';'
@@ -671,7 +672,7 @@ public class AIMLPullParser {
           if (isDecDigit())
             codepointBuffer.append(ch);
           else
-            throw new XmlPullParserException("Syntax error, invalid decimal digit '"+ch+"' in character reference");
+            throw new XmlPullParserException("Syntax error, invalid decimal digit '"+ch+"' in character reference",this,null);
           nextChar();
         } while (isDecDigit());
       }
@@ -679,17 +680,17 @@ public class AIMLPullParser {
       try {
         codepoint = Integer.parseInt(codepointBuffer.toString(),radix);
       } catch (NumberFormatException e) {
-        throw new XmlPullParserException("Syntax error, bad character reference '"+codepointBuffer +"'");
+        throw new XmlPullParserException("Syntax error, bad character reference '"+codepointBuffer +"'",this,null);
       }
       result.appendCodePoint(codepoint);
     } else {
-      throw new XmlPullParserException("Syntax error, bad entity reference");
+      throw new XmlPullParserException("Syntax error, bad entity reference",this,null);
     }
-    if (ch==';') {
+    if (ch==SEMICOLON) {
       nextChar();
       return result.toString();
     } else {
-        throw new XmlPullParserException("Syntax error, production [67] Reference must end with ';'");
+        throw new XmlPullParserException("Syntax error, production [67] Reference must end with ';'",this,null);
     }
 
   }
@@ -697,8 +698,8 @@ public class AIMLPullParser {
   public String nextAttValue() throws XmlPullParserException, IOException{
     //[10]   	AttValue	   ::=   	'"' ([^<&"] | Reference)* '"' |  "'" ([^<&'] | Reference)* "'"
     if ((ch!=QUOT) && (ch!=APOS)) {
-      System.out.println("((["+ch+"]!=["+QUOT+"]) || ([["+ch+"]!=["+APOS+"]))");
-      throw new XmlPullParserException("Syntax error, attribute value must begin with quote or apostrophe");
+      //System.out.println("((["+ch+"]!=["+QUOT+"]) || ([["+ch+"]!=["+APOS+"]))");
+      throw new XmlPullParserException("Syntax error, attribute value must begin with quote or apostrophe",this,null);
     }
     char delim=ch;
     StringBuffer result=new StringBuffer();
@@ -715,10 +716,10 @@ public class AIMLPullParser {
         continue;
       }
       switch(ch) {
-        case LT: throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value");
+        case LT: throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value",this,null);
         case AMP: String replacement=nextReference();
                   if (replacement.contains("<"))
-                    throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value");
+                    throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value",this,null);
                   result.append(replacement);
                   continue;
         default: result.append(ch);
@@ -733,7 +734,7 @@ public class AIMLPullParser {
     nextEq();
     String value=nextAttValue();
     if (attributeMap.containsKey(name))
-      throw new XmlPullParserException("Violation of WFC: Unique Att Spec (An attribute name MUST NOT appear more than once in the same start-tag or empty-element tag.)");
+      throw new XmlPullParserException("Violation of WFC: Unique Att Spec (An attribute name MUST NOT appear more than once in the same start-tag or empty-element tag.)",this,null);
     Attribute a = new Attribute(name,value);
     attributeMap.put(name,a);
     attributeList.add(a);
@@ -768,7 +769,7 @@ public class AIMLPullParser {
     return attributeMap.get(name).getValue();
   }
   private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException{
-    if (ch!=what) throw new XmlPullParserException(failMessage);
+    if (ch!=what) throw new XmlPullParserException(failMessage,this,null);
     nextChar();
   }
   public String nextPIContent() throws XmlPullParserException, IOException{
@@ -789,7 +790,7 @@ PIContent:
       do {
         if (!isChar()) {
           if (ch==EOF) throw new EOFException("Unexpected end of input while parsing PI");
-          else throw new XmlPullParserException("Syntax error, invalid character while parsing PI");
+          else throw new XmlPullParserException("Syntax error, invalid character while parsing PI",this,null);
         }
         if (!seenQ) {
           //S ::= '?' A | '>' S {out('>')} | C S {out(C)}
@@ -834,7 +835,7 @@ PIContent:
     do {
       if (!isChar()) {
         if (ch==EOF) throw new EOFException("Unexpected end of input while parsing Comment");
-        else throw new XmlPullParserException("Syntax error, invalid character while parsing Comment");
+        else throw new XmlPullParserException("Syntax error, invalid character while parsing Comment",this,null);
       }
       if (!seenDash) {
         if (ch==DASH) seenDash=true;
@@ -869,7 +870,7 @@ CDContent:
     do {
       if (!isChar()) {
         if (ch==EOF) throw new EOFException("Unexpected end of input while parsing Comment");
-        else throw new XmlPullParserException("Syntax error, invalid character while parsing Comment");
+        else throw new XmlPullParserException("Syntax error, invalid character while parsing Comment",this,null);
       }
       switch (seenRAB) {
         case 0:
@@ -915,7 +916,7 @@ CharData:
     do {
       if (!isChar()) {
         if (ch==EOF) throw new EOFException("Unexpected end of input while parsing Character data");
-        else throw new XmlPullParserException("Syntax error, invalid character while parsing Character data");
+        else throw new XmlPullParserException("Syntax error, invalid character while parsing Character data",this,null);
       }
       switch (seenRAB) {
         case 0:
@@ -939,7 +940,7 @@ CharData:
         case 2:
           switch(ch) {
             case RAB:result.append(']');break;
-            case GT:throw new XmlPullParserException("Syntax error, the CDATA-sesction-close delimiter ']]>' must not occur in Character data;");
+            case GT:throw new XmlPullParserException("Syntax error, the CDATA-sesction-close delimiter ']]>' must not occur in Character data",this,null);
             case(AMP):
             case(LT): result.append(']').append(']');
                       break CharData;
@@ -951,6 +952,50 @@ CharData:
       nextChar();
     } while (true);
     return result.toString();
+  }
+
+  public boolean isWhitespace() throws XmlPullParserException {
+    return false;
+  }
+
+  public String getText() {
+    return "";
+  }
+
+  public char[] getTextCharacters(int[] intArray) {
+    return null;
+  }
+
+  public String getName() {
+    return "";
+  }
+
+  public boolean isEmptyElementTag() throws XmlPullParserException {
+    return false;
+  }
+
+  public int getEventType() throws XmlPullParserException {
+    return eventType;
+  }
+
+  public int next() throws IOException, XmlPullParserException {
+    return 0;
+  }
+
+  public int nextToken() throws IOException, XmlPullParserException {
+    return 0;
+  }
+
+  public void require(int _int, String string, String string2) throws
+      IOException, XmlPullParserException {
+  }
+
+  public String nextText() throws IOException, XmlPullParserException {
+    return "";
+  }
+
+  public int nextTag() throws IOException, XmlPullParserException {
+    return 0;
   }
 
   public static void main(String[] args) throws Exception{
