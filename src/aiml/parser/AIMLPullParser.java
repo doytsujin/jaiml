@@ -12,11 +12,11 @@ import java.util.*;
 import org.xmlpull.v1.*;
 
 public class AIMLPullParser implements XmlPullParser{
-  InputStream is; //in case the requested encoding doesn't match the detected encoding, and we need to re-open the stream
-  Reader in;
-  String encoding;
+  private InputStream is; //in case the requested encoding doesn't match the detected encoding, and we need to re-open the stream
+  private Reader in;
+  private String encoding;
   char ch; //the current character in the input
-  HashMap<String,String> entityReplacementText=new HashMap<String,String>();
+  private HashMap<String,String> entityReplacementText=new HashMap<String,String>();
 
   class Attribute {
     String name;
@@ -49,8 +49,8 @@ public class AIMLPullParser implements XmlPullParser{
     }
   }
 
-  HashMap<String,Attribute> attributeMap = new HashMap<String,Attribute>();
-  ArrayList<Attribute> attributeList=new ArrayList<Attribute>();
+  private HashMap<String,Attribute> attributeMap = new HashMap<String,Attribute>();
+  private ArrayList<Attribute> attributeList=new ArrayList<Attribute>();
 
   private boolean readCR;
   private int lineNumber;
@@ -200,7 +200,7 @@ public class AIMLPullParser implements XmlPullParser{
   public char nextChar() throws IOException{
     ch = (char) in.read();
     colNumber++;
-    switch (ch) {
+    switch (ch) { //normalize end of line markers and count the position
       case LF:
         if (readCR) { // Processing CRLF, so silently skip the LF
           ch = (char) in.read();
@@ -249,9 +249,7 @@ public class AIMLPullParser implements XmlPullParser{
     if (!CharacterClasses.isS(ch)&&ch!=EQ)
       throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?",this,null);
     skipS();
-    if (ch!=EQ)
-      throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?",this,null);
-    nextChar();
+    requireChar(EQ,"Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?");
     skipS();
   }
   public int getLineNumber() {
@@ -263,8 +261,7 @@ public class AIMLPullParser implements XmlPullParser{
 
   public String nextReference() throws XmlPullParserException, IOException{
     //[67]   	Reference	   ::=   	EntityRef | CharRef
-    if (ch!=AMP) throw new XmlPullParserException("Syntax error, production [67] Referencee must start with &",this,null);
-    nextChar();
+    requireChar(AMP,"Syntax error, production [67] Referencee must start with &");
     StringBuffer result= new StringBuffer();
     if (CharacterClasses.isNameFirst(ch)) { //[68]   	EntityRef	   ::=   	'&' Name ';'
       String name=nextName();
@@ -306,13 +303,9 @@ public class AIMLPullParser implements XmlPullParser{
     } else {
       throw new XmlPullParserException("Syntax error, bad entity reference",this,null);
     }
-    if (ch==SEMICOLON) {
-      nextChar();
-      return result.toString();
-    } else {
-        throw new XmlPullParserException("Syntax error, production [67] Reference must end with ';'",this,null);
-    }
 
+    requireChar(SEMICOLON,"Syntax error, production [67] Reference must end with ';'");
+    return result.toString();
   }
 
   public String nextAttValue() throws XmlPullParserException, IOException{
