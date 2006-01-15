@@ -59,6 +59,8 @@ public class AIMLPullParser implements XmlPullParser{
   private boolean isEmptyElemTag;
   private String name;
   private StringBuilder text;
+  
+  private LexerTests tests=new LexerTests();
 
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
@@ -795,105 +797,122 @@ AttList:
   public int nextTag() throws IOException, XmlPullParserException {
     return 0;
   }
+  
+  private LexerTests tests() {
+    return tests;
+  }
+  
+  private class LexerTests {
+    private void testNextReference() throws IOException, XmlPullParserException {
+      setInput(new StringReader("&fooBar;&#64;&lt;&amp;"));
+      nextChar();
+      System.out.print(nextReference());
+      System.out.print(nextReference());
+      System.out.print(nextReference());
+      System.out.print(nextReference());
+      //System.out.print(pp.nextAttValue());
+      //System.out.println(pp.nextName());
+      System.out.println();
+    }
+    private void testNextAttribute() throws IOException, XmlPullParserException {
+      setInput(new StringReader("ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'"));
+      nextChar();
+      eventType=START_TAG;
+      nextAttribute();
+      nextAttribute();
+      System.out.println("Number of attributes: "+getAttributeCount());
+      for (int i=0;i<getAttributeCount();i++) {
+        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
+      }
+    }
+    private void testPIContent() throws IOException, XmlPullParserException {
+      setInput(new StringReader("?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
+      nextChar();
+      System.out.println(nextPIContent());
+      System.out.println(nextPIContent());
+    }
+    private void testCommentContent() throws IOException, XmlPullParserException {
+      setInput(new StringReader("ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
+      nextChar();
+      System.out.println(nextCommentContent());
+      System.out.println(nextCommentContent());
+      System.out.println(nextCommentContent());
+      try {
+        System.out.println(nextCommentContent());
+      } catch (XmlPullParserException e) {
+        System.out.println("Test succesfull: "+e.getMessage());
+      }
+      System.out.println(nextCommentContent());
+      try {
+        System.out.println(nextCommentContent());
+      } catch (XmlPullParserException e) {
+        System.out.println("Test succesfull: "+e.getMessage());
+      }
+    }
+    private void testCDataContent() throws IOException, XmlPullParserException {
+      setInput(new StringReader("]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
+      nextChar();
+      System.out.println(nextCDataContent());
+    }
+    private void testCharData() throws IOException, XmlPullParserException {
+      setInput(new StringReader("asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
+      nextChar();
+      System.out.println(nextCharData());
+      nextChar();
+      System.out.println(nextCharData());
+      nextChar();
+      System.out.println(nextCharData());
+      nextChar();
+      System.out.println(nextCharData());
+      nextChar();
+      try {
+        System.out.println(nextCharData());
+      } catch (XmlPullParserException e) {
+        System.out.println("Test succesfull: "+e.getMessage());
+      }
+      nextChar();
+      try {
+        System.out.println(nextCharData());
+      } catch (XmlPullParserException e) {
+        System.out.println("Test succesfull: "+e.getMessage());
+      }
+    }
+    private void testStartTagContent() throws IOException, XmlPullParserException {
+      setInput(new StringReader(" foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
+      nextChar();
+      nextStartTagContent();
 
+      System.out.println("Number of attributes: "+getAttributeCount()+" empty? "+(isEmptyElementTag()?"YES":"NO"));
+      for (int i=0;i<getAttributeCount();i++) {
+        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
+      }
+
+      nextStartTagContent();
+
+      System.out.println("Number of attributes: "+getAttributeCount()+" empty? "+(isEmptyElementTag()?"YES":"NO"));
+      for (int i=0;i<getAttributeCount();i++) {
+        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
+      }
+
+      nextStartTagContent();
+
+      System.out.println("Number of attributes: "+getAttributeCount()+" empty? "+(isEmptyElementTag()?"YES":"NO"));
+      for (int i=0;i<getAttributeCount();i++) {
+        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
+      }
+    }
+  }
+  
   public static void main(String[] args) throws Exception{
     AIMLPullParser pp = new AIMLPullParser();
-    System.out.println("\nj00 fail\n");
-    if ((char)-1=='\uFFFF') System.out.println("(char)-1=='\\uFFFF'\n");
-    /*
-    pp.setInput(new FileInputStream("forget.aiml"),System.getProperty("file.encoding"));
-    //System.out.println(((BufferedReader)pp.in).getEncoding());
 
-    while (pp.nextChar()!=EOF) {
-      if (pp.isS()) {
-        pp.skipS();
-        System.out.print("\n");
-      }
-      String chcl;
-      if (pp.isLetter()) chcl="[L]";
-      else if (pp.isDigit()) chcl="[D]";
-      else chcl="[?]";
-      System.out.print(pp.getChar()+chcl+"["+pp.lineNumber+":"+pp.colNumber+"]");
-    }
-    */
-    pp.setInput(new StringReader("&fooBar;&#64;&lt;&amp;ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
-    pp.nextChar();
-    System.out.print(pp.nextReference());
-    System.out.print(pp.nextReference());
-    System.out.print(pp.nextReference());
-    System.out.print(pp.nextReference());
-    //System.out.print(pp.nextAttValue());
-    //System.out.println(pp.nextName());
-    System.out.println();
-    pp.nextAttribute();
-    pp.nextAttribute();
-    System.out.println("Number of attributes: "+pp.getAttributeCount());
-    for (int i=0;i<pp.getAttributeCount();i++) {
-      System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
-    }
-    System.out.println(pp.nextPIContent());
-    System.out.println(pp.nextPIContent());
-    System.out.println(pp.nextCommentContent());
-    System.out.println(pp.nextCommentContent());
-    System.out.println(pp.nextCommentContent());
-    try {
-      System.out.println(pp.nextCommentContent());
-    } catch (XmlPullParserException e) {
-      System.out.println("Test succesfull: "+e.getMessage());
-    }
-    System.out.println(pp.nextCommentContent());
-    try {
-      System.out.println(pp.nextCommentContent());
-    } catch (XmlPullParserException e) {
-      System.out.println("Test succesfull: "+e.getMessage());
-    }
-    pp.setInput(new StringReader("]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
-    pp.nextChar();
-    System.out.println(pp.nextCDataContent());
-    pp.setInput(new StringReader("asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
-    pp.nextChar();
-    System.out.println(pp.nextCharData());
-    pp.nextChar();
-    System.out.println(pp.nextCharData());
-    pp.nextChar();
-    System.out.println(pp.nextCharData());
-    pp.nextChar();
-    System.out.println(pp.nextCharData());
-    pp.nextChar();
-    try {
-      System.out.println(pp.nextCharData());
-    } catch (XmlPullParserException e) {
-      System.out.println("Test succesfull: "+e.getMessage());
-    }
-    pp.nextChar();
-    try {
-      System.out.println(pp.nextCharData());
-    } catch (XmlPullParserException e) {
-      System.out.println("Test succesfull: "+e.getMessage());
-    }
-    pp.setInput(new StringReader(" foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
-    pp.nextChar();
-    pp.nextStartTagContent();
-
-    System.out.println("Number of attributes: "+pp.getAttributeCount()+" empty? "+(pp.isEmptyElementTag()?"YES":"NO"));
-    for (int i=0;i<pp.getAttributeCount();i++) {
-      System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
-    }
-
-    pp.nextStartTagContent();
-
-    System.out.println("Number of attributes: "+pp.getAttributeCount()+" empty? "+(pp.isEmptyElementTag()?"YES":"NO"));
-    for (int i=0;i<pp.getAttributeCount();i++) {
-      System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
-    }
-
-    pp.nextStartTagContent();
-
-    System.out.println("Number of attributes: "+pp.getAttributeCount()+" empty? "+(pp.isEmptyElementTag()?"YES":"NO"));
-    for (int i=0;i<pp.getAttributeCount();i++) {
-      System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
-    }
+    pp.tests().testNextReference();
+    pp.tests().testNextAttribute();   
+    pp.tests().testPIContent();
+    pp.tests().testCommentContent();    
+    pp.tests().testCDataContent();
+    pp.tests().testCharData();
+    pp.tests().testStartTagContent();
 
   }
-
 }
