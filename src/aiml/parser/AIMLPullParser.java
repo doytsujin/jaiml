@@ -194,7 +194,7 @@ public class AIMLPullParser implements XmlPullParser{
     return encoding;
   }
 
-  public char nextChar() throws IOException{
+  private char nextChar() throws IOException{
     ch = (char) in.read();
     colNumber++;
     switch (ch) { //normalize end of line markers and count the position
@@ -220,19 +220,19 @@ public class AIMLPullParser implements XmlPullParser{
 
     return ch;
   }
-  public char getChar() {
+  private char getChar() {
     return ch;
   }
-  public void skipS() throws XmlPullParserException, IOException {
+  private void skipS() throws XmlPullParserException, IOException {
     while (CharacterClasses.isS(ch)) nextChar();
   }
-  public void nextS() throws XmlPullParserException, IOException {
+  private void nextS() throws XmlPullParserException, IOException {
     //[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+
     if (!CharacterClasses.isS(ch)) throw new XmlPullParserException("Syntax error, expecting production\n[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+",this,null);
     skipS();
   }
 
-  public String nextName() throws XmlPullParserException, IOException {
+  private String nextName() throws XmlPullParserException, IOException {
     //[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*
     if (!CharacterClasses.isNameFirst(ch)) throw new XmlPullParserException("Syntax error, expecting production\n[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*",this,null);
     StringBuffer result=new StringBuffer();
@@ -241,7 +241,7 @@ public class AIMLPullParser implements XmlPullParser{
       result.append(ch);
     return result.toString();
   }
-  public void nextEq() throws XmlPullParserException, IOException {
+  private void nextEq() throws XmlPullParserException, IOException {
     // [25]   	Eq	   ::=   	S? '=' S?
     if (!CharacterClasses.isS(ch)&&ch!=EQ)
       throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?",this,null);
@@ -256,7 +256,7 @@ public class AIMLPullParser implements XmlPullParser{
     return colNumber;
   }
 
-  public String nextReference() throws XmlPullParserException, IOException{
+  private String nextReference() throws XmlPullParserException, IOException{
     //[67]   	Reference	   ::=   	EntityRef | CharRef
     requireChar(AMP,"Syntax error, production [67] Referencee must start with &");
     StringBuffer result= new StringBuffer();
@@ -305,7 +305,7 @@ public class AIMLPullParser implements XmlPullParser{
     return result.toString();
   }
 
-  public String nextAttValue() throws XmlPullParserException, IOException{
+  private String nextAttValue() throws XmlPullParserException, IOException{
     //[10]   	AttValue	   ::=   	'"' ([^<&"] | Reference)* '"' |  "'" ([^<&'] | Reference)* "'"
     if ((ch!=QUOT) && (ch!=APOS)) {
       //System.out.println("((["+ch+"]!=["+QUOT+"]) || ([["+ch+"]!=["+APOS+"]))");
@@ -339,7 +339,7 @@ public class AIMLPullParser implements XmlPullParser{
 
   }
 
-  public void nextAttribute() throws XmlPullParserException, IOException{
+  private void nextAttribute() throws XmlPullParserException, IOException{
     String name=nextName();
     nextEq();
     String value=nextAttValue();
@@ -382,7 +382,7 @@ public class AIMLPullParser implements XmlPullParser{
     if (ch!=what) throw new XmlPullParserException(failMessage,this,null);
     nextChar();
   }
-  public String nextPIContent() throws XmlPullParserException, IOException{
+  private String nextPIContent() throws XmlPullParserException, IOException{
     //[16]   	PI	   ::=   	'<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
     //assumes we already have parsed '<?'PITarget and are on the character after that
     if (CharacterClasses.isS(ch)){
@@ -430,7 +430,7 @@ PIContent:
 
   }
 
-  public String nextCommentContent() throws IOException,XmlPullParserException {
+  private String nextCommentContent() throws IOException,XmlPullParserException {
     //[15]   	Comment	   ::=   	'<!--' ((Char - '-') | ('-' (Char - '-')))* '-->'
     //Assumes we already read '<!--'
     //As with PI's we're actually looking for the terminating '--'
@@ -465,7 +465,7 @@ PIContent:
     return result.toString();
   }
 
-  public String nextCDataContent()throws IOException,XmlPullParserException {
+  private String nextCDataContent()throws IOException,XmlPullParserException {
     //[20]   	CData	   ::=   	(Char* - (Char* ']]>' Char*))
     //[21]   	CDEnd	   ::=   	']]>'
     //Assumes we already read '<![CDATA['
@@ -511,7 +511,7 @@ CDContent:
     nextChar();
     return result.toString();
   }
-  public String nextCharData() throws IOException, XmlPullParserException{
+  private String nextCharData() throws IOException, XmlPullParserException{
     //[14]   	CharData	   ::=   	[^<&]* - ([^<&]* ']]>' [^<&]*)
     //It is interesting to note, that, while the characters '<' and '&' do not
     //belong into this production they only signal the end of it, while the
