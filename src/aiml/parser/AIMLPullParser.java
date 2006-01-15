@@ -57,6 +57,8 @@ public class AIMLPullParser implements XmlPullParser{
   private int depth;
   private int eventType;
   private boolean isEmptyElemTag;
+  private String name;
+  private StringBuilder text;
 
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
@@ -74,7 +76,9 @@ public class AIMLPullParser implements XmlPullParser{
   public static final char SEMICOLON=';';
   public static final char DASH='-';
   public static final char RAB=']';
+  public static final char LAB = '[';
   public static final char SLASH='/';
+
 
   public static final int PI_START      = 0;      // '<?'PITarget
   public static final int XMLDECL_START = 1;      // '<?xml'
@@ -268,7 +272,7 @@ public class AIMLPullParser implements XmlPullParser{
     requireChar(AMP,"Syntax error, production [67] Referencee must start with &");
     StringBuffer result= new StringBuffer();
     if (CharacterClasses.isNameFirst(ch)) { //[68]   	EntityRef	   ::=   	'&' Name ';'
-      String name=nextName();
+      name=nextName();
       if (entityReplacementText.containsKey(name))
         result.append(entityReplacementText.get(name));
       else
@@ -279,6 +283,7 @@ public class AIMLPullParser implements XmlPullParser{
       StringBuffer codepointBuffer=new StringBuffer();
       if (ch==X) {//[66]   	CharRef	   ::=   	'&#x' [0-9a-fA-F]+ ';'
         radix=16;
+        name="#x";
         nextChar();
         do {
           if (CharacterClasses.isHexDigit(ch))
@@ -288,7 +293,8 @@ public class AIMLPullParser implements XmlPullParser{
           nextChar();
         } while (CharacterClasses.isHexDigit(ch));
       } else {//[66]   	CharRef	   ::=   	'&#' [0-9]+ ';'
-	radix=10;
+        radix=10;
+        name="#";
         do {
           if (CharacterClasses.isDecDigit(ch))
             codepointBuffer.append(ch);
@@ -299,6 +305,7 @@ public class AIMLPullParser implements XmlPullParser{
       }
       int codepoint;
       try {
+        name=name+codepointBuffer.toString();
         codepoint = Integer.parseInt(codepointBuffer.toString(),radix);
       } catch (NumberFormatException e) {
         throw new XmlPullParserException("Syntax error, bad character reference '"+codepointBuffer +"'",this,null);
@@ -402,6 +409,14 @@ public class AIMLPullParser implements XmlPullParser{
     if (ch!=what) throw new XmlPullParserException(failMessage,this,null);
     nextChar();
   }
+  private void requireString(String what,String failMessage) throws XmlPullParserException, IOException {
+    for (int i=0;i<what.length();i++) {
+      if (ch!= what.charAt(i))
+        throw new XmlPullParserException(failMessage,this,null);
+      nextChar();
+    }
+  }
+  
   private String nextPIContent() throws XmlPullParserException, IOException{
     //[16]   	PI	   ::=   	'<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
     //assumes we already have parsed '<?'PITarget and are on the character after that
@@ -584,7 +599,7 @@ CharData:
     return result.toString();
   }
   
-  private void nextContentMarkup() {
+  private void nextContentMarkup() throws XmlPullParserException, IOException {
     //Distinguishes between
     //[40]    STag          ::=  '<' Name (S Attribute)* S? '>'
     //[44]    EmptyElemTag  ::=  '<' Name (S Attribute)* S? '/>'
@@ -593,6 +608,54 @@ CharData:
     //[19]    CDStart       ::=  '<![CDATA['
     //[16]    PI            ::=  '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
     //[23]    XMLDecl       ::=  '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
+    //assumes we already read the initial '<'
+    switch(ch) {
+      case QUES:
+        eventType=PROCESSING_INSTRUCTION;
+        nextChar();
+        name=nextName();
+        if (name.equalsIgnoreCase("xml"))
+          throw new XmlPullParserException("The target '"+name+"' is not allowed for a processing instruction");
+        text.setLength(0);
+        text.append(name).append(nextPIContent());
+        break;
+      case EXCL:
+        nextChar();
+        switch (ch) {
+          case DASH:
+            eventType=COMMENT;
+            nextChar();
+            requireChar(DASH,"Syntax error, comments must begin with '<!--'");
+            nextCommentContent();
+            break;
+          case LAB:
+            eventType=CDSECT;
+            nextChar();
+            requireString("CDSECT[","Syntax error, only CDSECT marked sections are supported in XML");
+            text.setLength(0);
+            text.append(nextCDataContent());
+          case 'D':
+            eventType=DOCDECL;
+            nextChar();
+            requireString("OCTYPE","Syntax error, invalid characters after '<!'");
+            throw new XmlPullParserException("This implementation doesn't support DOCTYPE declarations");
+          default:
+            throw new XmlPullParserException("Syntax error, invalid characters after '<!'");
+        }
+        break;
+      case SLASH:
+        eventType=END_TAG;
+        nextChar();
+        name=nextName();
+        skipS();
+        requireChar(GT,"Syntax error, end-tag must end with '>'");
+        break;
+      default:
+        eventType=START_TAG;
+        nextChar();
+        name=nextName();
+        nextStartTagContent();
+    }
   }
   
   private void nextStartTagContent() throws XmlPullParserException, IOException  {
@@ -648,18 +711,56 @@ AttList:
   }
 
   public String getText() {
-    return "";
-  }
+    switch (eventType) {
+      case START_DOCUMENT:
+      case END_DOCUMENT:
+      case START_TAG:
+      case END_TAG:
+      case DOCDECL:
+        return null;
+      default:
+        return text.toString();
 
-  public char[] getTextCharacters(int[] intArray) {
-    return null;
+    }
+  }
+  
+  private char[] getTextCharacters(StringBuilder s, int[] holderForStartAndLength) {
+    holderForStartAndLength[0]=0;
+    holderForStartAndLength[0]=s.length();    
+    char[] result= new char[s.length()];
+    s.getChars(0,s.length(),result,0);
+    return result;    
+  }
+  
+  private char[] getTextCharacters(String s, int[] holderForStartAndLength) {
+    holderForStartAndLength[0]=0;
+    holderForStartAndLength[0]=s.length();    
+    char[] result= new char[s.length()];
+    s.getChars(0,s.length(),result,0);
+    return result;    
+  }
+  public char[] getTextCharacters(int[] holderForStartAndLength) {
+    switch (eventType) {
+      case START_DOCUMENT:
+      case END_DOCUMENT:
+      case START_TAG:
+      case END_TAG:
+      case DOCDECL:
+        return null;
+      case ENTITY_REF:
+        return getTextCharacters(name,holderForStartAndLength);
+      default:
+        return getTextCharacters(text,holderForStartAndLength);
+
+    }
+
   }
 
   public String getName() {
     switch(eventType) {
       case START_TAG:
       case END_TAG:
-      case ENTITY_REF: return "";
+      case ENTITY_REF: return name;
       default: return null;
     }
   }
