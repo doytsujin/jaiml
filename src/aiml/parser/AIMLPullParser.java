@@ -74,6 +74,7 @@ public class AIMLPullParser implements XmlPullParser{
   public static final char SEMICOLON=';';
   public static final char DASH='-';
   public static final char RAB=']';
+  public static final char SLASH='/';
 
   public static final int PI_START      = 0;      // '<?'PITarget
   public static final int XMLDECL_START = 1;      // '<?xml'
@@ -582,7 +583,66 @@ CharData:
     } while (true);
     return result.toString();
   }
-
+  
+  private void nextContentMarkup() {
+    //Distinguishes between
+    //[40]    STag          ::=  '<' Name (S Attribute)* S? '>'
+    //[44]    EmptyElemTag  ::=  '<' Name (S Attribute)* S? '/>'
+    //[42]    ETag          ::=  '</' Name S? '>'
+    //[15]    Comment       ::=  '<!--' ((Char - '-') | ('-' (Char - '-')))* '-->'
+    //[19]    CDStart       ::=  '<![CDATA['
+    //[16]    PI            ::=  '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
+    //[23]    XMLDecl       ::=  '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
+  }
+  
+  private void nextStartTagContent() throws XmlPullParserException, IOException  {
+    //reads the following part from productions [40] & [44]:
+    //(S Attribute)* S? '/'?'>'
+    //Assumes we already read '<' Name
+    //The state machine looks like this:
+    // 0::= S 1 | '/' | '>'
+    // 1::= Attribute 0 | '/' | '>'
+    int state=0;
+    isEmptyElemTag=false;
+    attributeList.clear();
+    attributeMap.clear();
+AttList:    
+    do {
+      switch(state) {
+        case 0:
+          if (CharacterClasses.isS(ch)) {
+            skipS();
+            state=1;
+            continue AttList;
+          }
+          switch(ch) {
+            case SLASH: 
+              isEmptyElemTag=true;
+              nextChar();
+            case GT:
+              break AttList;
+            default:
+              throw new XmlPullParserException("Syntax error, unexpected character '"+ch+"' while parsing attribute list");
+          }
+        case 1:
+          switch(ch) {
+            case SLASH:
+              isEmptyElemTag=true;
+              nextChar();
+            case GT:
+              break AttList;
+            default:
+              nextAttribute();
+              state=0;
+              break;
+          }
+      }
+    } while (true);
+    requireChar(GT,"Syntax error while parsing "+(isEmptyElemTag?"EmptyElemTag":"STag")+ ": unexpected terminal character, must be '>'");
+    eventType=START_TAG;
+    depth++;
+  }
+  
   public boolean isWhitespace() throws XmlPullParserException {
     return false;
   }
@@ -709,6 +769,28 @@ CharData:
       System.out.println(pp.nextCharData());
     } catch (XmlPullParserException e) {
       System.out.println("Test succesfull: "+e.getMessage());
+    }
+    pp.setInput(new StringReader(" foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
+    pp.nextChar();
+    pp.nextStartTagContent();
+
+    System.out.println("Number of attributes: "+pp.getAttributeCount()+" empty? "+(pp.isEmptyElementTag()?"YES":"NO"));
+    for (int i=0;i<pp.getAttributeCount();i++) {
+      System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
+    }
+
+    pp.nextStartTagContent();
+
+    System.out.println("Number of attributes: "+pp.getAttributeCount()+" empty? "+(pp.isEmptyElementTag()?"YES":"NO"));
+    for (int i=0;i<pp.getAttributeCount();i++) {
+      System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
+    }
+
+    pp.nextStartTagContent();
+
+    System.out.println("Number of attributes: "+pp.getAttributeCount()+" empty? "+(pp.isEmptyElementTag()?"YES":"NO"));
+    for (int i=0;i<pp.getAttributeCount();i++) {
+      System.out.println("Attribute ["+i+"]:"+pp.getAttributeName(i)+"="+pp.getAttributeValue(i));
     }
 
   }
