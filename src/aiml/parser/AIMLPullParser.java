@@ -12,7 +12,6 @@ import java.util.*;
 import org.xmlpull.v1.*;
 
 public class AIMLPullParser implements XmlPullParser{
-  private InputStream is; //in case the requested encoding doesn't match the detected encoding, and we need to re-open the stream
   private Reader in;
   private String encoding;
   char ch; //the current character in the input
@@ -150,7 +149,6 @@ public class AIMLPullParser implements XmlPullParser{
     setDefaultEntityReplacementText();
     attributeMap.clear();
     attributeList.clear();
-    is=null;
     in=null;
     encoding=null;
     eventType=START_DOCUMENT;
@@ -173,7 +171,6 @@ public class AIMLPullParser implements XmlPullParser{
   public void setInput(java.io.InputStream inputStream,java.lang.String inputEncoding) throws XmlPullParserException{
     resetState();
     try {
-      is=inputStream;
       InputStreamReader isr;
       if (inputEncoding!=null) {
         isr = new InputStreamReader(inputStream, inputEncoding);
