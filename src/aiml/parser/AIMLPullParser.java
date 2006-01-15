@@ -56,6 +56,7 @@ public class AIMLPullParser implements XmlPullParser{
   private int colNumber;
   private int depth;
   private int eventType;
+  private boolean isEmptyElemTag;
 
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
@@ -102,6 +103,7 @@ public class AIMLPullParser implements XmlPullParser{
   }
 
   public void setFeature(String name, boolean state) throws XmlPullParserException {
+    if (eventType!=START_DOCUMENT) throw new XmlPullParserException("Features can only be set before the first call to next or nextToken");
     if (state) throw new XmlPullParserException("This feature can't be activated");
   }
 
@@ -122,7 +124,11 @@ public class AIMLPullParser implements XmlPullParser{
   }
 
   public String getNamespace(String prefix) {
-    return null;
+    switch (eventType) {
+      case START_TAG:
+      case END_TAG: return NO_NAMESPACE;
+      default: return null;
+    } 
   }
 
   public int getDepth() {
@@ -350,16 +356,25 @@ public class AIMLPullParser implements XmlPullParser{
     attributeList.add(a);
   }
   public int getAttributeCount() {
-    return attributeList.size();
+    if (eventType==START_TAG)
+      return attributeList.size();
+    else
+      return -1;
   }
   public String getAttributeName(int index) {
+    if (eventType!=START_TAG)
+      throw new IndexOutOfBoundsException();
     return attributeList.get(index).getName();
   }
   public String getAttributeNamespace(int index) {
+    if (eventType!=START_TAG)
+      throw new IndexOutOfBoundsException();
     return attributeList.get(index).getNamespace();
   }
 
   public String getAttributePrefix(int index) {
+    if (eventType!=START_TAG)
+      throw new IndexOutOfBoundsException();
     return attributeList.get(index).getPrefix();
   }
 
@@ -372,10 +387,14 @@ public class AIMLPullParser implements XmlPullParser{
   }
 
   public String getAttributeValue(int index) {
+    if (eventType!=START_TAG)
+      throw new IndexOutOfBoundsException();
     return attributeList.get(index).getValue();
   }
   public String getAttributeValue(String namespace, String name) {
     assert (namespace==null): "Namespaces not supported";
+    if (eventType!=START_TAG)
+      throw new IndexOutOfBoundsException();
     return attributeMap.get(name).getValue();
   }
   private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException{
@@ -577,11 +596,19 @@ CharData:
   }
 
   public String getName() {
-    return "";
+    switch(eventType) {
+      case START_TAG:
+      case END_TAG:
+      case ENTITY_REF: return "";
+      default: return null;
+    }
   }
 
   public boolean isEmptyElementTag() throws XmlPullParserException {
-    return false;
+    if (eventType==START_TAG)
+      return isEmptyElemTag;
+    else
+      throw new XmlPullParserException("The function isEmptyElementTag() can only be called for start-tags");
   }
 
   public int getEventType() throws XmlPullParserException {
