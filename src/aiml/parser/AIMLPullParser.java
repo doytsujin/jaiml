@@ -83,23 +83,8 @@ public class AIMLPullParser implements XmlPullParser{
   public static final char SEMICOLON=';';
   public static final char DASH='-';
   public static final char RAB=']';
-  public static final char LAB = '[';
+  public static final char LAB='[';
   public static final char SLASH='/';
-
-
-  public static final int PI_START      = 0;      // '<?'PITarget
-  public static final int XMLDECL_START = 1;      // '<?xml'
-  public static final int PI_END        = 2;      // '?>'
-  public static final int STAG_START    = 3;      // '<'Name
-  public static final int TAG_END       = 4;      // '>'
-  public static final int EMPTY_TAG_END = 5;      // '/>'
-  public static final int ETAG_START    = 6;      // '</'Name
-  public static final int REF_START     = 7;      // '&'
-  public static final int CDATA_START   = 8;      // '<![CDATA['
-  public static final int CDATA_END     = 9;      // ']]>'
-  public static final int COMMENT_START =10;      // '<!--'
-  public static final int COMMENT_END   =11;      // '--' (actually, it's '-->' but since the string '--' isn't allowed to appear except as part of the end marker we can conveniently use this
-  public static final int DOCTYPE_START =12;      // '<!doctype'
 
   public AIMLPullParser() {
     resetState();
