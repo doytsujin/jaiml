@@ -28,9 +28,9 @@ public class AIMLPullParser implements XmlPullParser{
     String value;
     boolean isdefault=false;
     String type="CDATA";
-    Attribute(String name,String value) {
-      assert (name!=null && !name.equals("")) : "Name must not be empty";
-      assert (value!=null) : "Value must not be null";
+    Attribute(String name, String value) {
+      assert (name != null && !name.equals("")) : "Name must not be empty";
+      assert (value != null) : "Value must not be null";
       this.name=name;
       this.value=value;
     }
@@ -53,7 +53,6 @@ public class AIMLPullParser implements XmlPullParser{
       return value;
     }
   }
-
   private HashMap<String,Attribute> attributeMap = new HashMap<String,Attribute>();
   private ArrayList<Attribute> attributeList=new ArrayList<Attribute>();
 
@@ -90,56 +89,53 @@ public class AIMLPullParser implements XmlPullParser{
     resetState();
   }
 
-  public void setProperty(String name, Object value) throws XmlPullParserException {
-    if (name==null) throw new IllegalArgumentException("Property name cannot be null");
-    throw new XmlPullParserException("Property "+name+" not supported");
+  public void setProperty(String name, Object value)
+      throws XmlPullParserException {
+    if (name == null)
+      throw new IllegalArgumentException("Property name cannot be null");
+    throw new XmlPullParserException("Property " + name + " not supported");
   }
-
   public Object getProperty(String name) {
     return null;
   }
-
-  public void setFeature(String name, boolean state) throws XmlPullParserException {
-    if (eventType!=START_DOCUMENT) throw new XmlPullParserException("Features can only be set before the first call to next or nextToken");
-    if (state) throw new XmlPullParserException("This feature can't be activated");
+  public void setFeature(String name, boolean state)
+      throws XmlPullParserException {
+    if (eventType != START_DOCUMENT)
+      throw new XmlPullParserException(
+          "Features can only be set before the first call to next or nextToken");
+    if (state)
+      throw new XmlPullParserException("This feature can't be activated");
   }
-
   public boolean getFeature(java.lang.String name) {
     return false;
   }
-
-  public int getNamespaceCount(int depth) throws XmlPullParserException{
+  public int getNamespaceCount(int depth) throws XmlPullParserException {
     return 0;
   }
-
   public String getNamespacePrefix(int pos) throws XmlPullParserException {
     return null;
   }
-
-  public String getNamespaceUri(int pos)  throws XmlPullParserException {
+  public String getNamespaceUri(int pos) throws XmlPullParserException {
     return null;
   }
-
   public String getNamespace(String prefix) {
     switch (eventType) {
       case START_TAG:
-      case END_TAG: return NO_NAMESPACE;
-      default: return null;
-    } 
+      case END_TAG:
+        return NO_NAMESPACE;
+      default:
+        return null;
+    }
   }
-
   public int getDepth() {
     return depth;
   }
-
   public String getPositionDescription() {
-    return "@"+getLineNumber()+":"+getColumnNumber();
+    return "@" + getLineNumber() + ":" + getColumnNumber();
   }
-
   public String getNamespace() {
     return "";
   }
-
   public String getPrefix() {
     return null;
   }
@@ -166,27 +162,27 @@ public class AIMLPullParser implements XmlPullParser{
       defineEntityReplacementText("apos", "\"");
     } catch (XmlPullParserException e) {};
   }
-  public void defineEntityReplacementText(String entityName, String replacementText) throws XmlPullParserException{
+  public void defineEntityReplacementText(String entityName,
+      String replacementText) throws XmlPullParserException {
     if (entityReplacementText.containsKey(entityName))
-      throw new XmlPullParserException("Cannot redefine entity replacement text");
-    entityReplacementText.put(entityName,replacementText);
+      throw new XmlPullParserException(
+          "Cannot redefine entity replacement text");
+    entityReplacementText.put(entityName, replacementText);
   }
-  public void setInput(java.io.InputStream inputStream,java.lang.String inputEncoding) throws XmlPullParserException{
+  public void setInput(java.io.InputStream inputStream,
+      java.lang.String inputEncoding) throws XmlPullParserException {
     resetState();
     try {
       InputStreamReader isr;
-      if (inputEncoding!=null) {
-        isr = new InputStreamReader(inputStream, inputEncoding);
+      if (inputEncoding != null) {
+        isr=new InputStreamReader(inputStream, inputEncoding);
         encoding=isr.getEncoding();
+      } else {
+        isr=new InputStreamReader(inputStream);
       }
-      else {
-        isr = new InputStreamReader(inputStream);
-      }
-
-      in = new BufferedReader(isr);
-    }
-    catch (UnsupportedEncodingException e) {
-      throw new XmlPullParserException("Unsupported encoding",null,e);
+      in=new BufferedReader(isr);
+    } catch (UnsupportedEncodingException e) {
+      throw new XmlPullParserException("Unsupported encoding", null, e);
     };
   }
   public void setInput(java.io.Reader in) {
@@ -355,48 +351,41 @@ public class AIMLPullParser implements XmlPullParser{
     attributeMap.put(name,a);
     attributeList.add(a);
   }
+  
   public int getAttributeCount() {
-    if (eventType==START_TAG)
+    if (eventType == START_TAG)
       return attributeList.size();
     else
       return -1;
   }
   public String getAttributeName(int index) {
-    if (eventType!=START_TAG)
-      throw new IndexOutOfBoundsException();
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
     return attributeList.get(index).getName();
   }
   public String getAttributeNamespace(int index) {
-    if (eventType!=START_TAG)
-      throw new IndexOutOfBoundsException();
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
     return attributeList.get(index).getNamespace();
   }
-
   public String getAttributePrefix(int index) {
-    if (eventType!=START_TAG)
-      throw new IndexOutOfBoundsException();
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
     return attributeList.get(index).getPrefix();
   }
-
   public String getAttributeType(int index) {
     return attributeList.get(index).getType();
   }
-
   public boolean isAttributeDefault(int index) {
     return attributeList.get(index).isDefault();
   }
-
   public String getAttributeValue(int index) {
-    if (eventType!=START_TAG)
-      throw new IndexOutOfBoundsException();
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
     return attributeList.get(index).getValue();
   }
   public String getAttributeValue(String namespace, String name) {
-    assert (namespace==null): "Namespaces not supported";
-    if (eventType!=START_TAG)
-      throw new IndexOutOfBoundsException();
+    assert (namespace == null) : "Namespaces not supported";
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
     return attributeMap.get(name).getValue();
   }
+
   private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException{
     if (ch!=what) throw new XmlPullParserException(failMessage,this,null);
     nextChar();
@@ -701,7 +690,6 @@ AttList:
   public boolean isWhitespace() throws XmlPullParserException {
     return false;
   }
-
   public String getText() {
     switch (eventType) {
       case START_DOCUMENT:
@@ -712,7 +700,6 @@ AttList:
         return null;
       default:
         return text.toString();
-
     }
   }
   
@@ -731,6 +718,7 @@ AttList:
     s.getChars(0,s.length(),result,0);
     return result;    
   }
+
   public char[] getTextCharacters(int[] holderForStartAndLength) {
     switch (eventType) {
       case START_DOCUMENT:
@@ -740,50 +728,43 @@ AttList:
       case DOCDECL:
         return null;
       case ENTITY_REF:
-        return getTextCharacters(name,holderForStartAndLength);
+        return getTextCharacters(name, holderForStartAndLength);
       default:
-        return getTextCharacters(text,holderForStartAndLength);
-
+        return getTextCharacters(text, holderForStartAndLength);
     }
-
   }
-
   public String getName() {
-    switch(eventType) {
+    switch (eventType) {
       case START_TAG:
       case END_TAG:
-      case ENTITY_REF: return name;
-      default: return null;
+      case ENTITY_REF:
+        return name;
+      default:
+        return null;
     }
   }
-
   public boolean isEmptyElementTag() throws XmlPullParserException {
-    if (eventType==START_TAG)
+    if (eventType == START_TAG)
       return isEmptyElemTag;
     else
-      throw new XmlPullParserException("The function isEmptyElementTag() can only be called for start-tags");
+      throw new XmlPullParserException(
+          "The function isEmptyElementTag() can only be called for start-tags");
   }
-
   public int getEventType() throws XmlPullParserException {
     return eventType;
   }
-
   public int next() throws IOException, XmlPullParserException {
     return 0;
   }
-
   public int nextToken() throws IOException, XmlPullParserException {
     return 0;
   }
-
-  public void require(int _int, String string, String string2) throws
-      IOException, XmlPullParserException {
+  public void require(int _int, String string, String string2)
+      throws IOException, XmlPullParserException {
   }
-
   public String nextText() throws IOException, XmlPullParserException {
     return "";
   }
-
   public int nextTag() throws IOException, XmlPullParserException {
     return 0;
   }
