@@ -820,14 +820,15 @@ AttList:
     }
     public void testNextReference() throws IOException, XmlPullParserException {
       setInput(new StringReader("&fooBar;&#64;&lt;&amp;"));
-      nextChar();      
-      System.out.print(nextReference());
-      System.out.print(nextReference());
-      System.out.print(nextReference());
-      System.out.print(nextReference());
-      //System.out.print(pp.nextAttValue());
-      //System.out.println(pp.nextName());
-      System.out.println();
+      nextChar();   
+      assertEquals(nextReference(),"&fooBar;");
+      assertEquals(nextReference(),new String(Character.toChars(64)));
+      assertEquals(nextReference(),"<");
+      assertEquals(nextReference(),"&");
+    }
+    private void assertAttribute(int i,String name,String value){
+      assertEquals(getAttributeName(i),name);
+      assertEquals(getAttributeValue(i),value);
     }
     public void testNextAttribute() throws IOException, XmlPullParserException {
       setInput(new StringReader("ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'"));
@@ -835,86 +836,125 @@ AttList:
       eventType=START_TAG;
       nextAttribute();
       nextAttribute();
-      System.out.println("Number of attributes: "+getAttributeCount());
-      for (int i=0;i<getAttributeCount();i++) {
-        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
-      }
+      assertEquals(getAttributeCount(),2);
+      assertAttribute(0,"ap:kf","foo   &'xxx");
+      assertAttribute(1,"foofoo","wtf");
     }
     public void testPIContent() throws IOException, XmlPullParserException {
       setInput(new StringReader("?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
       nextChar();
-      System.out.println(nextPIContent());
-      System.out.println(nextPIContent());
+      assertEquals(nextPIContent(),"");
+      assertEquals(nextPIContent()," bla??? >>>>??? ? > ?hblah");
+      try {
+        nextPIContent();
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {
+        assertTrue(true);
+      }
     }
     public void testCommentContent() throws IOException, XmlPullParserException {
       setInput(new StringReader("ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
       nextChar();
-      System.out.println(nextCommentContent());
-      System.out.println(nextCommentContent());
-      System.out.println(nextCommentContent());
+      assertEquals(nextCommentContent(),"ffrrfraaafhr");
+      assertEquals(nextCommentContent(),"");
+      assertEquals(nextCommentContent(),"-aasdfasdf-asdfsad-asdfa->-asfd");
       try {
-        System.out.println(nextCommentContent());
+        nextCommentContent();
+        fail("Expected XmlPullParserException");
       } catch (XmlPullParserException e) {
-        System.out.println("Test succesfull: "+e.getMessage());
+        assertTrue(true);
       }
-      System.out.println(nextCommentContent());
+      assertEquals(nextCommentContent(),"asdf");
       try {
         System.out.println(nextCommentContent());
+        fail("Expected XmlPullParserException");        
       } catch (XmlPullParserException e) {
-        System.out.println("Test succesfull: "+e.getMessage());
+        assertTrue(true);
       }
     }
     public void testCDataContent() throws IOException, XmlPullParserException {
       setInput(new StringReader("]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
       nextChar();
-      System.out.println(nextCDataContent());
+      assertEquals(nextCDataContent(),"]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
     }
     public void testCharData() throws IOException, XmlPullParserException {
       setInput(new StringReader("asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
-      nextChar();
-      System.out.println(nextCharData());
-      nextChar();
-      System.out.println(nextCharData());
-      nextChar();
-      System.out.println(nextCharData());
-      nextChar();
-      System.out.println(nextCharData());
-      nextChar();
+      assertEquals(nextChar(),'a');
+      assertEquals(nextCharData(),"asdfasdfjh");
+      assertEquals(getChar(),'<');
+
+      assertEquals(nextChar(),'s');
+      assertEquals(nextCharData(),"skdjfhaskdjfh");
+      assertEquals(getChar(),'&');
+      
+      assertEquals(nextChar(),'a');
+      assertEquals(nextCharData(),"askjfh");
+      assertEquals(getChar(),'<');
+
+      assertEquals(nextChar(),']');
+      assertEquals(nextCharData(),"]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
+      assertEquals(getChar(),'<');
+
+      assertEquals(nextChar(),']');
       try {
-        System.out.println(nextCharData());
+        nextCharData();
+        fail("Expected XmlPullParserException");        
       } catch (XmlPullParserException e) {
-        System.out.println("Test succesfull: "+e.getMessage());
+        assertTrue(true);
       }
-      nextChar();
+      assertEquals(getChar(),'>');
+      
+      assertEquals(nextChar(),'a');
       try {
-        System.out.println(nextCharData());
+        nextCharData();
+        fail("Expected XmlPullParserException");        
       } catch (XmlPullParserException e) {
-        System.out.println("Test succesfull: "+e.getMessage());
+        assertTrue(true);
       }
     }
     public void testStartTagContent() throws IOException, XmlPullParserException {
       setInput(new StringReader(" foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
-      nextChar();
+      assertEquals(nextChar(),' ');
       nextStartTagContent();
-
-      System.out.println("Number of attributes: "+getAttributeCount()+" empty? "+(isEmptyElementTag()?"YES":"NO"));
-      for (int i=0;i<getAttributeCount();i++) {
-        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
+      assertEquals(getAttributeCount(),2);
+      assertEquals(isEmptyElementTag(),false);
+      assertAttribute(0,"foo","bar");
+      assertAttribute(1,"bar","foo");
+      try {
+        getAttributeName(2);
+        fail("Expcected IndexOutOfBoundsException");
+      } catch (IndexOutOfBoundsException e) {
+        assertTrue(true);
       }
+      assertEquals(getChar(),' ');
+      
+      nextStartTagContent();
+      assertEquals(getAttributeCount(),2);
+      assertEquals(isEmptyElementTag(),false);
+      assertAttribute(0,"a","b");
+      assertAttribute(1,"c","d");
+      try {
+        getAttributeValue(2);
+        fail("Expcected IndexOutOfBoundsException");
+      } catch (IndexOutOfBoundsException e) {
+        assertTrue(true);
+      }
+      assertEquals(getChar(),' ');
 
       nextStartTagContent();
-
-      System.out.println("Number of attributes: "+getAttributeCount()+" empty? "+(isEmptyElementTag()?"YES":"NO"));
-      for (int i=0;i<getAttributeCount();i++) {
-        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
+      assertEquals(getAttributeCount(),2);
+      assertEquals(isEmptyElementTag(),true);
+      assertAttribute(0,"u","1");
+      assertAttribute(1,"v","2");
+      try {
+        getAttributeValue(2);
+        fail("Expcected IndexOutOfBoundsException");
+      } catch (IndexOutOfBoundsException e) {
+        assertTrue(true);
       }
+      assertEquals(getChar(),EOF);
 
-      nextStartTagContent();
 
-      System.out.println("Number of attributes: "+getAttributeCount()+" empty? "+(isEmptyElementTag()?"YES":"NO"));
-      for (int i=0;i<getAttributeCount();i++) {
-        System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
-      }
     }
   }
   
