@@ -89,15 +89,6 @@ public class AIMLPullParser implements XmlPullParser{
     resetState();
   }
 
-  public void setProperty(String name, Object value)
-      throws XmlPullParserException {
-    if (name == null)
-      throw new IllegalArgumentException("Property name cannot be null");
-    throw new XmlPullParserException("Property " + name + " not supported");
-  }
-  public Object getProperty(String name) {
-    return null;
-  }
   public void setFeature(String name, boolean state)
       throws XmlPullParserException {
     if (eventType != START_DOCUMENT)
@@ -108,6 +99,45 @@ public class AIMLPullParser implements XmlPullParser{
   }
   public boolean getFeature(java.lang.String name) {
     return false;
+  }
+  public void setProperty(String name, Object value)
+      throws XmlPullParserException {
+    if (name == null)
+      throw new IllegalArgumentException("Property name cannot be null");
+    throw new XmlPullParserException("Property " + name + " not supported");
+  }
+  public Object getProperty(String name) {
+    return null;
+  }
+  public void setInput(java.io.Reader in) {
+    resetState();
+    this.in=in;
+  }
+  public void setInput(java.io.InputStream inputStream,
+      java.lang.String inputEncoding) throws XmlPullParserException {
+    resetState();
+    try {
+      InputStreamReader isr;
+      if (inputEncoding != null) {
+        isr=new InputStreamReader(inputStream, inputEncoding);
+        encoding=isr.getEncoding();
+      } else {
+        isr=new InputStreamReader(inputStream);
+      }
+      in=new BufferedReader(isr);
+    } catch (UnsupportedEncodingException e) {
+      throw new XmlPullParserException("Unsupported encoding", null, e);
+    };
+  }
+  public String getInputEncoding() {
+    return encoding;
+  }
+  public void defineEntityReplacementText(String entityName,
+      String replacementText) throws XmlPullParserException {
+    if (entityReplacementText.containsKey(entityName))
+      throw new XmlPullParserException(
+          "Cannot redefine entity replacement text");
+    entityReplacementText.put(entityName, replacementText);
   }
   public int getNamespaceCount(int depth) throws XmlPullParserException {
     return 0;
@@ -133,11 +163,134 @@ public class AIMLPullParser implements XmlPullParser{
   public String getPositionDescription() {
     return "@" + getLineNumber() + ":" + getColumnNumber();
   }
+  public int getLineNumber() {
+    return lineNumber;
+  }
+  public int getColumnNumber() {
+    return colNumber;
+  }
+  public boolean isWhitespace() throws XmlPullParserException {
+    return false;
+  }
+  public String getText() {
+    switch (eventType) {
+      case START_DOCUMENT:
+      case END_DOCUMENT:
+      case START_TAG:
+      case END_TAG:
+      case DOCDECL:
+        return null;
+      default:
+        return text.toString();
+    }
+  }
+  public char[] getTextCharacters(int[] holderForStartAndLength) {
+    switch (eventType) {
+      case START_DOCUMENT:
+      case END_DOCUMENT:
+      case START_TAG:
+      case END_TAG:
+      case DOCDECL:
+        return null;
+      case ENTITY_REF:
+        return getTextCharacters(name, holderForStartAndLength);
+      default:
+        return getTextCharacters(text, holderForStartAndLength);
+    }
+  }
   public String getNamespace() {
     return "";
   }
+  public String getName() {
+    switch (eventType) {
+      case START_TAG:
+      case END_TAG:
+      case ENTITY_REF:
+        return name;
+      default:
+        return null;
+    }
+  }
   public String getPrefix() {
     return null;
+  }
+  public boolean isEmptyElementTag() throws XmlPullParserException {
+    if (eventType == START_TAG)
+      return isEmptyElemTag;
+    else
+      throw new XmlPullParserException(
+          "The function isEmptyElementTag() can only be called for start-tags");
+  }
+  public int getAttributeCount() {
+    if (eventType == START_TAG)
+      return attributeList.size();
+    else
+      return -1;
+  }
+  public String getAttributeNamespace(int index) {
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
+    return attributeList.get(index).getNamespace();
+  }
+  public String getAttributeName(int index) {
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
+    return attributeList.get(index).getName();
+  }
+  public String getAttributePrefix(int index) {
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
+    return attributeList.get(index).getPrefix();
+  }
+  public String getAttributeType(int index) {
+    return attributeList.get(index).getType();
+  }
+  public boolean isAttributeDefault(int index) {
+    return attributeList.get(index).isDefault();
+  }
+  public String getAttributeValue(int index) {
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
+    return attributeList.get(index).getValue();
+  }
+  public String getAttributeValue(String namespace, String name) {
+    assert (namespace == null) : "Namespaces not supported";
+    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
+    return attributeMap.get(name).getValue();
+  }
+  public int getEventType() throws XmlPullParserException {
+    return eventType;
+  }
+  public int next() throws IOException, XmlPullParserException {
+    return 0;
+  }
+  public int nextToken() throws IOException, XmlPullParserException {
+    return 0;
+  }
+  public void require(int _int, String string, String string2)
+      throws IOException, XmlPullParserException {
+  }
+  public String nextText() throws IOException, XmlPullParserException {
+    return "";
+  }
+  public int nextTag() throws IOException, XmlPullParserException {
+    return 0;
+  }
+
+  private static char[] getTextCharacters(StringBuilder s, int[] holderForStartAndLength) {
+    holderForStartAndLength[0]=0;
+    holderForStartAndLength[0]=s.length();    
+    char[] result= new char[s.length()];
+    s.getChars(0,s.length(),result,0);
+    return result;    
+  }
+
+  private static char[] getTextCharacters(String s, int[] holderForStartAndLength) {
+    holderForStartAndLength[0]=0;
+    holderForStartAndLength[0]=s.length();    
+    char[] result= new char[s.length()];
+    s.getChars(0,s.length(),result,0);
+    return result;    
+  }
+
+  private char getChar() {
+    return ch;
   }
 
   private void resetState() {
@@ -162,35 +315,21 @@ public class AIMLPullParser implements XmlPullParser{
       defineEntityReplacementText("apos", "\"");
     } catch (XmlPullParserException e) {};
   }
-  public void defineEntityReplacementText(String entityName,
-      String replacementText) throws XmlPullParserException {
-    if (entityReplacementText.containsKey(entityName))
-      throw new XmlPullParserException(
-          "Cannot redefine entity replacement text");
-    entityReplacementText.put(entityName, replacementText);
+  
+  private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException{
+    if (ch!=what) throw new XmlPullParserException(failMessage,this,null);
+    nextChar();
   }
-  public void setInput(java.io.InputStream inputStream,
-      java.lang.String inputEncoding) throws XmlPullParserException {
-    resetState();
-    try {
-      InputStreamReader isr;
-      if (inputEncoding != null) {
-        isr=new InputStreamReader(inputStream, inputEncoding);
-        encoding=isr.getEncoding();
-      } else {
-        isr=new InputStreamReader(inputStream);
-      }
-      in=new BufferedReader(isr);
-    } catch (UnsupportedEncodingException e) {
-      throw new XmlPullParserException("Unsupported encoding", null, e);
-    };
+  private void requireString(String what,String failMessage) throws XmlPullParserException, IOException {
+    for (int i=0;i<what.length();i++) {
+      if (ch!= what.charAt(i))
+        throw new XmlPullParserException(failMessage,this,null);
+      nextChar();
+    }
   }
-  public void setInput(java.io.Reader in) {
-    resetState();
-    this.in=in;
-  }
-  public String getInputEncoding() {
-    return encoding;
+
+  private void skipS() throws XmlPullParserException, IOException {
+    while (CharacterClasses.isS(ch)) nextChar();
   }
 
   private char nextChar() throws IOException{
@@ -219,12 +358,6 @@ public class AIMLPullParser implements XmlPullParser{
 
     return ch;
   }
-  private char getChar() {
-    return ch;
-  }
-  private void skipS() throws XmlPullParserException, IOException {
-    while (CharacterClasses.isS(ch)) nextChar();
-  }
   private void nextS() throws XmlPullParserException, IOException {
     //[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+
     if (!CharacterClasses.isS(ch)) throw new XmlPullParserException("Syntax error, expecting production\n[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+",this,null);
@@ -248,13 +381,6 @@ public class AIMLPullParser implements XmlPullParser{
     requireChar(EQ,"Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?");
     skipS();
   }
-  public int getLineNumber() {
-    return lineNumber;
-  }
-  public int getColumnNumber() {
-    return colNumber;
-  }
-
   private String nextReference() throws XmlPullParserException, IOException{
     //[67]   	Reference	   ::=   	EntityRef | CharRef
     requireChar(AMP,"Syntax error, production [67] Referencee must start with &");
@@ -350,52 +476,6 @@ public class AIMLPullParser implements XmlPullParser{
     Attribute a = new Attribute(name,value);
     attributeMap.put(name,a);
     attributeList.add(a);
-  }
-  
-  public int getAttributeCount() {
-    if (eventType == START_TAG)
-      return attributeList.size();
-    else
-      return -1;
-  }
-  public String getAttributeName(int index) {
-    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
-    return attributeList.get(index).getName();
-  }
-  public String getAttributeNamespace(int index) {
-    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
-    return attributeList.get(index).getNamespace();
-  }
-  public String getAttributePrefix(int index) {
-    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
-    return attributeList.get(index).getPrefix();
-  }
-  public String getAttributeType(int index) {
-    return attributeList.get(index).getType();
-  }
-  public boolean isAttributeDefault(int index) {
-    return attributeList.get(index).isDefault();
-  }
-  public String getAttributeValue(int index) {
-    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
-    return attributeList.get(index).getValue();
-  }
-  public String getAttributeValue(String namespace, String name) {
-    assert (namespace == null) : "Namespaces not supported";
-    if (eventType != START_TAG) throw new IndexOutOfBoundsException();
-    return attributeMap.get(name).getValue();
-  }
-
-  private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException{
-    if (ch!=what) throw new XmlPullParserException(failMessage,this,null);
-    nextChar();
-  }
-  private void requireString(String what,String failMessage) throws XmlPullParserException, IOException {
-    for (int i=0;i<what.length();i++) {
-      if (ch!= what.charAt(i))
-        throw new XmlPullParserException(failMessage,this,null);
-      nextChar();
-    }
   }
   
   private String nextPIContent() throws XmlPullParserException, IOException{
@@ -527,6 +607,7 @@ CDContent:
     nextChar();
     return result.toString();
   }
+
   private String nextCharData() throws IOException, XmlPullParserException{
     //[14]   	CharData	   ::=   	[^<&]* - ([^<&]* ']]>' [^<&]*)
     //It is interesting to note, that, while the characters '<' and '&' do not
@@ -687,99 +768,6 @@ AttList:
     depth++;
   }
   
-  public boolean isWhitespace() throws XmlPullParserException {
-    return false;
-  }
-  public String getText() {
-    switch (eventType) {
-      case START_DOCUMENT:
-      case END_DOCUMENT:
-      case START_TAG:
-      case END_TAG:
-      case DOCDECL:
-        return null;
-      default:
-        return text.toString();
-    }
-  }
-  
-  private char[] getTextCharacters(StringBuilder s, int[] holderForStartAndLength) {
-    holderForStartAndLength[0]=0;
-    holderForStartAndLength[0]=s.length();    
-    char[] result= new char[s.length()];
-    s.getChars(0,s.length(),result,0);
-    return result;    
-  }
-  
-  private char[] getTextCharacters(String s, int[] holderForStartAndLength) {
-    holderForStartAndLength[0]=0;
-    holderForStartAndLength[0]=s.length();    
-    char[] result= new char[s.length()];
-    s.getChars(0,s.length(),result,0);
-    return result;    
-  }
-
-  public char[] getTextCharacters(int[] holderForStartAndLength) {
-    switch (eventType) {
-      case START_DOCUMENT:
-      case END_DOCUMENT:
-      case START_TAG:
-      case END_TAG:
-      case DOCDECL:
-        return null;
-      case ENTITY_REF:
-        return getTextCharacters(name, holderForStartAndLength);
-      default:
-        return getTextCharacters(text, holderForStartAndLength);
-    }
-  }
-  public String getName() {
-    switch (eventType) {
-      case START_TAG:
-      case END_TAG:
-      case ENTITY_REF:
-        return name;
-      default:
-        return null;
-    }
-  }
-  public boolean isEmptyElementTag() throws XmlPullParserException {
-    if (eventType == START_TAG)
-      return isEmptyElemTag;
-    else
-      throw new XmlPullParserException(
-          "The function isEmptyElementTag() can only be called for start-tags");
-  }
-  public int getEventType() throws XmlPullParserException {
-    return eventType;
-  }
-  public int next() throws IOException, XmlPullParserException {
-    return 0;
-  }
-  public int nextToken() throws IOException, XmlPullParserException {
-    return 0;
-  }
-  public void require(int _int, String string, String string2)
-      throws IOException, XmlPullParserException {
-  }
-  public String nextText() throws IOException, XmlPullParserException {
-    return "";
-  }
-  public int nextTag() throws IOException, XmlPullParserException {
-    return 0;
-  }
-  
-  private Test suite() {
-    TestSuite t=new TestSuite();
-    Method[] methods = LexerTest.class.getMethods();
-    for (int i=0;i<methods.length;i++) {
-      if (methods[i].getName().startsWith("test")&&Modifier.isPublic(methods[i].getModifiers())) {
-        t.addTest(new LexerTest(methods[i].getName()));
-      }
-    }
-    return t;
-  }
-  
   public class LexerTest extends TestCase {
     public LexerTest(String s) {
       super(s);
@@ -924,6 +912,17 @@ AttList:
     }
   }
   
+  private Test suite() {
+    TestSuite t=new TestSuite();
+    Method[] methods = LexerTest.class.getMethods();
+    for (int i=0;i<methods.length;i++) {
+      if (methods[i].getName().startsWith("test")&&Modifier.isPublic(methods[i].getModifiers())) {
+        t.addTest(new LexerTest(methods[i].getName()));
+      }
+    }
+    return t;
+  }
+
   public static void main(String[] args) throws Exception{
     AIMLPullParser pp = new AIMLPullParser();
     TestRunner.run(pp.suite());
