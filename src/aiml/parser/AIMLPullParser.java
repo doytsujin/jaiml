@@ -63,7 +63,7 @@ public class AIMLPullParser implements XmlPullParser {
   private int eventType;
   private boolean isEmptyElemTag;
   private String name;
-  private StringBuilder text;
+  private String text;
 
   public static final char EOF = '\uFFFF';
   public static final char CR = '\r';
@@ -174,7 +174,7 @@ public class AIMLPullParser implements XmlPullParser {
       case DOCDECL:
         return null;
       default:
-        return text.toString();
+        return text;
     }
   }
   public char[] getTextCharacters(int[] holderForStartAndLength) {
@@ -695,7 +695,7 @@ CharData:
     return result.toString();
   }
 
-  private void nextContentMarkup() throws XmlPullParserException, IOException {
+  private void nextMarkupContent() throws XmlPullParserException, IOException {
     //Distinguishes between
     //[40]    STag          ::=  '<' Name (S Attribute)* S? '>'
     //[44]    EmptyElemTag  ::=  '<' Name (S Attribute)* S? '/>'
@@ -712,8 +712,7 @@ CharData:
         name = nextName();
         if (name.equalsIgnoreCase("xml"))
           throw new XmlPullParserException("The target '" + name + "' is not allowed for a processing instruction");
-        text.setLength(0);
-        text.append(name).append(nextPIContent());
+        text = name + nextPIContent();
         break;
       case EXCL:
         nextChar();
@@ -722,14 +721,14 @@ CharData:
             eventType = COMMENT;
             nextChar();
             requireChar(DASH,"Syntax error, comments must begin with '<!--'");
-            nextCommentContent();
+            text=nextCommentContent();
             break;
           case LAB:
             eventType = CDSECT;
             nextChar();
             requireString("CDSECT[","Syntax error, only CDSECT marked sections are supported in XML");
-            text.setLength(0);
-            text.append(nextCDataContent());
+            text = nextCDataContent();
+            break;
           case 'D':
             eventType = DOCDECL;
             nextChar();
@@ -942,6 +941,62 @@ AttList:
       }
       assertEquals(getChar(),EOF);
 
+    }
+    public void testMarkupContentComment() throws IOException, XmlPullParserException {
+      setInput(new StringReader("!--foobar-->"));
+      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('!',nextChar());
+      nextMarkupContent();
+      assertEquals(COMMENT,eventType);
+      assertEquals("foobar",getText());      
+      assertEquals(EOF,getChar());
+    }
+    public void testMarkupContentCommentEmpty() throws IOException, XmlPullParserException {
+      setInput(new StringReader("!---->"));
+      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('!',nextChar());
+      nextMarkupContent();
+      assertEquals(COMMENT,eventType);
+      assertEquals("",getText());      
+      assertEquals(EOF,getChar());      
+    }
+    public void testMarkupContentCommentError() throws IOException, XmlPullParserException {
+      setInput(new StringReader("!-foo-->"));
+      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('!',nextChar());
+      try {
+        nextMarkupContent();
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {
+        assertTrue(true);
+      }      
+    }
+    public void testMarkupContentPI() throws Exception {
+      setInput(new StringReader("?php echo('j00 fail')?>"));
+      assertEquals('?',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      nextMarkupContent();
+      assertEquals(PROCESSING_INSTRUCTION,getEventType());
+      assertEquals("php echo('j00 fail')",getText());
+      assertEquals(EOF,getChar());
+    }
+    public void testMarkupContentPIXmlDecl() throws Exception {
+      setInput(new StringReader("?xml version='1.0'?>"));
+      assertEquals('?',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      nextMarkupContent();
+      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals("1.0",getProperty("http://xmlpull.org/v1/doc/properties.html#xmldecl-version"));
+      assertEquals(EOF,getChar());
+    }
+    public void testMarkupContentCDSect() throws Exception {
+      setInput(new StringReader("![CDSECT[<this> will be &ignored;]]<><!---->]]>"));
+      assertEquals('!',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      nextMarkupContent();
+      assertEquals(CDSECT,getEventType());
+      assertEquals("<this> will be &ignored;]]<><!---->",getText());
+      assertEquals(EOF,getChar());
     }
   }
 
