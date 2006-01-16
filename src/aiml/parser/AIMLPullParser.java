@@ -8,7 +8,13 @@ package aiml.parser;
  * @version 1.0
  */
 import java.io.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
+
+import junit.framework.*;
+import junit.textui.TestRunner;
+
 import org.xmlpull.v1.*;
 
 public class AIMLPullParser implements XmlPullParser{
@@ -60,7 +66,6 @@ public class AIMLPullParser implements XmlPullParser{
   private String name;
   private StringBuilder text;
   
-  private LexerTests tests=new LexerTests();
 
   public static final char EOF='\uFFFF';
   public static final char CR='\r';
@@ -798,14 +803,24 @@ AttList:
     return 0;
   }
   
-  private LexerTests tests() {
-    return tests;
+  private Test suite() {
+    TestSuite t=new TestSuite();
+    Method[] methods = LexerTest.class.getMethods();
+    for (int i=0;i<methods.length;i++) {
+      if (methods[i].getName().startsWith("test")&&Modifier.isPublic(methods[i].getModifiers())) {
+        t.addTest(new LexerTest(methods[i].getName()));
+      }
+    }
+    return t;
   }
   
-  private class LexerTests {
-    private void testNextReference() throws IOException, XmlPullParserException {
+  public class LexerTest extends TestCase {
+    public LexerTest(String s) {
+      super(s);
+    }
+    public void testNextReference() throws IOException, XmlPullParserException {
       setInput(new StringReader("&fooBar;&#64;&lt;&amp;"));
-      nextChar();
+      nextChar();      
       System.out.print(nextReference());
       System.out.print(nextReference());
       System.out.print(nextReference());
@@ -814,7 +829,7 @@ AttList:
       //System.out.println(pp.nextName());
       System.out.println();
     }
-    private void testNextAttribute() throws IOException, XmlPullParserException {
+    public void testNextAttribute() throws IOException, XmlPullParserException {
       setInput(new StringReader("ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'"));
       nextChar();
       eventType=START_TAG;
@@ -825,13 +840,13 @@ AttList:
         System.out.println("Attribute ["+i+"]:"+getAttributeName(i)+"="+getAttributeValue(i));
       }
     }
-    private void testPIContent() throws IOException, XmlPullParserException {
+    public void testPIContent() throws IOException, XmlPullParserException {
       setInput(new StringReader("?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
       nextChar();
       System.out.println(nextPIContent());
       System.out.println(nextPIContent());
     }
-    private void testCommentContent() throws IOException, XmlPullParserException {
+    public void testCommentContent() throws IOException, XmlPullParserException {
       setInput(new StringReader("ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
       nextChar();
       System.out.println(nextCommentContent());
@@ -849,12 +864,12 @@ AttList:
         System.out.println("Test succesfull: "+e.getMessage());
       }
     }
-    private void testCDataContent() throws IOException, XmlPullParserException {
+    public void testCDataContent() throws IOException, XmlPullParserException {
       setInput(new StringReader("]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
       nextChar();
       System.out.println(nextCDataContent());
     }
-    private void testCharData() throws IOException, XmlPullParserException {
+    public void testCharData() throws IOException, XmlPullParserException {
       setInput(new StringReader("asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
       nextChar();
       System.out.println(nextCharData());
@@ -877,7 +892,7 @@ AttList:
         System.out.println("Test succesfull: "+e.getMessage());
       }
     }
-    private void testStartTagContent() throws IOException, XmlPullParserException {
+    public void testStartTagContent() throws IOException, XmlPullParserException {
       setInput(new StringReader(" foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
       nextChar();
       nextStartTagContent();
@@ -905,7 +920,8 @@ AttList:
   
   public static void main(String[] args) throws Exception{
     AIMLPullParser pp = new AIMLPullParser();
-
+    TestRunner.run(pp.suite());
+    /*
     pp.tests().testNextReference();
     pp.tests().testNextAttribute();   
     pp.tests().testPIContent();
@@ -913,6 +929,6 @@ AttList:
     pp.tests().testCDataContent();
     pp.tests().testCharData();
     pp.tests().testStartTagContent();
-
+    */
   }
 }
