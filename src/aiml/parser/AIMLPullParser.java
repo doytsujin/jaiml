@@ -108,6 +108,7 @@ public class AIMLPullParser implements XmlPullParser {
   public void setInput(java.io.Reader in) {
     resetState();
     this.in = in;
+    
   }
   public void setInput(java.io.InputStream inputStream, java.lang.String inputEncoding) throws XmlPullParserException {
     resetState();
@@ -745,7 +746,7 @@ CharData:
         skipS();
         requireChar(GT,"Syntax error, end-tag must end with '>'");
         break;
-      default:
+      default://Actually case:NAME_START_CHAR
         eventType = START_TAG;
         nextChar();
         name = nextName();
@@ -998,8 +999,83 @@ AttList:
       assertEquals("<this> will be &ignored;]]<><!---->",getText());
       assertEquals(EOF,getChar());
     }
-  }
-
+    public void testMarkupContentDoctype() throws Exception {
+      setInput(new StringReader("!DOCTYPE [<!ELEMENT"));
+      assertEquals('!',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      try {
+        nextMarkupContent();
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {
+        assertTrue(true);
+      }
+    }
+    public void testMarkupContentMarkedSectionError() throws Exception {
+      setInput(new StringReader("![RCDSECT[some RCDATA]]>"));
+      assertEquals('!',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      try {
+        nextMarkupContent();
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {
+        assertTrue(true);
+      }
+    }
+    public void testMarkupContentInvalidCharAfterExcl() throws Exception {
+      setInput(new StringReader("!]something"));
+      assertEquals('!',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      try {
+        nextMarkupContent();
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {
+        assertTrue(true);
+      }
+    }
+    public void testMarkupContentEndTag() throws Exception {
+      setInput(new StringReader("/endtag>"));
+      assertEquals('/',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      nextMarkupContent();
+      assertEquals(END_TAG,getEventType());
+      assertEquals(null,getText());
+      assertEquals("endtag",AIMLPullParser.this.getName());
+      assertEquals(EOF,getChar());      
+    }
+    public void testMarkupContentEndTagWithSpaces() throws Exception {
+      setInput(new StringReader("/endtag   >"));
+      assertEquals('/',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      nextMarkupContent();
+      assertEquals(END_TAG,getEventType());
+      assertEquals(null,getText());
+      assertEquals("endtag",AIMLPullParser.this.getName());
+      assertEquals(EOF,getChar());      
+    }
+    public void testMarkupContentEndTagMalformed() throws Exception {
+      setInput(new StringReader("/ endtag   >"));
+      assertEquals('/',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      try {
+        nextMarkupContent();
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {
+        assertTrue(true);
+      }
+      
+      setInput(new StringReader("/endtag s>"));
+      assertEquals('/',nextChar());
+      assertEquals(START_DOCUMENT,getEventType());
+      try {
+        nextMarkupContent();
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {
+        assertTrue(true);
+      }
+      
+    }
+  } 
+ 
   private Test suite() {
     TestSuite t = new TestSuite();
     Method[] methods = LexerTest.class.getMethods();
