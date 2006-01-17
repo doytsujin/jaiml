@@ -132,7 +132,7 @@ public class AIMLPullParser implements XmlPullParser {
       in = new BufferedReader(isr);
     } catch (UnsupportedEncodingException e) {
       throw new XmlPullParserException("Unsupported encoding",null,e);
-    };
+    }
   }
   public String getInputEncoding() {
     return encoding;
@@ -371,11 +371,16 @@ public class AIMLPullParser implements XmlPullParser {
 
     return ch;
   }
-  private void nextS() throws XmlPullParserException, IOException {
+  private String nextS() throws XmlPullParserException, IOException {
     //[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+
+    StringBuffer result = new StringBuffer();
     if (!CharacterClasses.isS(ch))
       throw new XmlPullParserException("Syntax error, expecting whitespace",this,null);
-    skipS();
+    do {
+      result.append(ch);
+      nextChar();
+    } while (CharacterClasses.isS(ch));
+    return result.toString();
   }
 
   private String nextName() throws XmlPullParserException, IOException {
