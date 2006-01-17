@@ -26,6 +26,21 @@ public class CharacterClasses {
 
     }
   }
+  
+  public static boolean isEncName(char ch) {
+    //[81]    EncName    ::=    [A-Za-z] ([A-Za-z0-9._] | '-')*
+    return ((ch >= 'a' && ch <='z')  ||
+            (ch >= 'A' && ch <='Z')  ||
+            (ch >= '0' && ch <='9') ||
+             ch == '.' ||
+             ch == '_' ||
+             ch == '-');
+  }
+  
+  public static boolean isEncNameFirst(char ch) {
+    //[81]    EncName    ::=    [A-Za-z] ([A-Za-z0-9._] | '-')*
+    return ((ch>='a' && ch<='z') || (ch>='A' && ch<='Z'));
+  }
   public static boolean isDecDigit(char ch) {
     // [0-9]
     return (ch>='0' && ch <='9');

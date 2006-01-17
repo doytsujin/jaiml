@@ -64,6 +64,9 @@ public class AIMLPullParser implements XmlPullParser {
   private boolean isEmptyElemTag;
   private String name;
   private String text;
+  private Boolean isStandalone;
+  private String encodingDeclared;
+  private boolean xmlDeclParsed;
 
   public static final char EOF = '\uFFFF';
   public static final char CR = '\r';
@@ -103,12 +106,18 @@ public class AIMLPullParser implements XmlPullParser {
     throw new XmlPullParserException("Property " + name + " not supported");
   }
   public Object getProperty(String name) {
+    if (name.equals("http://xmlpull.org/v1/doc/properties.html#xmldecl-version") && xmlDeclParsed) {
+      return "1.0";
+    }
+    if (name.equals("http://xmlpull.org/v1/doc/properties.html#xmldecl-standalone")) {
+      return isStandalone;
+    }
+    
     return null;
   }
   public void setInput(java.io.Reader in) {
     resetState();
-    this.in = in;
-    
+    this.in = new BufferedReader(in);
   }
   public void setInput(java.io.InputStream inputStream, java.lang.String inputEncoding) throws XmlPullParserException {
     resetState();
@@ -301,6 +310,11 @@ public class AIMLPullParser implements XmlPullParser {
     in = null;
     encoding = null;
     eventType = START_DOCUMENT;
+    isStandalone=null;
+    encodingDeclared=null;
+    xmlDeclParsed=false;
+    name=null;
+    text=null;
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
@@ -360,7 +374,7 @@ public class AIMLPullParser implements XmlPullParser {
   private void nextS() throws XmlPullParserException, IOException {
     //[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+
     if (!CharacterClasses.isS(ch))
-      throw new XmlPullParserException("Syntax error, expecting production\n[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+",this,null);
+      throw new XmlPullParserException("Syntax error, expecting whitespace",this,null);
     skipS();
   }
 
@@ -801,7 +815,167 @@ AttList:
     eventType = START_TAG;
     depth++;
   }
+  private String nextNcoding() throws IOException, XmlPullParserException {
+    // 'ncoding' Eq ('"' EncName '"' | "'" EncName "'" )
+    nextChar();
+    requireString("ncoding","Syntax error while parsing XML declaration, 'encoding' expected");
+    nextEq();
+    if (ch!=QUOT && ch!=APOS)
+      throw new XmlPullParserException("Syntax error, encoding name must be encolsed in quotes or apostrophes",this,null);
+    char delim=ch;
+    nextChar();
+    if (!CharacterClasses.isEncNameFirst(ch))
+      throw new XmlPullParserException("Syntax error, encoding name must begin with [A-Za-z]");
+    StringBuffer result = new StringBuffer();
+    result.append(ch);
+    do { //[81]     EncName    ::=    [A-Za-z] ([A-Za-z0-9._] | '-')*
+      nextChar();
+      if (ch == delim) {
+        nextChar();
+        return result.toString();
+      } else if (CharacterClasses.isEncName(ch)) {
+        result.append(ch);
+      } else {
+        throw new XmlPullParserException("Syntax error, encoding name must contain only with [A-Za-z0-9._] or the character '-'");
+      }
+    } while (true);
 
+  }
+  
+  private boolean nextTandalone() throws IOException, XmlPullParserException{
+    // 'tandalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"'))
+    nextChar();
+    requireString("tandalone","Syntax error while parsing XML declaration, 'standalone' expected");
+    nextEq();
+    if (ch!=QUOT && ch!=APOS)
+      throw new XmlPullParserException("Syntax error, standalone value must be encolsed in quotes or apostrophes",this,null);
+    char delim=ch;
+    nextChar();
+    boolean result;
+    switch (ch) {
+      case 'y':
+        nextChar();
+        requireString("es","Syntax error, standalone value must be either 'yes' or 'no'");
+        result=true;
+        break;
+      case 'n':
+        nextChar();
+        requireChar('o',"Syntax error, standalone value must be either 'yes' or 'no'");
+        result=false;
+        break;
+      default:
+        throw new XmlPullParserException("Syntax error, standalone value must be either 'yes' or 'no'",this,null);
+    }
+    requireChar(delim,"Syntax error, encoding name must be encolsed in quotes or apostrophes");
+    return result;
+
+  }
+  private boolean tryXmlDecl() throws IOException, XmlPullParserException {
+    //[23]    XMLDecl    ::=    '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
+    in.mark(6);
+    char firstch=ch;
+    try {
+      requireString("<?xml","No Xml declaration present");
+    } catch (XmlPullParserException e) {
+      in.reset();
+      colNumber=0;
+      ch=firstch;
+      return false;
+    }
+    if (CharacterClasses.isNameChar(ch)) { //something that only looks like an XML declaration
+      in.reset();
+      colNumber=0;
+      ch=firstch;
+      return false;
+    }
+    nextS();
+    requireString("version","Syntax error in XML declaration, 'version' expected");
+    nextEq();
+    if (!nextAttValue().equals("1.0"))
+      throw new XmlPullParserException("XML version MUST be '1.0'");
+    
+    /* now for the tricky part
+       EncodingDecl? SDDecl? S? '?>'
+       which translates to
+       (S 'encoding' Eq ('"' EncName '"' | "'" EncName "'" ))?   (S 'standalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"')))? S? '?>'
+       (S 'e' Ncoding)? (S 's' Tandalone)? S? '?>'
+       The grammar for this is:
+       0 ::= S 1 | '?'
+       1 ::= 'e' Ncoding 2 | 's' Tandalone 4 | '?'   
+       2 ::= S 3 | '?'
+       3 ::= 's' Tandalone 4 | '?'
+       4 ::= S '?' | '?'
+    */
+    
+    int state=0;
+XMLDeclContent:    
+    do {
+      switch (state) {
+        case 0:
+          if (CharacterClasses.isS(ch)) {
+            skipS();
+            state=1;
+          } else if (ch==QUES) {
+            nextChar();
+            break XMLDeclContent;
+          } else {
+            throw new XmlPullParserException("Syntax error parsing XML declaration, expecting whitespace or '?>' after version");
+          }
+          break;
+        case 1:
+          switch (ch) {
+            case 'e':
+              encodingDeclared=nextNcoding();
+              state=2;
+              break;
+            case 's':
+              isStandalone=nextTandalone();
+              state=4;
+              break;
+            case '?':
+              nextChar();
+              break XMLDeclContent;
+            default:
+              throw new XmlPullParserException("Syntax error parsing XML declaration, expecting encoding, standalone or '?>'");
+          }
+          break;
+        case 2:
+          if (CharacterClasses.isS(ch)) {
+            skipS();
+            state=3;
+          } else if (ch==QUES) {
+            nextChar();
+            break XMLDeclContent;
+          } else {
+            throw new XmlPullParserException("Syntax error parsing XML declaration, expecting whitespace or '?>' after encoding");
+          }
+          break;
+        case 3:
+          switch (ch) {
+            case 's':
+              isStandalone=nextTandalone();
+              state=4;
+              break;
+            case '?':
+              nextChar();
+              break XMLDeclContent;
+            default:
+              throw new XmlPullParserException("Syntax error parsing XML declaration, expecting standalone or '?>'");
+          }
+          break;
+        case 4:
+          skipS();          
+          requireChar('?',"Syntax error, XML declaration must end with '?>'");
+          break XMLDeclContent;
+        default:
+          break;
+      }
+    } while(true);
+    requireChar('>',"Syntax error, XML declaration must end with '?>'");
+    xmlDeclParsed=true;
+    return true;
+  }
+  
   public class LexerTest extends TestCase {
     public LexerTest(String s) {
       super(s);
@@ -985,10 +1159,13 @@ AttList:
       setInput(new StringReader("?xml version='1.0'?>"));
       assertEquals('?',nextChar());
       assertEquals(START_DOCUMENT,getEventType());
-      nextMarkupContent();
-      assertEquals(START_DOCUMENT,getEventType());
-      assertEquals("1.0",getProperty("http://xmlpull.org/v1/doc/properties.html#xmldecl-version"));
-      assertEquals(EOF,getChar());
+      try {
+        nextMarkupContent();
+        fail("Expected XmlPullParserException");
+      } catch(XmlPullParserException e) {
+        
+      }
+        
     }
     public void testMarkupContentCDSect() throws Exception {
       setInput(new StringReader("![CDSECT[<this> will be &ignored;]]<><!---->]]>"));
@@ -1073,6 +1250,21 @@ AttList:
         assertTrue(true);
       }
       
+    }
+    public void testSetInputToNullReader() throws Exception {
+      setInput(null);
+    }
+    public void testSetInputToNullStream() throws Exception {
+      setInput(null,null);
+      
+    }
+    public void testXmlDeclVersion() throws Exception {
+      setInput(new StringReader("<?xml version='1.0' encoding='windows-1250' standalone='yes'?>"));
+      assertEquals('<',nextChar());
+      tryXmlDecl();
+      assertTrue("xmlDeclParsed",xmlDeclParsed);
+      assertTrue("isStandalone",isStandalone);
+      assertEquals("windows-1250",encodingDeclared);
     }
   } 
  
