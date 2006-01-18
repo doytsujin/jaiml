@@ -1407,7 +1407,11 @@ XMLDeclContent:
       setInput(null);
     }
     public void testSetInputToNullStream() throws Exception {
-      setInput(null,null);
+      try {
+        setInput(null,null);
+        fail("Expected IllegalArgumentException");
+      } catch (IllegalArgumentException e) {
+      }
       
     }
     public void testXmlDeclVersion() throws Exception {
