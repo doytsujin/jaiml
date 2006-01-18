@@ -532,7 +532,7 @@ public class AIMLPullParser implements XmlPullParser {
       if (entityReplacementText.containsKey(name))
         result.append(entityReplacementText.get(name));
       else
-        result.append(AMP).append(name).append(SEMICOLON);
+        result=null;
     } else if (ch == HASH) {//[66]   	CharRef	   ::=   	'&#' [0-9]+ ';' | '&#x' [0-9a-fA-F]+ ';'
       nextChar();
       int radix;
@@ -572,7 +572,10 @@ public class AIMLPullParser implements XmlPullParser {
     }
 
     requireChar(SEMICOLON,"Syntax error, production [67] Reference must end with ';'");
-    return result.toString();
+    if (result==null)
+      return null;
+    else
+      return result.toString();
   }
 
   private String nextAttValue() throws XmlPullParserException, IOException {
@@ -1132,7 +1135,7 @@ XMLDeclContent:
     public void testNextReference() throws IOException, XmlPullParserException {
       setInput(new StringReader("&fooBar;&#64;&lt;&amp;"));
       nextChar();
-      assertEquals(nextReference(),"&fooBar;");
+      assertEquals(nextReference(),null);
       assertEquals(nextReference(),new String(Character.toChars(64)));
       assertEquals(nextReference(),"<");
       assertEquals(nextReference(),"&");
