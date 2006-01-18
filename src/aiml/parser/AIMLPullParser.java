@@ -399,14 +399,6 @@ public class AIMLPullParser implements XmlPullParser {
     return 0;
   }
 
-  private static char[] getTextCharacters(StringBuilder s, int[] holderForStartAndLength) {
-    holderForStartAndLength[0] = 0;
-    holderForStartAndLength[0] = s.length();
-    char[] result = new char[s.length()];
-    s.getChars(0,s.length(),result,0);
-    return result;
-  }
-
   private static char[] getTextCharacters(String s, int[] holderForStartAndLength) {
     holderForStartAndLength[0] = 0;
     holderForStartAndLength[0] = s.length();
