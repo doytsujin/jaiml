@@ -1403,17 +1403,6 @@ XMLDeclContent:
       }
       
     }
-    public void testSetInputToNullReader() throws Exception {
-      setInput(null);
-    }
-    public void testSetInputToNullStream() throws Exception {
-      try {
-        setInput(null,null);
-        fail("Expected IllegalArgumentException");
-      } catch (IllegalArgumentException e) {
-      }
-      
-    }
     public void testXmlDeclVersion() throws Exception {
       setInput(new StringReader("<?xml version='1.0' encoding='windows-1250' standalone='yes'?>"));
       assertEquals('<',nextChar());

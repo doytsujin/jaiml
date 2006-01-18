@@ -49,4 +49,16 @@ public class AIMLPullParserTest extends TestCase {
     assertEquals(XmlPullParser.COMMENT,pp.getEventType());
     assertEquals(0,pp.getDepth());
     
-  }}
+  }
+  public void testSetInputToNullReader() throws Exception {
+    pp.setInput(null);
+  }
+  public void testSetInputToNullStream() throws Exception {
+    try {
+      pp.setInput(null,null);
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+    }
+    
+  }
+}
