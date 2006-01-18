@@ -105,7 +105,7 @@ public class AIMLPullParser implements XmlPullParser {
     if (eventType != START_DOCUMENT)
       throw new XmlPullParserException("Features can only be set before the first call to next or nextToken");
     if (state)
-      throw new XmlPullParserException("This feature can't be activated");
+      throw new XmlPullParserException("Feature " + name + " can't be activated");
   }
   public boolean getFeature(java.lang.String name) {
     return false;
@@ -134,21 +134,19 @@ public class AIMLPullParser implements XmlPullParser {
   }
   public void setInput(java.io.InputStream inputStream, java.lang.String inputEncoding) throws XmlPullParserException {
     resetState();
-    if (inputStream!=null) {
-      try {
-        InputStreamReader isr;
-        if (inputEncoding != null) {
-          isr = new InputStreamReader(inputStream,inputEncoding);
-          encoding = isr.getEncoding();
-        } else {
-          isr = new InputStreamReader(inputStream);
-        }
-        in = new BufferedReader(isr);
-      } catch (UnsupportedEncodingException e) {
-        throw new XmlPullParserException("Unsupported encoding",null,e);
+    if (inputStream==null)
+      throw new IllegalArgumentException("Input stream must not be null");
+    try {
+      InputStreamReader isr;
+      if (inputEncoding != null) {
+        isr = new InputStreamReader(inputStream,inputEncoding);
+        encoding = isr.getEncoding();
+      } else {
+        isr = new InputStreamReader(inputStream);
       }
-    } else {
-      in = null;
+      in = new BufferedReader(isr);
+    } catch (UnsupportedEncodingException e) {
+      throw new XmlPullParserException("Unsupported encoding",null,e);
     }
   }
   public String getInputEncoding() {
@@ -228,7 +226,13 @@ public class AIMLPullParser implements XmlPullParser {
     }
   }
   public String getNamespace() {
-    return "";
+    switch (eventType) {
+      case START_TAG:
+      case END_TAG:
+        return "";
+      default:
+        return null;
+    }
   }
   public String getName() {
     switch (eventType) {
@@ -291,6 +295,8 @@ public class AIMLPullParser implements XmlPullParser {
     return eventType;
   }
   public int next() throws IOException, XmlPullParserException {
+    if (in==null)
+      throw new XmlPullParserException("Input must not be null");
     return 0;
   }
   public int nextToken() throws IOException, XmlPullParserException {
