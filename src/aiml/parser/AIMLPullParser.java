@@ -309,6 +309,10 @@ public class AIMLPullParser implements XmlPullParser {
           throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
         }
       case CONTENT:
+        if (eventType==START_TAG && isEmptyElemTag) { //special handling for empty elements
+          eventType=END_TAG;
+          return eventType;
+        }
         if (eventType==END_TAG) depth--;
         switch (ch) {
           case '<':
@@ -1425,6 +1429,26 @@ XMLDeclContent:
       assertEquals("end tag et",END_DOCUMENT,getEventType());
       assertEquals("depth 0",0,getDepth());
       assertEquals("internal state",internalState,DOCUMENT_END);
+      
+    }  
+    public void testEmptyStartElement() throws Exception {
+      setInput(new StringReader("<root><test/>foo</root>"));
+      assertEquals(START_TAG,nextToken());
+      
+      assertEquals(START_TAG,nextToken());
+      assertEquals(START_TAG,getEventType());
+      assertEquals(true,isEmptyElementTag());      
+
+      assertEquals(END_TAG,nextToken());
+      assertEquals(END_TAG,getEventType());
+
+      assertEquals(TEXT,nextToken());
+      assertEquals(TEXT,getEventType());
+      assertEquals("foo",getText());
+      
+      assertEquals(END_TAG,nextToken());
+      assertEquals(END_TAG,getEventType());
+      assertEquals(true,isEmptyElementTag());
       
     }  
   } 
