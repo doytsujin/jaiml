@@ -1474,40 +1474,6 @@ XMLDeclContent:
       assertEquals("internal state",internalState,InternalState.DOCUMENT_END);
       
     }  
-    public void testEmptyStartElement() throws Exception {
-      setInput(new StringReader("<root><test/>foo</root>"));
-      assertEquals(START_TAG,nextToken());
-      
-      assertEquals(START_TAG,nextToken());
-      assertEquals(START_TAG,getEventType());
-      assertEquals(true,isEmptyElementTag());      
-
-      assertEquals(END_TAG,nextToken());
-      assertEquals(END_TAG,getEventType());
-
-      assertEquals(TEXT,nextToken());
-      assertEquals(TEXT,getEventType());
-      assertEquals("foo",getText());
-      
-      assertEquals(END_TAG,nextToken());
-      assertEquals(END_TAG,getEventType());      
-    }
-    public void testEmptyRootElement() throws Exception {
-      setInput(new StringReader("<root/><!--some comment-->"));
-      assertEquals(START_TAG,nextToken());
-      assertEquals(START_TAG,getEventType());
-      assertEquals(true,isEmptyElementTag());
-      assertEquals(1,getDepth());
-
-      assertEquals(END_TAG,nextToken());
-      assertEquals(END_TAG,getEventType());
-      assertEquals(1,getDepth());
-      
-      assertEquals(COMMENT,nextToken());
-      assertEquals(COMMENT,getEventType());
-      assertEquals(0,getDepth());
-      
-    }
     public void testChardataWhitespace() throws Exception {
       setInput(new StringReader("    <   s  <   ><"));
       eventType=TEXT;
@@ -1523,7 +1489,7 @@ XMLDeclContent:
       nextChar();
       nextCharData();
       assertFalse(isWhitespace());      
-}
+    }
     public void testCDataWhitespace() throws Exception {
       setInput(new StringReader("    ]]>   ] ]]>   ]] ]]>"));
       eventType=CDSECT;
