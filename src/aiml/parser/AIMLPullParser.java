@@ -62,6 +62,7 @@ public class AIMLPullParser implements XmlPullParser {
   private int depth;
   private int eventType;
   private boolean isEmptyElemTag;
+  private boolean isWhitespace;
   private String name;
   private String text;
   private Boolean isStandalone;
@@ -126,21 +127,28 @@ public class AIMLPullParser implements XmlPullParser {
   }
   public void setInput(java.io.Reader in) {
     resetState();
-    this.in = new BufferedReader(in);
+    if (in!=null)
+      this.in = new BufferedReader(in);
+    else
+      this.in=null;
   }
   public void setInput(java.io.InputStream inputStream, java.lang.String inputEncoding) throws XmlPullParserException {
     resetState();
-    try {
-      InputStreamReader isr;
-      if (inputEncoding != null) {
-        isr = new InputStreamReader(inputStream,inputEncoding);
-        encoding = isr.getEncoding();
-      } else {
-        isr = new InputStreamReader(inputStream);
+    if (inputStream!=null) {
+      try {
+        InputStreamReader isr;
+        if (inputEncoding != null) {
+          isr = new InputStreamReader(inputStream,inputEncoding);
+          encoding = isr.getEncoding();
+        } else {
+          isr = new InputStreamReader(inputStream);
+        }
+        in = new BufferedReader(isr);
+      } catch (UnsupportedEncodingException e) {
+        throw new XmlPullParserException("Unsupported encoding",null,e);
       }
-      in = new BufferedReader(isr);
-    } catch (UnsupportedEncodingException e) {
-      throw new XmlPullParserException("Unsupported encoding",null,e);
+    } else {
+      in = null;
     }
   }
   public String getInputEncoding() {
@@ -182,7 +190,16 @@ public class AIMLPullParser implements XmlPullParser {
     return colNumber;
   }
   public boolean isWhitespace() throws XmlPullParserException {
-    return false;
+    switch(eventType) {
+      case IGNORABLE_WHITESPACE:
+        return true;
+      case TEXT:
+      case CDSECT:
+        return isWhitespace;
+      default:
+        throw new XmlPullParserException("Whitespace can only be queried for ignorable whitespace, text and cdata sections");
+    }
+    
   }
   public String getText() {
     switch (eventType) {
@@ -413,6 +430,7 @@ public class AIMLPullParser implements XmlPullParser {
     name=null;
     text=null;
     internalState=InternalState.DOCUMENT_START;
+    isWhitespace=false;
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
@@ -703,6 +721,7 @@ PIContent:
      */
     StringBuffer result = new StringBuffer();
     int seenRAB = 0;
+    isWhitespace=true;
 CDContent:
     do {
       if (!CharacterClasses.isChar(ch)) {
@@ -715,26 +734,35 @@ CDContent:
         case 0:
           if (ch == RAB) {
             seenRAB = 1;
-          } else
+          } else {
+            if (isWhitespace && !CharacterClasses.isS(ch))
+              isWhitespace=false;
             result.append(ch);
+          }
           break;
         case 1:
           if (ch == RAB) {
             seenRAB = 2;
           } else {
             seenRAB = 0;
+            if (isWhitespace)
+              isWhitespace=false;
             result.append(']').append(ch);
           }
           break;
         case 2:
           switch (ch) {
             case RAB:
+              if (isWhitespace)
+                isWhitespace=false;
               result.append(']');
               break;
             case GT:
               break CDContent;
             default:
               seenRAB = 0;
+              if (isWhitespace)
+                isWhitespace=false;
               result.append(']').append(']').append(ch);
           }
           break;
@@ -756,8 +784,9 @@ CDContent:
      */
     StringBuffer result = new StringBuffer();
     int seenRAB = 0;
+    isWhitespace=true;
 CharData:
-    do {
+    do {      
       if (!CharacterClasses.isChar(ch)) {
         if (ch == EOF)
           throw new EOFException("Unexpected end of input while parsing Character data");
@@ -774,6 +803,8 @@ CharData:
             case (LT):
               break CharData;
             default:
+              if (isWhitespace && !CharacterClasses.isS(ch))
+                isWhitespace=false;
               result.append(ch);
           }
           break;
@@ -784,9 +815,13 @@ CharData:
               break;
             case (AMP):
             case (LT):
+              if (isWhitespace)
+                isWhitespace=false;
               result.append(']');
               break CharData;
             default:
+              if (isWhitespace)
+                isWhitespace=false;
               seenRAB = 0;
               result.append(']').append(ch);
           }
@@ -794,16 +829,22 @@ CharData:
         case 2:
           switch (ch) {
             case RAB:
+              if (isWhitespace)
+                isWhitespace=false;
               result.append(']');
               break;
             case GT:
               throw new XmlPullParserException("Syntax error, the CDATA-sesction-close delimiter ']]>' must not occur in Character data",this,null);
             case (AMP):
             case (LT):
+              if (isWhitespace)
+                isWhitespace=false;
               result.append(']').append(']');
               break CharData;
             default:
               seenRAB = 0;
+              if (isWhitespace)
+                isWhitespace=false;
               result.append(']').append(']').append(ch);
           }
           break;
@@ -1466,6 +1507,38 @@ XMLDeclContent:
       assertEquals(COMMENT,getEventType());
       assertEquals(0,getDepth());
       
+    }
+    public void testChardataWhitespace() throws Exception {
+      setInput(new StringReader("    <   s  <   ><"));
+      eventType=TEXT;
+
+      nextChar();
+      nextCharData();
+      assertTrue(isWhitespace());      
+
+      nextChar();
+      nextCharData();
+      assertFalse(isWhitespace());      
+
+      nextChar();
+      nextCharData();
+      assertFalse(isWhitespace());      
+}
+    public void testCDataWhitespace() throws Exception {
+      setInput(new StringReader("    ]]>   ] ]]>   ]] ]]>"));
+      eventType=CDSECT;
+
+      nextChar();
+      nextCDataContent();
+      assertTrue(isWhitespace());      
+
+      nextChar();
+      nextCDataContent();
+      assertFalse(isWhitespace());      
+
+      nextChar();
+      nextCDataContent();
+      assertFalse(isWhitespace());      
     }
   } 
  
