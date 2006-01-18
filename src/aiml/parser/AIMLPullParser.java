@@ -67,14 +67,16 @@ public class AIMLPullParser implements XmlPullParser {
   private Boolean isStandalone;
   private String encodingDeclared;
   private boolean xmlDeclParsed;
-  private int internalState;
-
-  private static final int DOCUMENT_START=0;
-  private static final int PROLOG=1;
-  private static final int CONTENT=2;
-  private static final int EPILOG=3;
-  private static final int DOCUMENT_END=4;
   
+  private enum InternalState{
+    DOCUMENT_START,
+    PROLOG,
+    CONTENT,
+    EPILOG,
+    DOCUMENT_END;
+  }
+  private InternalState internalState;
+
   public static final char EOF = '\uFFFF';
   public static final char CR = '\r';
   public static final char LF = '\n';
@@ -279,12 +281,12 @@ public class AIMLPullParser implements XmlPullParser {
       case DOCUMENT_START:
         nextChar();
         tryXmlDecl();
-        internalState=PROLOG;
+        internalState=InternalState.PROLOG;
       case PROLOG:  
         if (CharacterClasses.isS(ch)) {
           text=nextS();
           eventType=IGNORABLE_WHITESPACE;
-          internalState=PROLOG;
+          internalState=InternalState.PROLOG;
           return eventType;
         } else if (ch=='<') {
           nextChar();
@@ -294,7 +296,7 @@ public class AIMLPullParser implements XmlPullParser {
             case END_TAG:
               throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
             case START_TAG:
-              internalState=CONTENT;
+              internalState=InternalState.CONTENT;
               return eventType;
             case DOCDECL:
             case PROCESSING_INSTRUCTION:
@@ -318,7 +320,7 @@ public class AIMLPullParser implements XmlPullParser {
           case '<':
             nextChar();
             nextMarkupContent();
-            if (eventType==END_TAG && depth==1) internalState=EPILOG;
+            if (eventType==END_TAG && depth==1) internalState=InternalState.EPILOG;
             return eventType;
           case '&':
             text=nextReference();
@@ -353,7 +355,7 @@ public class AIMLPullParser implements XmlPullParser {
               throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
           }
         } else if(ch==EOF){
-          internalState=DOCUMENT_END;
+          internalState=InternalState.DOCUMENT_END;
           eventType=END_DOCUMENT;
           return eventType;
         } else { 
@@ -410,7 +412,7 @@ public class AIMLPullParser implements XmlPullParser {
     xmlDeclParsed=false;
     name=null;
     text=null;
-    internalState=DOCUMENT_START;
+    internalState=InternalState.DOCUMENT_START;
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
@@ -1370,65 +1372,65 @@ XMLDeclContent:
       setInput(new StringReader("<foo>some mixed content<bar>foo&amp;bar</bar></foo>"));
       assertEquals(START_DOCUMENT,getEventType());
       assertEquals("depth",0,getDepth());
-      assertEquals("internal state",internalState,DOCUMENT_START);
+      assertEquals("internal state",internalState,InternalState.DOCUMENT_START);
            
       assertEquals("start tag nt",START_TAG,nextToken());
       assertEquals("start tag et",START_TAG,getEventType());
       assertEquals("depth 1",1,getDepth());
       assertEquals("foo",AIMLPullParser.this.getName());
-      assertEquals("internal state",internalState,CONTENT);
+      assertEquals("internal state",internalState,InternalState.CONTENT);
       
       assertEquals("text nt",TEXT,nextToken());
       assertEquals("text et",TEXT,getEventType());
       assertEquals("depth 1",1,getDepth());
       assertEquals("some mixed content",getText());
-      assertEquals("internal state",internalState,CONTENT);
+      assertEquals("internal state",internalState,InternalState.CONTENT);
 
       assertEquals("start tag nt",START_TAG,nextToken());
       assertEquals("start tag et",START_TAG,getEventType());
       assertEquals("depth 2",2,getDepth());
       assertEquals("bar",AIMLPullParser.this.getName());
-      assertEquals("internal state",internalState,CONTENT);
+      assertEquals("internal state",internalState,InternalState.CONTENT);
 
       assertEquals("text nt",TEXT,nextToken());
       assertEquals("text et",TEXT,getEventType());
       assertEquals("depth 2",2,getDepth());
       assertEquals("foo",getText());
-      assertEquals("internal state",internalState,CONTENT);
+      assertEquals("internal state",internalState,InternalState.CONTENT);
       
       assertEquals("entity nt",ENTITY_REF,nextToken());
       assertEquals("entity et",ENTITY_REF,getEventType());
       assertEquals("depth 2",2,getDepth());
       assertEquals("&",getText());
-      assertEquals("internal state",internalState,CONTENT);
+      assertEquals("internal state",internalState,InternalState.CONTENT);
 
       assertEquals("text nt",TEXT,nextToken());
       assertEquals("text et",TEXT,getEventType());
       assertEquals("depth 2",2,getDepth());
       assertEquals("bar",getText());
-      assertEquals("internal state",internalState,CONTENT);
+      assertEquals("internal state",internalState,InternalState.CONTENT);
       
       assertEquals("end tag nt",END_TAG,nextToken());
       assertEquals("end tag et",END_TAG,getEventType());
       assertEquals("depth 2",2,getDepth());
       assertEquals("bar",AIMLPullParser.this.getName());
-      assertEquals("internal state",internalState,CONTENT);
+      assertEquals("internal state",internalState,InternalState.CONTENT);
 
       assertEquals("end tag nt",END_TAG,nextToken());
       assertEquals("end tag et",END_TAG,getEventType());
       assertEquals("depth 1",1,getDepth());
       assertEquals("foo",AIMLPullParser.this.getName());
-      assertEquals("internal state",internalState,EPILOG);
+      assertEquals("internal state",internalState,InternalState.EPILOG);
 
       assertEquals("end tag nt",END_DOCUMENT,nextToken());
       assertEquals("end tag et",END_DOCUMENT,getEventType());
       assertEquals("depth 0",0,getDepth());
-      assertEquals("internal state",internalState,DOCUMENT_END);
+      assertEquals("internal state",internalState,InternalState.DOCUMENT_END);
 
       assertEquals("end tag nt",END_DOCUMENT,nextToken());
       assertEquals("end tag et",END_DOCUMENT,getEventType());
       assertEquals("depth 0",0,getDepth());
-      assertEquals("internal state",internalState,DOCUMENT_END);
+      assertEquals("internal state",internalState,InternalState.DOCUMENT_END);
       
     }  
     public void testEmptyStartElement() throws Exception {
@@ -1447,10 +1449,24 @@ XMLDeclContent:
       assertEquals("foo",getText());
       
       assertEquals(END_TAG,nextToken());
-      assertEquals(END_TAG,getEventType());
+      assertEquals(END_TAG,getEventType());      
+    }
+    public void testEmptyRootElement() throws Exception {
+      setInput(new StringReader("<root/><!--some comment-->"));
+      assertEquals(START_TAG,nextToken());
+      assertEquals(START_TAG,getEventType());
       assertEquals(true,isEmptyElementTag());
+      assertEquals(1,getDepth());
+
+      assertEquals(END_TAG,nextToken());
+      assertEquals(END_TAG,getEventType());
+      assertEquals(1,getDepth());
       
-    }  
+      assertEquals(COMMENT,nextToken());
+      assertEquals(COMMENT,getEventType());
+      assertEquals(0,getDepth());
+      
+    }
   } 
  
   private Test suite() {
