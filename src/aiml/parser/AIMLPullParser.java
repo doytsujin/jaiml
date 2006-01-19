@@ -104,7 +104,7 @@ public class AIMLPullParser implements XmlPullParser {
   public void setFeature(String name, boolean state) throws XmlPullParserException {
     if (eventType != START_DOCUMENT)
       throw new XmlPullParserException("Features can only be set before the first call to next or nextToken");
-    if (state)
+    if (state && !name.equals("http://xmlpull.org/v1/doc/features.html#process-namespaces"))
       throw new XmlPullParserException("Feature " + name + " can't be activated");
   }
   public boolean getFeature(java.lang.String name) {
@@ -140,7 +140,7 @@ public class AIMLPullParser implements XmlPullParser {
       InputStreamReader isr;
       if (inputEncoding != null) {
         isr = new InputStreamReader(inputStream,inputEncoding);
-        encoding = isr.getEncoding();
+        encoding = inputEncoding; //isr.getEncoding();
       } else {
         isr = new InputStreamReader(inputStream);
       }
@@ -297,9 +297,23 @@ public class AIMLPullParser implements XmlPullParser {
   public int next() throws IOException, XmlPullParserException {
     if (in==null)
       throw new XmlPullParserException("Input must not be null");
-    return 0;
+    StringBuffer textBuffer = new StringBuffer();
+CoalesceEvents:
+    do {
+      switch (nextToken()) {
+        case START_TAG:
+        case END_TAG:
+          return eventType;
+        default:
+          break CoalesceEvents;
+      }
+    } while (true);
+    text=textBuffer.toString();
+    return eventType;
   }
   public int nextToken() throws IOException, XmlPullParserException {
+    if (in==null)
+      throw new XmlPullParserException("Input must not be null");
     switch (internalState) {
       case DOCUMENT_START:
         nextChar();
@@ -350,6 +364,11 @@ public class AIMLPullParser implements XmlPullParser {
             eventType=ENTITY_REF;
             return eventType;
           case EOF:
+            if (depth==0) {
+              internalState=InternalState.DOCUMENT_END;
+              eventType=END_DOCUMENT;
+              return eventType;
+            }
             throw new EOFException("Unexpected end of file inside ROOT element");
           default:
             text=nextCharData();
