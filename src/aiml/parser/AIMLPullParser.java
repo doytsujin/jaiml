@@ -232,7 +232,7 @@ public class AIMLPullParser implements XmlPullParser {
       case DOCDECL:
         return null;
       case ENTITY_REF:
-        return getTextCharacters(name,holderForStartAndLength);
+        return getTextCharacters(refName,holderForStartAndLength);
       default:
         return getTextCharacters(text,holderForStartAndLength);
     }
