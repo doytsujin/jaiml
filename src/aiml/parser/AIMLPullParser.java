@@ -65,6 +65,7 @@ public class AIMLPullParser implements XmlPullParser {
   private boolean isWhitespace;
   private boolean processNamespaces;
   private String name;
+  private String refName;
   private String text;
   private Boolean isStandalone;
   private String encodingDeclared;
@@ -243,8 +244,9 @@ public class AIMLPullParser implements XmlPullParser {
     switch (eventType) {
       case START_TAG:
       case END_TAG:
-      case ENTITY_REF:
         return name;
+      case ENTITY_REF:
+        return refName;
       default:
         return null;
     }
@@ -437,6 +439,7 @@ public class AIMLPullParser implements XmlPullParser {
     xmlDeclParsed=false;
     name=null;
     text=null;
+    refName=null;
     internalState=InternalState.DOCUMENT_START;
     isWhitespace=false;
     processNamespaces=false;
@@ -530,6 +533,7 @@ public class AIMLPullParser implements XmlPullParser {
     //[67]   	Reference	   ::=   	EntityRef | CharRef
     requireChar(AMP,"Syntax error, production [67] Referencee must start with &");
     StringBuffer result = new StringBuffer();
+    String name;
     if (CharacterClasses.isNameFirst(ch)) { //[68]   	EntityRef	   ::=   	'&' Name ';'
       name = nextName();
       if (entityReplacementText.containsKey(name))
@@ -575,6 +579,7 @@ public class AIMLPullParser implements XmlPullParser {
     }
 
     requireChar(SEMICOLON,"Syntax error, production [67] Reference must end with ';'");
+    refName=name;
     if (result==null)
       return null;
     else
