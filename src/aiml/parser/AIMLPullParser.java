@@ -84,6 +84,7 @@ public class AIMLPullParser implements XmlPullParser {
   private boolean isMarked;
   private char markedCharacter;
   private boolean markedReadCR;
+  private boolean readDocdecl;
 
   public static final char EOF = '\uFFFF';
   public static final char CR = '\r';
@@ -301,13 +302,141 @@ public class AIMLPullParser implements XmlPullParser {
     assert (namespace == null) : "Namespaces not supported";
     if (eventType != START_TAG)
       throw new IndexOutOfBoundsException();
-    return attributeMap.get(name).getValue();
+    if (attributeMap.containsKey(name))
+      return attributeMap.get(name).getValue();
+    else
+      return null;
   }
   public int getEventType() throws XmlPullParserException {
     return eventType;
   }
   public int next() throws IOException, XmlPullParserException {
-    return nextToken();
+    if (in==null)
+      throw new XmlPullParserException("Input must not be null");
+    StringBuffer textBuffer = new StringBuffer();
+TextLoop:
+    do {
+      switch (internalState) {
+        case DOCUMENT_START:
+          nextChar();
+          tryXmlDecl();
+          internalState=InternalState.PROLOG;
+        case PROLOG:  
+          if (CharacterClasses.isS(ch)) {
+            nextS();
+            eventType=IGNORABLE_WHITESPACE;
+            internalState=InternalState.PROLOG;
+            continue TextLoop;
+          } else if (ch=='<') {
+            nextChar();
+            nextMarkupContent();
+            switch (eventType) {
+              case CDSECT:
+              case END_TAG:
+                throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+              case START_TAG:
+                internalState=InternalState.CONTENT;
+                return eventType;
+              case DOCDECL:
+              case PROCESSING_INSTRUCTION:
+              case COMMENT:
+                continue TextLoop;
+              default:
+                throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+            }
+          } else if(ch==EOF){
+            throw new EOFException("Unexpected end of file inside XML prolog");
+          } else { 
+            throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+          }
+        case CONTENT:
+          if (eventType==START_TAG && isEmptyElemTag) { //special handling for empty elements
+            eventType=END_TAG;
+            return eventType;
+          }
+          if (eventType==END_TAG) depth--;
+          switch (ch) {
+            case '<':
+              markInput(2);
+              nextChar();
+              switch (ch) {
+                case '!':
+                case '?':
+                  unmarkInput();
+                  eventType=TEXT;
+                  nextMarkupContent();
+                  if (eventType==CDSECT) {
+                    textBuffer.append(text);                    
+                  }
+                  continue TextLoop;
+                default:
+                  if (textBuffer.length()>0) {
+                    resetInput();
+                    eventType=TEXT;
+                    text=textBuffer.toString();
+                    return eventType;
+                  }
+                  nextMarkupContent();
+                  if (eventType==END_TAG && depth==1) internalState=InternalState.EPILOG;
+                  return eventType;
+              }
+            
+            case '&':
+              text=nextReference();
+              if (text==null)
+                throw new XmlPullParserException("Unknown reference '" + refName + "' encountered",this,null);
+              else
+                textBuffer.append(text);
+              eventType=TEXT;
+              continue TextLoop;
+            case EOF:
+              if (depth==0) {
+                internalState=InternalState.DOCUMENT_END;
+                eventType=END_DOCUMENT;
+                return eventType;
+              }
+              throw new EOFException("Unexpected end of file inside ROOT element");
+            default:
+              textBuffer.append(nextCharData());
+              eventType=TEXT;
+              continue TextLoop;
+          }
+        case EPILOG:
+          if (eventType==END_TAG) depth--;
+          if (CharacterClasses.isS(ch)) {
+            text=nextS();
+            eventType=IGNORABLE_WHITESPACE;
+            continue TextLoop;
+          } else if (ch=='<') {
+            nextChar();
+            if (eventType!=TEXT) {
+              nextMarkupContent();
+              switch (eventType) {
+                case CDSECT:
+                case END_TAG:
+                case START_TAG:  
+                case DOCDECL:
+                  throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
+                case PROCESSING_INSTRUCTION:
+                case COMMENT:
+                  continue TextLoop;
+                default:
+                  throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
+              }
+            }
+          } else if(ch==EOF){
+            internalState=InternalState.DOCUMENT_END;
+            eventType=END_DOCUMENT;
+            return eventType;
+          } else { 
+            throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+          }
+        case DOCUMENT_END:
+          return END_DOCUMENT;
+        default:
+          throw new XmlPullParserException("Inconsistent parser state, please reset input");
+      }
+    } while (true);
   }
   public int nextToken() throws IOException, XmlPullParserException {
     if (in==null)
@@ -407,13 +536,41 @@ public class AIMLPullParser implements XmlPullParser {
         throw new XmlPullParserException("Inconsistent parser state, please reset input");
     }
   }
-  public void require(int _int, String string, String string2) throws IOException, XmlPullParserException {
+  public void require(int type, String namespace, String name) throws IOException, XmlPullParserException {
+    if (type != getEventType()
+        || (namespace != null &&  !namespace.equals( getNamespace () ) )
+        || (name != null &&  !name.equals( getName() ) ) )
+           throw new XmlPullParserException( "expected "+ TYPES[ type ]+getPositionDescription());
   }
   public String nextText() throws IOException, XmlPullParserException {
-    return "";
-  }
+    if(getEventType() != START_TAG) {
+      throw new XmlPullParserException(
+        "parser must be on START_TAG to read next text", this, null);
+   }
+   next();
+   if(eventType == TEXT) {
+      String result = getText();
+      next();
+      if(eventType != END_TAG) {
+        throw new XmlPullParserException(
+           "event TEXT must be immediately followed by END_TAG", this, null);
+       }
+       return result;
+   } else if(eventType == END_TAG) {
+      return "";
+   } else {
+      throw new XmlPullParserException(
+        "parser must be on START_TAG or TEXT to read text", this, null);
+   }  }
   public int nextTag() throws IOException, XmlPullParserException {
-    return 0;
+    next();
+    if(eventType == TEXT &&  isWhitespace()) {   // skip whitespace
+       next();
+    }
+    if (eventType != START_TAG &&  eventType != END_TAG) {
+       throw new XmlPullParserException("expected start or end tag", this, null);
+    }
+    return eventType;
   }
 
   private static char[] getTextCharacters(String s, int[] holderForStartAndLength) {
@@ -472,6 +629,7 @@ public class AIMLPullParser implements XmlPullParser {
     isWhitespace=false;
     processNamespaces=false;
     isMarked=false;
+    readDocdecl=false;
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
@@ -479,8 +637,8 @@ public class AIMLPullParser implements XmlPullParser {
       defineEntityReplacementText("amp","&");
       defineEntityReplacementText("lt","<");
       defineEntityReplacementText("gt",">");
-      defineEntityReplacementText("quot","'");
-      defineEntityReplacementText("apos","\"");
+      defineEntityReplacementText("quot","\"");
+      defineEntityReplacementText("apos","'");
     } catch (XmlPullParserException e) {
     };
   }
@@ -510,11 +668,17 @@ public class AIMLPullParser implements XmlPullParser {
       case LF:
         if (readCR) { // Processing CRLF, so silently skip the LF
           ch = (char) in.read();
+          if (ch==CR) {
+            ch = LF;
+            lineNumber++;
+            colNumber = 0;            
+          } else
+            readCR=false;
         } else {
           lineNumber++;
           colNumber = 0;
+          readCR = false;
         }
-        readCR = false;
         break;
       case CR:
         ch = LF;
@@ -942,14 +1106,18 @@ CharData:
           case LAB:
             eventType = CDSECT;
             nextChar();
-            requireString("CDSECT[","Syntax error, only CDSECT marked sections are supported in XML");
+            requireString("CDATA[","Syntax error, only CDATA marked sections are supported in XML");
             text = nextCDataContent();
             break;
           case 'D':
             eventType = DOCDECL;
             nextChar();
             requireString("OCTYPE","Syntax error, invalid characters after '<!'");
-            throw new XmlPullParserException("This implementation doesn't support DOCTYPE declarations");
+            if (readDocdecl)
+              throw new XmlPullParserException("There can be only one doctype declaration in a document");
+            skipDoctypeContent();
+            //throw new XmlPullParserException("This implementation doesn't support DOCTYPE declarations");
+            break;
           default:
             throw new XmlPullParserException("Syntax error, invalid characters after '<!'");
         }
@@ -966,6 +1134,20 @@ CharData:
         name = nextName();
         nextStartTagContent();
     }
+  }
+
+  private void skipDoctypeContent() throws IOException {
+    int bracketLevel=0;
+    do {
+      nextChar();
+      if(ch == '[') ++bracketLevel;
+      if(ch == ']') --bracketLevel;
+      if(ch == '>' && bracketLevel == 0) break;
+      if(ch==EOF)
+        throw new EOFException();
+    } while (true);
+    nextChar();
+    readDocdecl=true;
   }
 
   private void nextStartTagContent() throws XmlPullParserException, IOException {
@@ -1364,7 +1546,7 @@ XMLDeclContent:
         
     }
     public void testMarkupContentCDSect() throws Exception {
-      setInput(new StringReader("![CDSECT[<this> will be &ignored;]]<><!---->]]>"));
+      setInput(new StringReader("![CDATA[<this> will be &ignored;]]<><!---->]]>"));
       assertEquals('!',nextChar());
       assertEquals(START_DOCUMENT,getEventType());
       nextMarkupContent();
@@ -1373,15 +1555,11 @@ XMLDeclContent:
       assertEquals(EOF,getChar());
     }
     public void testMarkupContentDoctype() throws Exception {
-      setInput(new StringReader("!DOCTYPE [<!ELEMENT"));
+      setInput(new StringReader("!DOCTYPE [<!ELEMENT ]>"));
       assertEquals('!',nextChar());
       assertEquals(START_DOCUMENT,getEventType());
-      try {
-        nextMarkupContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
+      nextMarkupContent();
+      assertEquals(DOCDECL,getEventType());
     }
     public void testMarkupContentMarkedSectionError() throws Exception {
       setInput(new StringReader("![RCDSECT[some RCDATA]]>"));
