@@ -614,8 +614,19 @@ CoalesceEvents:
           throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value",this,null);
         case AMP:
           String replacement = nextReference();
+          
+          /* Weeelll... the specification states that
+           * "The replacement text of any entity referred to directly or 
+           * indirectly in an attribute value MUST NOT contain a <"
+           * http://www.w3.org/TR/REC-xml/#CleanAttrVals
+           * (and it's been like that since the second revision).
+           * BUT, the test cases assume that the character < can be included 
+           * in attribute values via references... who am I to argue?
+           */
+          /*
           if (replacement.contains("<"))
             throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value",this,null);
+          */  
           result.append(replacement);
           continue;
         default:
