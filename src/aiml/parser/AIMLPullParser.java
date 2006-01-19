@@ -537,10 +537,23 @@ TextLoop:
     }
   }
   public void require(int type, String namespace, String name) throws IOException, XmlPullParserException {
-    if (type != getEventType()
-        || (namespace != null &&  !namespace.equals( getNamespace () ) )
-        || (name != null &&  !name.equals( getName() ) ) )
-           throw new XmlPullParserException( "expected "+ TYPES[ type ]+getPositionDescription());
+    StringBuffer err = new StringBuffer();
+    StringBuffer msg = new StringBuffer();
+    if (type != getEventType()) {
+      err.append(" type,");
+      msg.append(' ').append(TYPES[ type ]);
+    }
+    if (namespace != null &&  !namespace.equals( getNamespace () ) ) {
+      err.append(" namespace,");
+      msg.append(' ').append(namespace);
+    }
+    if (name != null &&  !name.equals( getName() ) ) {
+      err.append(" name,");
+      msg.append(" name=").append(name);
+    }
+    
+    if (err.length()>0)
+      throw new XmlPullParserException("Wrong" + err +" expected "+ msg,this,null);
   }
   public String nextText() throws IOException, XmlPullParserException {
     if(getEventType() != START_TAG) {
