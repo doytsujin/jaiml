@@ -6,14 +6,14 @@ import junit.framework.TestCase;
 import org.xmlpull.v1.*;
 
 public class AIMLPullParserTest extends TestCase {
-  private AIMLPullParser pp;
+  private XmlParser pp;
   public static void main(String[] args) {
     junit.textui.TestRunner.run(AIMLPullParserTest.class);
   }
 
   protected void setUp() throws Exception {
     super.setUp();
-    pp=new AIMLPullParser();
+    pp=new XmlParser();
     
   }
   public void testEmptyStartElement() throws Exception {

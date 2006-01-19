@@ -17,7 +17,7 @@ import junit.textui.TestRunner;
 
 import org.xmlpull.v1.*;
 
-public class AIMLPullParser implements XmlPullParser {
+public class XmlParser implements XmlPullParser {
   private Reader in;
   private String encoding;
   char ch; //the current character in the input
@@ -105,7 +105,7 @@ public class AIMLPullParser implements XmlPullParser {
   public static final char LAB = '[';
   public static final char SLASH = '/';
 
-  public AIMLPullParser() {
+  public XmlParser() {
     resetState();
   }
 
@@ -1603,7 +1603,7 @@ XMLDeclContent:
       nextMarkupContent();
       assertEquals(END_TAG,getEventType());
       assertEquals(null,getText());
-      assertEquals("endtag",AIMLPullParser.this.getName());
+      assertEquals("endtag",XmlParser.this.getName());
       assertEquals(EOF,getChar());      
     }
     public void testMarkupContentEndTagWithSpaces() throws Exception {
@@ -1613,7 +1613,7 @@ XMLDeclContent:
       nextMarkupContent();
       assertEquals(END_TAG,getEventType());
       assertEquals(null,getText());
-      assertEquals("endtag",AIMLPullParser.this.getName());
+      assertEquals("endtag",XmlParser.this.getName());
       assertEquals(EOF,getChar());      
     }
     public void testMarkupContentEndTagMalformed() throws Exception {
@@ -1655,7 +1655,7 @@ XMLDeclContent:
       assertEquals("start tag nt",START_TAG,nextToken());
       assertEquals("start tag et",START_TAG,getEventType());
       assertEquals("depth 1",1,getDepth());
-      assertEquals("foo",AIMLPullParser.this.getName());
+      assertEquals("foo",XmlParser.this.getName());
       assertEquals("internal state",internalState,InternalState.CONTENT);
       
       assertEquals("text nt",TEXT,nextToken());
@@ -1667,7 +1667,7 @@ XMLDeclContent:
       assertEquals("start tag nt",START_TAG,nextToken());
       assertEquals("start tag et",START_TAG,getEventType());
       assertEquals("depth 2",2,getDepth());
-      assertEquals("bar",AIMLPullParser.this.getName());
+      assertEquals("bar",XmlParser.this.getName());
       assertEquals("internal state",internalState,InternalState.CONTENT);
 
       assertEquals("text nt",TEXT,nextToken());
@@ -1691,13 +1691,13 @@ XMLDeclContent:
       assertEquals("end tag nt",END_TAG,nextToken());
       assertEquals("end tag et",END_TAG,getEventType());
       assertEquals("depth 2",2,getDepth());
-      assertEquals("bar",AIMLPullParser.this.getName());
+      assertEquals("bar",XmlParser.this.getName());
       assertEquals("internal state",internalState,InternalState.CONTENT);
 
       assertEquals("end tag nt",END_TAG,nextToken());
       assertEquals("end tag et",END_TAG,getEventType());
       assertEquals("depth 1",1,getDepth());
-      assertEquals("foo",AIMLPullParser.this.getName());
+      assertEquals("foo",XmlParser.this.getName());
       assertEquals("internal state",internalState,InternalState.EPILOG);
 
       assertEquals("end tag nt",END_DOCUMENT,nextToken());
@@ -1757,7 +1757,7 @@ XMLDeclContent:
   }
 
   public static void main(String[] args) throws Exception {
-    AIMLPullParser pp = new AIMLPullParser();
+    XmlParser pp = new XmlParser();
     TestRunner.run(pp.suite());
     /*
      pp.tests().testNextReference();

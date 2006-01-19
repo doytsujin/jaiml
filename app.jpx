@@ -20,7 +20,7 @@
 <property category="runtime.0" name="BuildTargetOnRun" value="com.borland.jbuilder.build.ProjectBuilder$ProjectBuildAction;make"/>
 <property category="runtime.0" name="ConfigurationName" value="Untitled Runtime Configuration1"/>
 <property category="runtime.0" name="RunnableType" value="com.borland.jbuilder.runtime.ApplicationRunner"/>
-<property category="runtime.0" name="application.class" value="aiml.parser.AIMLPullParser"/>
+<property category="runtime.0" name="application.class" value="aiml.parser.XmlParser"/>
 <property category="runtime.0" name="application.vmparameters" value="-ea"/>
 <property category="runtime.0" name="custom.init_required" value="0"/>
 <property category="runtime.0" name="enable.tcpmonitor" value="0"/>
