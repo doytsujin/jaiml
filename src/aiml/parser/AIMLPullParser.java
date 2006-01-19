@@ -79,6 +79,11 @@ public class AIMLPullParser implements XmlPullParser {
     DOCUMENT_END;
   }
   private InternalState internalState;
+  private int markedLineNumber;
+  private int markedColNumber;
+  private boolean isMarked;
+  private char markedCharacter;
+  private boolean markedReadCR;
 
   public static final char EOF = '\uFFFF';
   public static final char CR = '\r';
@@ -303,7 +308,7 @@ public class AIMLPullParser implements XmlPullParser {
   }
   public int next() throws IOException, XmlPullParserException {
     return nextToken();
- }
+  }
   public int nextToken() throws IOException, XmlPullParserException {
     if (in==null)
       throw new XmlPullParserException("Input must not be null");
@@ -422,7 +427,30 @@ public class AIMLPullParser implements XmlPullParser {
   private char getChar() {
     return ch;
   }
-
+  
+  private void markInput(int readAheadLimit) throws IOException {
+    assert(in.markSupported()) : "Mark operation must be supported";
+    in.mark(readAheadLimit);
+    markedLineNumber=lineNumber;
+    markedColNumber=colNumber;
+    markedReadCR=readCR;
+    isMarked=true;
+    markedCharacter=ch;
+  }
+  
+  private void resetInput() throws IOException {
+    assert(isMarked) : "Cannot reset unmarked input";
+    in.reset();
+    lineNumber=markedLineNumber;
+    colNumber=markedColNumber;
+    ch=markedCharacter;
+    isMarked=false;
+    readCR=markedReadCR;
+  }
+  private void unmarkInput() {
+    isMarked=false;
+  }
+  
   private void resetState() {
     lineNumber = 1;
     colNumber = 0;
@@ -443,6 +471,7 @@ public class AIMLPullParser implements XmlPullParser {
     internalState=InternalState.DOCUMENT_START;
     isWhitespace=false;
     processNamespaces=false;
+    isMarked=false;
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
@@ -1043,22 +1072,18 @@ AttList:
   }
   private boolean tryXmlDecl() throws IOException, XmlPullParserException {
     //[23]    XMLDecl    ::=    '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
-    in.mark(6);
-    char firstch=ch;
+    markInput(6);
     try {
       requireString("<?xml","No Xml declaration present");
     } catch (XmlPullParserException e) {
-      in.reset();
-      colNumber=0;
-      ch=firstch;
+      resetInput();
       return false;
     }
     if (CharacterClasses.isNameChar(ch)) { //something that only looks like an XML declaration
-      in.reset();
-      colNumber=0;
-      ch=firstch;
+      resetInput();
       return false;
     }
+    unmarkInput();
     nextS();
     requireString("version","Syntax error in XML declaration, 'version' expected");
     nextEq();
