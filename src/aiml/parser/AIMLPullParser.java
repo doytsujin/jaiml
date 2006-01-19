@@ -63,6 +63,7 @@ public class AIMLPullParser implements XmlPullParser {
   private int eventType;
   private boolean isEmptyElemTag;
   private boolean isWhitespace;
+  private boolean processNamespaces;
   private String name;
   private String text;
   private Boolean isStandalone;
@@ -104,10 +105,14 @@ public class AIMLPullParser implements XmlPullParser {
   public void setFeature(String name, boolean state) throws XmlPullParserException {
     if (eventType != START_DOCUMENT)
       throw new XmlPullParserException("Features can only be set before the first call to next or nextToken");
-    if (state && !name.equals("http://xmlpull.org/v1/doc/features.html#process-namespaces"))
+    if (name.equals(FEATURE_PROCESS_NAMESPACES))
+      processNamespaces=state;
+    else if(state)
       throw new XmlPullParserException("Feature " + name + " can't be activated");
   }
   public boolean getFeature(java.lang.String name) {
+    if (name.equals(FEATURE_PROCESS_NAMESPACES))
+      return processNamespaces;
     return false;
   }
   public void setProperty(String name, Object value) throws XmlPullParserException {
@@ -529,6 +534,7 @@ public class AIMLPullParser implements XmlPullParser {
     text=null;
     internalState=InternalState.DOCUMENT_START;
     isWhitespace=false;
+    processNamespaces=false;
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
