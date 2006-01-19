@@ -297,20 +297,101 @@ public class AIMLPullParser implements XmlPullParser {
   public int next() throws IOException, XmlPullParserException {
     if (in==null)
       throw new XmlPullParserException("Input must not be null");
-    StringBuffer textBuffer = new StringBuffer();
-CoalesceEvents:
-    do {
-      switch (nextToken()) {
-        case START_TAG:
-        case END_TAG:
+    switch (internalState) {
+      case DOCUMENT_START:
+        nextChar();
+        tryXmlDecl();
+        internalState=InternalState.PROLOG;
+      case PROLOG:  
+        if (CharacterClasses.isS(ch)) {
+          text=nextS();
+          eventType=IGNORABLE_WHITESPACE;
+          internalState=InternalState.PROLOG;
           return eventType;
-        default:
-          break CoalesceEvents;
-      }
-    } while (true);
-    text=textBuffer.toString();
-    return eventType;
-  }
+        } else if (ch=='<') {
+          nextChar();
+          nextMarkupContent();
+          switch (eventType) {
+            case CDSECT:
+            case END_TAG:
+              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+            case START_TAG:
+              internalState=InternalState.CONTENT;
+              return eventType;
+            case DOCDECL:
+            case PROCESSING_INSTRUCTION:
+            case COMMENT:
+              return eventType;
+            default:
+              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+          }
+        } else if(ch==EOF){
+          throw new EOFException("Unexpected end of file inside XML prolog");
+        } else { 
+          throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+        }
+      case CONTENT:
+        if (eventType==START_TAG && isEmptyElemTag) { //special handling for empty elements
+          eventType=END_TAG;
+          return eventType;
+        }
+        if (eventType==END_TAG) depth--;
+        switch (ch) {
+          case '<':
+            nextChar();
+            nextMarkupContent();
+            if (eventType==END_TAG && depth==1) internalState=InternalState.EPILOG;
+            return eventType;
+          case '&':
+            text=nextReference();
+            eventType=ENTITY_REF;
+            return eventType;
+          case EOF:
+            if (depth==0) {
+              internalState=InternalState.DOCUMENT_END;
+              eventType=END_DOCUMENT;
+              return eventType;
+            }
+            throw new EOFException("Unexpected end of file inside ROOT element");
+          default:
+            text=nextCharData();
+            eventType=TEXT;
+            return eventType;
+        }
+      case EPILOG:
+        if (eventType==END_TAG) depth--;
+        if (CharacterClasses.isS(ch)) {
+          text=nextS();
+          eventType=IGNORABLE_WHITESPACE;
+          return eventType;
+        } else if (ch=='<') {
+          nextChar();
+          nextMarkupContent();
+          switch (eventType) {
+            case CDSECT:
+            case END_TAG:
+            case START_TAG:  
+            case DOCDECL:
+              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
+            case PROCESSING_INSTRUCTION:
+            case COMMENT:
+              return eventType;
+            default:
+              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
+          }
+        } else if(ch==EOF){
+          internalState=InternalState.DOCUMENT_END;
+          eventType=END_DOCUMENT;
+          return eventType;
+        } else { 
+          throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+        }
+      case DOCUMENT_END:
+        return END_DOCUMENT;
+      default:
+        throw new XmlPullParserException("Inconsistent parser state, please reset input");
+    }
+ }
   public int nextToken() throws IOException, XmlPullParserException {
     if (in==null)
       throw new XmlPullParserException("Input must not be null");
@@ -420,7 +501,7 @@ CoalesceEvents:
 
   private static char[] getTextCharacters(String s, int[] holderForStartAndLength) {
     holderForStartAndLength[0] = 0;
-    holderForStartAndLength[0] = s.length();
+    holderForStartAndLength[1] = s.length();
     char[] result = new char[s.length()];
     s.getChars(0,s.length(),result,0);
     return result;
