@@ -61,4 +61,20 @@ public class AIMLPullParserTest extends TestCase {
     }
     
   }
+  public void testEntityName() throws Exception {
+    pp.setInput(new StringReader("<foo>&gt;</foo>"));
+    
+    assertEquals(XmlPullParser.START_TAG, pp.nextToken());
+    assertEquals("foo",pp.getName());
+    
+    assertEquals(XmlPullParser.ENTITY_REF, pp.nextToken());
+    assertEquals("gt",pp.getName());
+    assertEquals(">",pp.getText());
+
+    assertEquals(XmlPullParser.END_TAG, pp.nextToken());
+    assertEquals("foo",pp.getName());
+    
+    assertEquals(XmlPullParser.END_DOCUMENT, pp.nextToken());
+
+  }
 }
