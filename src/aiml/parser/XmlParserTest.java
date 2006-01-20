@@ -5,10 +5,10 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 import org.xmlpull.v1.*;
 
-public class AIMLPullParserTest extends TestCase {
+public class XmlParserTest extends TestCase {
   private XmlParser pp;
   public static void main(String[] args) {
-    junit.textui.TestRunner.run(AIMLPullParserTest.class);
+    junit.textui.TestRunner.run(XmlParserTest.class);
   }
 
   protected void setUp() throws Exception {
