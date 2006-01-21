@@ -1744,29 +1744,23 @@ XMLDeclContent:
       assertFalse(isWhitespace());      
     }
   } 
- 
-  private Test suite() {
+  private Test getTest(String name) {
+    return new LexerTest(name);
+  }
+  public static Test suite() {
+    XmlParser pp = new XmlParser();
     TestSuite t = new TestSuite();
+    t.setName("XmlParser.LexerTest");
     Method[] methods = LexerTest.class.getMethods();
     for (int i = 0; i < methods.length; i++) {
       if (methods[i].getName().startsWith("test") && Modifier.isPublic(methods[i].getModifiers())) {
-        t.addTest(new LexerTest(methods[i].getName()));
+        t.addTest(pp.getTest(methods[i].getName()));
       }
     }
     return t;
   }
 
   public static void main(String[] args) throws Exception {
-    XmlParser pp = new XmlParser();
-    TestRunner.run(pp.suite());
-    /*
-     pp.tests().testNextReference();
-     pp.tests().testNextAttribute();   
-     pp.tests().testPIContent();
-     pp.tests().testCommentContent();    
-     pp.tests().testCDataContent();
-     pp.tests().testCharData();
-     pp.tests().testStartTagContent();
-     */
+    TestRunner.run(XmlParser.suite());
   }
 }
