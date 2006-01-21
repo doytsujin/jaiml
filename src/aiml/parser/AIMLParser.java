@@ -7,7 +7,9 @@ package aiml.parser;
  * @version 1.0
  */
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Method;
@@ -25,6 +27,12 @@ public class AIMLParser {
     
   }
   
+  private boolean isEvent(XmlParser parser, int eventType, String name) throws XmlPullParserException {
+    if (parser==null)
+      throw new IllegalArgumentException();
+    return (parser.getEventType()==eventType && (name==null || parser.getName().equals(name)));         
+  }
+  
   private void doAiml(XmlParser parser) throws IOException, XmlPullParserException, AimlParserException {
     parser.nextTag();
     try {
@@ -38,15 +46,66 @@ public class AIMLParser {
     } catch(XmlPullParserException e) {
       throw new AimlSyntaxException("Syntax error, root element must be 'aiml'",e);
     }
-    //doCategoryList(parser);
+    parser.nextTag();
+    doCategoryList(parser);
+    parser.require(XmlParser.END_TAG,null,"aiml");
+    parser.next();
+    assert (isEvent(parser,XmlParser.END_DOCUMENT,null)) : "Syntax error, no markup allowed after the root element";
   }
   
+  
+  
+  private void doCategoryList(XmlParser parser) throws IOException, XmlPullParserException, AimlParserException  {
+    while (!isEvent(parser,XmlParser.END_TAG,"aiml")) {
+      switch (parser.getEventType()) {
+        case XmlParser.START_TAG:
+          if (parser.getName().equals("category")) {
+            doCategory(parser);
+          } else if (parser.getName().equals("contextgroup")) {
+            doContextGroup(parser);
+          } else if (parser.getName().equals("topic")) {
+            doTopic(parser);
+          } else
+            throw new AimlSyntaxException("Expected category, contextgroup or topic");
+          break;
+        case XmlParser.END_TAG:
+          throw new AimlSyntaxException("Syntax error, end tag '" + parser.getName() + "' without opening tag");
+        default:
+          assert (false) :"Something very unexpected happened";          
+      }
+      parser.nextTag();
+    }
+  }
+
+  private void doTopic(XmlParser parser) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("doTopic");
+    
+  }
+
+  private void doContextGroup(XmlParser parser) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("doContextGroup");
+    
+  }
+
+  private void doCategory(XmlParser parser) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("doCategory");
+  }
+
   public void load(Reader in) throws IOException, XmlPullParserException, AimlParserException {
     XmlParser parser = new XmlParser();
     parser.setInput(in);
     doAiml(parser);
   }
-  
+
+  public void load(InputStream in, String encoding) throws IOException, XmlPullParserException, AimlParserException {
+    XmlParser parser = new XmlParser();
+    parser.setInput(in,encoding);
+    doAiml(parser);
+  }
+
   public class AIMLParserTest extends TestCase {
     public AIMLParserTest(String s){
       super(s);
@@ -69,9 +128,31 @@ public class AIMLParser {
         fail("Expected InvalidAimlVersionException");
       } catch (InvalidAimlVersionException e) {};
       
+      try {
+        load(new StringReader("<aiml version='1.0'></aiml><foo></foo>"));
+        fail("Expected XmlPullParserException");
+      } catch (XmlPullParserException e) {};
       
     }
 
+    public void testCategoryList() throws Exception {
+      load(new FileInputStream("tests/categoryList-ok.aiml"),"UTF-8");
+
+      try {
+        load(new FileInputStream("tests/categoryList-badstart.aiml"),"UTF-8");
+        fail("Expected AimlSyntaxException");
+      } catch (AimlSyntaxException e) {};
+
+      try {
+        load(new FileInputStream("tests/categoryList-badstart2.aiml"),"UTF-8");
+        fail("Expected AimlSyntaxException");
+      } catch (AimlSyntaxException e) {};
+
+      try {
+        load(new FileInputStream("tests/categoryList-badend.aiml"),"UTF-8");
+        fail("Expected AimlSyntaxException");
+      } catch (AimlSyntaxException e) {};
+    }
   }
   
   private AIMLParserTest getTest(String name) {
