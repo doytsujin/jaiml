@@ -152,7 +152,7 @@ public class MatchState {
       return "WC{" + context + ":(" + getBeginIndex() + "," + getLength() +
           ")=\"" + getValue() + "\"}";
     }
-  };
+  }
 
   /**
    * Creates a new MatchState object, makes a snapshot of the context variables.
@@ -163,7 +163,7 @@ public class MatchState {
     }
     for (int i=0;i<ContextInfo.getCount();i++)
       contextValues[i] = ContextInfo.getContext(i).getValue();
-  };
+  }
 
   /**
    * Adds a new context to the match state.

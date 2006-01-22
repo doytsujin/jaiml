@@ -63,7 +63,7 @@ public class PatternContextNode extends ContextNode {
       add(path, o);
     }
     catch (DuplicatePathException e) {}
-    ; //since we just created a new subtree, there's no way this exception can occur
+    //since we just created a new subtree, there's no way this exception can occur
   }
 
   /**

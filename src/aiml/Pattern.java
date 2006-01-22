@@ -29,9 +29,6 @@ import aiml.node.*;
 
 public class Pattern {
 
-  private Pattern(String pattern) {
-  }
-
   /**
    * Returns the type of the pattern at the current depth. This can be either
    * PatternNode.STAR PatternNode.STRING or PatternNode.UNDERSCORE.

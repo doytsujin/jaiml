@@ -14,8 +14,6 @@
 
 package aiml;
 
-import java.util.*;
-
 /**
  * <p>This class encapsulates all AIML pattern matching functionality.</p>
  *
