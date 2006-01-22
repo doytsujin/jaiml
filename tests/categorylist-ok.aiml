@@ -8,84 +8,74 @@ this version should pass without errors
 <aiml version="1.0.1">
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>
 
 <topic name="FOO">
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>
@@ -94,63 +84,56 @@ this version should pass without errors
 
 <topic name="BAR">
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
+
 <topic name="FOO">
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>
@@ -158,21 +141,19 @@ this version should pass without errors
 </topic>
 
 <contextgroup>
+<context name="foo"></context>
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>
 
 <category>
-<template>
-</template>
+<template></template>
 </category>
 
 </contextgroup>

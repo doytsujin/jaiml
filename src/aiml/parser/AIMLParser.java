@@ -56,7 +56,7 @@ public class AIMLParser {
   
   
   private void doCategoryList(XmlParser parser) throws IOException, XmlPullParserException, AimlParserException  {
-    while (!isEvent(parser,XmlParser.END_TAG,"aiml")) {
+    do {
       switch (parser.getEventType()) {
         case XmlParser.START_TAG:
           if (parser.getName().equals("category")) {
@@ -66,32 +66,137 @@ public class AIMLParser {
           } else if (parser.getName().equals("topic")) {
             doTopic(parser);
           } else
-            throw new AimlSyntaxException("Expected category, contextgroup or topic");
+            throw new AimlSyntaxException("Expected category, contextgroup or topic "+parser.getPositionDescription());
           break;
         case XmlParser.END_TAG:
-          throw new AimlSyntaxException("Syntax error, end tag '" + parser.getName() + "' without opening tag");
+          if (parser.getName().equals("aiml")
+              || parser.getName().equals("contextgroup")
+              || parser.getName().equals("topic"))
+            return;
+          throw new AimlSyntaxException("Syntax error, end tag '" + parser.getName() + "' without opening tag "+parser.getPositionDescription());
         default:
           assert (false) :"Something very unexpected happened";          
       }
-      parser.nextTag();
+      //parser.nextTag();
+    } while (true);
+  }
+
+  private void doTopic(XmlParser parser) throws IOException, XmlPullParserException, AimlParserException {
+    parser.require(XmlParser.START_TAG,null,"topic");
+    if (parser.getAttributeValue(null,"name")==null)
+      throw new AimlSyntaxException("Topic must have mandatory name attribute ");
+    parser.nextTag();
+    doCategoryList(parser);
+    parser.require(XmlParser.END_TAG,null,"topic");
+    parser.nextTag();    
+  }
+
+  private void doContextGroup(XmlParser parser) throws IOException, XmlPullParserException, AimlParserException {
+    parser.require(XmlParser.START_TAG,null,"contextgroup");
+    parser.nextTag();
+    doContextList(parser);
+    doCategoryList(parser);
+    parser.require(XmlParser.END_TAG,null,"contextgroup");
+    parser.nextTag();
+  }
+
+  private void doContextList(XmlParser parser) throws XmlPullParserException, AimlSyntaxException, IOException {
+    do {
+      doContextDef(parser);
+    } while (isEvent(parser,XmlParser.START_TAG,"context"));
+  }
+
+  private void doCategory(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
+    parser.require(XmlParser.START_TAG,null,"category");
+    parser.nextTag();
+    if (isEvent(parser,XmlParser.START_TAG,"pattern")) {
+      doPatternC(parser);
     }
+    if (isEvent(parser,XmlParser.START_TAG,"that")) {
+      doThatC(parser);
+    }
+    if (isEvent(parser,XmlParser.START_TAG,"context"))
+      doContextList(parser);
+    parser.require(XmlParser.START_TAG,null,"template");
+    doTemplate(parser);
+    parser.require(XmlParser.END_TAG,null,"category");
+    parser.nextTag();    
   }
 
-  private void doTopic(XmlParser parser) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doTopic");
+  private void doTemplate(XmlParser parser) throws IOException, XmlPullParserException {
+    parser.require(XmlParser.START_TAG,null,"template");
+    parser.next();
+    doAIMLScript(parser);
+    parser.require(XmlParser.END_TAG,null,"template");
+    parser.nextTag();
     
   }
 
-  private void doContextGroup(XmlParser parser) {
+  private void doAIMLScript(XmlParser parser) throws XmlPullParserException {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doContextGroup");
+    do {
+      switch(parser.getEventType()) {
+        case XmlParser.END_TAG:
+          return;
+        default:
+          throw new UnsupportedOperationException("doAIMLScript()"+parser.getPositionDescription());
+      }
+      // TODO parser.next();
+    } while (true);
     
   }
 
-  private void doCategory(XmlParser parser) {
+  private void doContextDef(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
+    parser.require(XmlParser.START_TAG,null,"context");
+    if (parser.getAttributeValue(null,"name")==null)
+      throw new AimlSyntaxException("Syntax error while parsing context definition, mandatory attribute 'name' missing "+parser.getPositionDescription());
+    parser.next();
+    doPattern(parser);
+    parser.require(XmlParser.END_TAG,null,"context");
+    parser.nextTag();
+  }
+
+  private void doPattern(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
+PatternLoop:    
+    do {
+      switch (parser.getEventType()) {
+        case XmlParser.START_TAG:
+          if (parser.getName().equals("bot"))
+            doBotConst(parser);
+          else
+            throw new AimlSyntaxException("Unexpected start tag '" + parser.getName() + "' while parsing pattern, only 'bot' allowed "+parser.getPositionDescription());
+          break;
+        case XmlParser.END_TAG:
+          break PatternLoop;
+        case XmlParser.TEXT:
+          //append text to pattern
+          break;
+        case XmlParser.END_DOCUMENT:
+          throw new AimlSyntaxException("Unexpected end of document while parsing pattern "+parser.getPositionDescription());
+        default:
+          throw new IllegalStateException("Something really weird happened while parsing pattern "+parser.getPositionDescription());
+      }
+      parser.next();
+    } while (true);   
+  }
+
+
+  private void doBotConst(XmlParser parser) {
     // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doCategory");
+    throw new UnsupportedOperationException("doBotConst()");
+    
+  }
+
+  private void doThatC(XmlParser parser) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("doThat");
+    
+  }
+
+  private void doPatternC(XmlParser parser) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("doPattern");
+    
   }
 
   public void load(Reader in) throws IOException, XmlPullParserException, AimlParserException {
@@ -141,17 +246,17 @@ public class AIMLParser {
       try {
         load(new FileInputStream("tests/categoryList-badstart.aiml"),"UTF-8");
         fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {};
+      } catch (AimlSyntaxException e) {}
 
       try {
         load(new FileInputStream("tests/categoryList-badstart2.aiml"),"UTF-8");
         fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {};
+      } catch (AimlSyntaxException e) {}
 
       try {
         load(new FileInputStream("tests/categoryList-badend.aiml"),"UTF-8");
         fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {};
+      } catch (AimlSyntaxException e) {}
     }
   }
   
