@@ -50,13 +50,17 @@ public class AIMLParser {
     else
       throw new AimlSyntaxException("Syntax error: expected " + XmlParser.TYPES[eventType] + " '" + name + "' " + parser.getPositionDescription());
   }
-
+  
+  private String requireAttrib(XmlParser parser, String name) throws AimlSyntaxException {
+    if (parser.getAttributeValue(null,name)==null)
+      throw new AimlSyntaxException("Syntax error: mandatory attribute '" + name + "' missing from element '" + parser.getName() + "' "+ parser.getPositionDescription());
+    else return parser.getAttributeValue(null,name);
+  }
+  
   private void doAiml(XmlParser parser) throws IOException, XmlPullParserException, AimlParserException {
     parser.nextTag();
     require(parser,XmlParser.START_TAG,"aiml","root element must be 'aiml'");
-    String version = parser.getAttributeValue(null,"version");
-    if (version==null)
-      throw new AimlSyntaxException("Syntax error, version attribute of root element must be present");
+    String version=requireAttrib(parser,"version");
     if (!version.equals("1.0") && !version.equals("1.0.1"))
       throw new InvalidAimlVersionException("Unsupported AIML version, refusing forward compatible processing mode");
       
@@ -97,8 +101,7 @@ public class AIMLParser {
 
   private void doTopic(XmlParser parser) throws IOException, XmlPullParserException, AimlParserException {
     require(parser,XmlParser.START_TAG,"topic");
-    if (parser.getAttributeValue(null,"name")==null)
-      throw new AimlSyntaxException("Topic must have mandatory name attribute ");
+    requireAttrib(parser,"name");
     parser.nextTag();
     doCategoryList(parser);
     require(parser,XmlParser.END_TAG,"topic");
@@ -162,8 +165,7 @@ public class AIMLParser {
 
   private void doContextDef(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
     require(parser,XmlParser.START_TAG,"context");
-    if (parser.getAttributeValue(null,"name")==null)
-      throw new AimlSyntaxException("Syntax error while parsing context definition, mandatory attribute 'name' missing "+parser.getPositionDescription());
+    requireAttrib(parser,"name");
     parser.next();
     doPattern(parser);
     require(parser,XmlParser.END_TAG,"context");
@@ -197,10 +199,9 @@ PatternLoop:
 
   private void doBotConst(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
     require(parser,XmlParser.START_TAG,"bot");
-    if (parser.getAttributeValue(null,"name")==null)
-      throw new AimlSyntaxException("Syntax error while parsing bot constant in pattern, mandatory attribute 'name' missing "+parser.getPositionDescription());
+    requireAttrib(parser,"name");
     if (!parser.isEmptyElementTag())
-      throw new AimlSyntaxException("Syntax error while parsing bot constant in pattern, element must be empty "+parser.getPositionDescription());
+      throw new AimlSyntaxException("Syntax error while parsing bot constant in pattern: element must be empty "+parser.getPositionDescription());
     parser.nextTag();
     parser.next();    
   }
