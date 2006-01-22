@@ -20,8 +20,8 @@ import java.applet.*;
 import java.io.*;
 import java.util.regex.*;
 
-import aiml.*;
-import aiml.node.*;
+import aiml.classifier.*;
+import aiml.classifier.node.*;
 import aiml.context.*;
 
 /**

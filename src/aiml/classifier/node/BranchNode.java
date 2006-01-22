@@ -12,9 +12,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-package aiml.node;
+package aiml.classifier.node;
 
-import aiml.*;
+import aiml.classifier.*;
 
 /**
  * A branch in the pattern matching tree. This pure branching node implements the

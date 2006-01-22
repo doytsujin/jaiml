@@ -12,10 +12,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-package aiml.node;
+package aiml.classifier.node;
 
 import java.util.*;
-import aiml.*;
+
+import aiml.classifier.*;
 
 /**
  * A single character branch in the strings portion of the pattern tree. All by

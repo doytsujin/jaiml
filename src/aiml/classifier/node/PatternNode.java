@@ -12,10 +12,11 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-package aiml.node;
+package aiml.classifier.node;
 
 import java.util.*;
-import aiml.*;
+
+import aiml.classifier.*;
 
 /**
  * <p>
@@ -64,7 +65,7 @@ public abstract class PatternNode {
 
   /**
    * <p>This inner class is a wrapper for the
-   * {@link aiml.node.PatternNode#add(int depth, String pattern) add(int, String)} result type,
+   * {@link aiml.classifier.node.PatternNode#add(int depth, String pattern) add(int, String)} result type,
    * which needs to return several values, and Java doesn't support "pass by
    * reference" method parameters.</p>
    *

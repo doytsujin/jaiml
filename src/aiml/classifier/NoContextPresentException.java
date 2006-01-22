@@ -12,18 +12,21 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-package aiml;
+package aiml.classifier;
 
 /**
- * Multiple contexts of the same type aren't supported in a single path, the
- * result should be multiple paths, this has to be ensured by the loader
+ * This exception gets thrown whenever there is an attempt to start a match
+ * when there are no defined contexts.
+ *
+ * It's a runtime exception, because such a thing should never happen with a
+ * properly initialized matching environment.
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class MultipleContextsException
+public class NoContextPresentException
     extends RuntimeException {
-  public MultipleContextsException() {
+  public NoContextPresentException() {
   }
 
 }
