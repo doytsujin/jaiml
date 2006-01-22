@@ -41,10 +41,10 @@ import aiml.context.*;
 
 public class Path {
   /** An internal linked list to represent the priority queue */
-  private LinkedList contextQueue = new LinkedList();
+  private LinkedList<Pattern> contextQueue = new LinkedList<Pattern>();
 
   /** An internal stack of previous path states (used for loading)*/
-  private LinkedList historyStack = new LinkedList();
+  private LinkedList<LinkedList<Pattern>> historyStack = new LinkedList<LinkedList<Pattern>>();
 
   /**
    * A wrapper for a context pattern.
@@ -127,13 +127,13 @@ public class Path {
     //  System.out.println("["+context+"]\""+pattern+"\"");
     Context c = ContextInfo.getContext(context);
     Pattern p = new Pattern(c.getOrder(), pattern);
-    ListIterator i = contextQueue.listIterator();
+    ListIterator<Pattern> i = contextQueue.listIterator();
     if (!i.hasNext()) {
       i.add(p);
     }
     else {
       while (i.hasNext()) {
-        Pattern pi = (Pattern) i.next();
+        Pattern pi = i.next();
         if (pi.context == p.context) {
           throw new MultipleContextsException();
         }
@@ -151,8 +151,9 @@ public class Path {
   /**
    * Saves the current path onto a stack (used for loading nested context groups)
    */
+  @SuppressWarnings("unchecked")
   public void save() {
-    historyStack.addFirst(contextQueue.clone());
+    historyStack.addFirst((LinkedList<Pattern>)contextQueue.clone());
   }
 
   /**
@@ -161,7 +162,7 @@ public class Path {
    * @throws NoSuchElementException
    */
   public void restore() {
-    contextQueue=(LinkedList)historyStack.removeFirst();
+    contextQueue=historyStack.removeFirst();
   }
 
   /**

@@ -30,7 +30,7 @@ public class PatternNodeFactory {
    * A dynamic array of known node types. More precisely, a dynamic array of
    * Creatable instances that know how to create a specific node type
    */
-  private static ArrayList nodeTypes = new ArrayList();
+  private static ArrayList<Creatable> nodeTypes = new ArrayList<Creatable>();
 
   /**
    * Do not create instances of PatternNodeFactory

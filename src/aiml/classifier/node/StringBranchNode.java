@@ -32,7 +32,7 @@ public class StringBranchNode
   /**
    * a map to store the branches
    */
-  private HashMap map = new HashMap();
+  private HashMap<Character,PatternNode> map = new HashMap<Character,PatternNode>();
 
   /**
    * Create a new empty string branch node. The type is PatternNode.STRING
@@ -73,7 +73,7 @@ public class StringBranchNode
     char c = Character.toUpperCase(pattern.charAt(depth));
     Character key = new Character(c);
 
-    PatternNode node = (PatternNode) map.get(key);
+    PatternNode node = map.get(key);
     depth++;
     if (node == null) {
       node = PatternNodeFactory.getInstance(depth, pattern);
@@ -94,7 +94,7 @@ public class StringBranchNode
     catch (StringIndexOutOfBoundsException e) {
       return false; //the current context is an empty string
     }
-    PatternNode node = (PatternNode) map.get(new Character(c));
+    PatternNode node = map.get(new Character(c));
     //match is "done" check result:
     if (node != null) {
       match.depth++;

@@ -36,7 +36,7 @@ public class MatchState {
   /** The contextStack list stores the history of context traversal, used for
    *  backtracking.
    */
-  private LinkedList contextStack = new LinkedList();
+  private LinkedList<Integer> contextStack = new LinkedList<Integer>();
 
   /** The current depth in the context */
   public int depth;
@@ -184,7 +184,7 @@ public class MatchState {
    */
   public void dropContext() {
     //shouldn't this be error-checked? The default NoSuchElementException is probably enough though...
-    this.context = ( (Integer) contextStack.removeLast()).intValue();
+    this.context = contextStack.removeLast().intValue();
     depth = getContextValue().length();
   }
 
@@ -202,11 +202,11 @@ public class MatchState {
    * @param depth the depth (the starting index of the wildcard)
    * @return Wildcard
    */
-
+  @SuppressWarnings("unchecked")
   public Wildcard addWildcard(int context, int depth) {
     Wildcard wc = new Wildcard(context, depth);
     if (wildcards[context] == null) {
-      wildcards[context] = new ArrayList();
+      wildcards[context] = new ArrayList<Wildcard>();
     }
     wildcards[context].add(wc);
     return wc;

@@ -35,10 +35,10 @@ import java.util.*;
 public class ContextInfo {
 
   /** An array of known contexts, the context order is defined by the order of insertion. */
-  private static List contexts = new ArrayList();
+  private static List<Context> contexts = new ArrayList<Context>();
 
   /** An array of known contexts but this tame keyed by their name, and not order. */
-  private static Map contextNames = new HashMap();
+  private static Map<String,Context> contextNames = new HashMap<String,Context>();
 
   /**
    * The default constructor is private, people aren't generally supposed to create
@@ -55,7 +55,7 @@ public class ContextInfo {
    */
 
   public static Context getContext(String name) {
-    Context c = (Context) contextNames.get(name);
+    Context c = contextNames.get(name);
     if (c == null) {
       throw new UnknownContextException("The context \"" + name +
                                         "\" is unknown");
@@ -72,7 +72,7 @@ public class ContextInfo {
    */
   public static Context getContext(int context) {
     try {
-      return (Context) contexts.get(context);
+      return contexts.get(context);
     }
     catch (IndexOutOfBoundsException e) {
       throw new UnknownContextException("The context with ID " + context +

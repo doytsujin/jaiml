@@ -30,7 +30,7 @@ import aiml.classifier.*;
 
 public class HashMapNode
     extends PatternNode {
-  private HashMap map = new HashMap();
+  private HashMap<String,PatternNode> map = new HashMap<String,PatternNode>();
 
   /**
    * Creates a new hash map pattern node
@@ -48,7 +48,7 @@ public class HashMapNode
     AddResult result;
     pattern = pattern.substring(depth).toUpperCase();
 
-    PatternNode node = (PatternNode) map.get(pattern);
+    PatternNode node = map.get(pattern);
     depth += pattern.length();
     if (node == null) {
       node = PatternNodeFactory.getInstance(depth, pattern);
@@ -70,7 +70,7 @@ public class HashMapNode
   public boolean match(MatchState match) {
     //Match
     String s = match.getContextValue().substring(match.depth).toUpperCase();
-    PatternNode node = (PatternNode) map.get(s);
+    PatternNode node = map.get(s);
     //match is "done" check result:
     if (node != null) {
       match.depth += s.length();
