@@ -223,48 +223,47 @@ PatternLoop:
     public AIMLParserTest(String s){
       super(s);
     }
-    public void testAimlRoot() throws Exception {
-      load(new StringReader("<aiml version='1.0'/>"));
-      
+    
+    private void loadFail(Reader in,Class<? extends Exception> exception) throws Exception {
       try {
-        load(new StringReader("<aiml></aiml>"));
+        load(in);
         fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {}
+      } catch (Exception e) {
+        if (exception.isAssignableFrom(e.getClass()))
+          return;
+        else
+          throw e;
+      }
+      fail("Expected exception " + exception);
+    }
 
+    private void loadFail(InputStream in,String encoding, Class<? extends Exception> exception) throws Exception {
       try {
-        load(new StringReader("<AIML></AIML>"));
+        load(in,encoding);
         fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {}
-      
-      try {
-        load(new StringReader("<aiml version='1.0p'></aiml>"));
-        fail("Expected InvalidAimlVersionException");
-      } catch (InvalidAimlVersionException e) {}
-      
-      try {
-        load(new StringReader("<aiml version='1.0'></aiml><foo></foo>"));
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {}
+      } catch (Exception e) {
+        if (exception.isAssignableFrom(e.getClass()))
+          return;
+        else
+          throw e;
+      }
+      fail("Expected exception " + exception);
+    }
+
+    public void testAimlRoot() throws Exception {
+      load(new StringReader("<aiml version='1.0'/>"));     
+      loadFail(new StringReader("<aiml></aiml>"),AimlSyntaxException.class);
+      loadFail(new StringReader("<AIML></AIML>"),AimlSyntaxException.class);      
+      loadFail(new StringReader("<aiml version='1.0p'></aiml>"),InvalidAimlVersionException.class);
+      loadFail(new StringReader("<aiml version='1.0'></aiml><foo></foo>"),XmlPullParserException.class);
       
     }
 
     public void testCategoryList() throws Exception {
       load(new FileInputStream("tests/categoryList-ok.aiml"),"UTF-8");
-
-      try {
-        load(new FileInputStream("tests/categoryList-badstart.aiml"),"UTF-8");
-        fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {}
-
-      try {
-        load(new FileInputStream("tests/categoryList-badstart2.aiml"),"UTF-8");
-        fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {}
-
-      try {
-        load(new FileInputStream("tests/categoryList-badend.aiml"),"UTF-8");
-        fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {}
+      loadFail(new FileInputStream("tests/categoryList-badstart.aiml"),"UTF-8",AimlSyntaxException.class);
+      loadFail(new FileInputStream("tests/categoryList-badstart2.aiml"),"UTF-8",AimlSyntaxException.class);
+      loadFail(new FileInputStream("tests/categoryList-badend.aiml"),"UTF-8",AimlSyntaxException.class);
     }
   }
   
