@@ -170,33 +170,41 @@ PatternLoop:
           break PatternLoop;
         case XmlParser.TEXT:
           //append text to pattern
+          parser.next();
           break;
         case XmlParser.END_DOCUMENT:
           throw new AimlSyntaxException("Unexpected end of document while parsing pattern "+parser.getPositionDescription());
         default:
           throw new IllegalStateException("Something really weird happened while parsing pattern "+parser.getPositionDescription());
       }
-      parser.next();
     } while (true);   
   }
 
 
-  private void doBotConst(XmlParser parser) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doBotConst()");
-    
+  private void doBotConst(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
+    parser.require(XmlParser.START_TAG,null,"bot");
+    if (parser.getAttributeValue(null,"name")==null)
+      throw new AimlSyntaxException("Syntax error while parsing bot constant in pattern, mandatory attribute 'name' missing "+parser.getPositionDescription());
+    if (!parser.isEmptyElementTag())
+      throw new AimlSyntaxException("Syntax error while parsing bot constant in pattern, element must be empty "+parser.getPositionDescription());
+    parser.nextTag();
+    parser.next();    
   }
 
-  private void doThatC(XmlParser parser) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doThat");
-    
+  private void doThatC(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
+    parser.require(XmlParser.START_TAG,null,"that");
+    parser.next();
+    doPattern(parser);
+    parser.require(XmlParser.END_TAG,null,"that");
+    parser.nextTag();    
   }
 
-  private void doPatternC(XmlParser parser) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doPattern");
-    
+  private void doPatternC(XmlParser parser) throws IOException, XmlPullParserException, AimlSyntaxException {
+    parser.require(XmlParser.START_TAG,null,"pattern");
+    parser.next();
+    doPattern(parser);
+    parser.require(XmlParser.END_TAG,null,"pattern");
+    parser.nextTag();    
   }
 
   public void load(Reader in) throws IOException, XmlPullParserException, AimlParserException {
@@ -221,22 +229,22 @@ PatternLoop:
       try {
         load(new StringReader("<aiml></aiml>"));
         fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {};
+      } catch (AimlSyntaxException e) {}
 
       try {
         load(new StringReader("<AIML></AIML>"));
         fail("Expected AimlSyntaxException");
-      } catch (AimlSyntaxException e) {};
+      } catch (AimlSyntaxException e) {}
       
       try {
         load(new StringReader("<aiml version='1.0p'></aiml>"));
         fail("Expected InvalidAimlVersionException");
-      } catch (InvalidAimlVersionException e) {};
+      } catch (InvalidAimlVersionException e) {}
       
       try {
         load(new StringReader("<aiml version='1.0'></aiml><foo></foo>"));
         fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {};
+      } catch (XmlPullParserException e) {}
       
     }
 
