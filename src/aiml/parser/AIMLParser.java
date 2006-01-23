@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import junit.framework.*;
 import junit.textui.TestRunner;
@@ -24,8 +25,11 @@ import junit.textui.TestRunner;
 
 public class AIMLParser {
   
-  public AIMLParser() {
-    
+  XmlPullParser parser;
+  
+  public AIMLParser() throws XmlPullParserException {
+    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+    parser = factory.newPullParser();
   }
   
   private boolean isEvent(XmlPullParser parser, int eventType, String name) throws XmlPullParserException {
@@ -224,13 +228,11 @@ PatternLoop:
   }
 
   public void load(Reader in) throws IOException, XmlPullParserException, AimlParserException {
-    XmlPullParser parser = new XmlParser();
     parser.setInput(in);
     doAiml(parser);
   }
 
   public void load(InputStream in, String encoding) throws IOException, XmlPullParserException, AimlParserException {
-    XmlPullParser parser = new XmlParser();
     parser.setInput(in,encoding);
     doAiml(parser);
   }
@@ -287,7 +289,7 @@ PatternLoop:
     return new AIMLParserTest(name);
   }
   
-  public static Test suite() {
+  public static Test suite() throws XmlPullParserException {
     AIMLParser ap= new AIMLParser();
     TestSuite t = new TestSuite();
     t.setName("AIMLParser.AIMLParserTest");
@@ -299,7 +301,7 @@ PatternLoop:
     }
     return t;
   }
-  public static void main(String[] args) {
+  public static void main(String[] args) throws XmlPullParserException {
     TestRunner.run(AIMLParser.suite());    
   }
 
