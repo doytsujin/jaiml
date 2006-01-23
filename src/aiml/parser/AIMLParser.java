@@ -14,6 +14,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.logging.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -21,6 +22,8 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.bot.Bot;
 import aiml.bot.InvalidConstantException;
+import aiml.classifier.AIMLMatcher;
+import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
 import aiml.context.ContextInfo;
@@ -32,6 +35,7 @@ import junit.textui.TestRunner;
 
 public class AIMLParser {
   
+  Logger log = Logger.getLogger(AIMLParser.class.getName());
   XmlPullParser parser;
   Bot bot;
   Path currentPath;
@@ -160,7 +164,12 @@ public class AIMLParser {
     doTemplate();
     require(XmlPullParser.END_TAG,"category");
     parser.nextTag();
-    // TODO: add path to classifier
+    // TODO: add category to classifier
+    try {
+      AIMLMatcher.add(currentPath,currentPath.toString());
+    } catch (DuplicatePathException e) {
+      log.warning("Duplicate category " + currentPath + " " + parser.getPositionDescription());
+    }
     currentPath.restore();
   }
 
@@ -361,6 +370,7 @@ public class AIMLParser {
     ContextInfo.registerContext(new StringContext("ni"));
     ContextInfo.registerContext(new StringContext("san"));
 
+    AIMLMatcher.registerDefaultNodeHandlers();
     
     AIMLParser ap= new AIMLParser(b);
     TestSuite t = new TestSuite();
