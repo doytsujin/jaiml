@@ -164,10 +164,11 @@ public class AIMLParser {
     if (isEvent(XmlPullParser.START_TAG,"context"))
       doContextList();
     require(XmlPullParser.START_TAG,"template","expected 'template' element in category");
-    doTemplate();
+    ScriptElement s = doTemplate();
     require(XmlPullParser.END_TAG,"category");
     try {
-      AIMLMatcher.add(currentPath,currentPath.toString());
+      AIMLMatcher.add(currentPath,s);
+      log.info("added category "+currentPath+"{"+ s +"}");
     } catch (DuplicatePathException e) {
       log.warning("Duplicate category " + currentPath + " " + parser.getPositionDescription());
     }
@@ -179,7 +180,6 @@ public class AIMLParser {
     require(XmlPullParser.START_TAG,"template");
     ScriptElement s = new BlockElement();
     s=s.parse(parser);
-    log.info("template: {"+ s +"}");
     require(XmlPullParser.END_TAG,"template");
     parser.nextTag();
     return s;
