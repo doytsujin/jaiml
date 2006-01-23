@@ -674,6 +674,10 @@ TextLoop:
   }
 
   private char nextChar() throws IOException {
+    if (ch==LF) {
+      lineNumber++;
+      colNumber = 0;
+    }
     ch = (char) in.read();
     colNumber++;
     switch (ch) { //normalize end of line markers and count the position
@@ -682,20 +686,14 @@ TextLoop:
           ch = (char) in.read();
           if (ch==CR) {
             ch = LF;
-            lineNumber++;
-            colNumber = 0;            
           } else
             readCR=false;
         } else {
-          lineNumber++;
-          colNumber = 0;
           readCR = false;
         }
         break;
       case CR:
         ch = LF;
-        lineNumber++;
-        colNumber = 0;
         readCR = true;
         break;
       default:
