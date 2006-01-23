@@ -21,6 +21,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.bot.Bot;
 import aiml.bot.InvalidConstantException;
+import aiml.classifier.MultipleContextsException;
+import aiml.classifier.Path;
+import aiml.context.ContextInfo;
+import aiml.context.StringContext;
 
 import junit.framework.*;
 import junit.textui.TestRunner;
@@ -30,6 +34,7 @@ public class AIMLParser {
   
   XmlPullParser parser;
   Bot bot;
+  Path currentPath;
   
   public AIMLParser(Bot bot) throws XmlPullParserException {
     XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
@@ -71,6 +76,7 @@ public class AIMLParser {
       throw new InvalidAimlVersionException("Unsupported AIML version, refusing forward compatible processing mode");
       
     parser.nextTag();
+    currentPath=new Path();
     doCategoryList();
     require(XmlPullParser.END_TAG, "aiml");
     parser.next();
@@ -80,58 +86,68 @@ public class AIMLParser {
   
   
   private void doCategoryList() throws IOException, XmlPullParserException, AimlParserException  {
-    do {
-      switch (parser.getEventType()) {
-        case XmlPullParser.START_TAG:
-          if (parser.getName().equals("category")) {
-            doCategory();
-          } else if (parser.getName().equals("contextgroup")) {
-            doContextGroup();
-          } else if (parser.getName().equals("topic")) {
-            doTopic();
-          } else
-            throw new AimlSyntaxException("Syntax error: expected category, contextgroup or topic "+parser.getPositionDescription());
-          break;
-        case XmlPullParser.END_TAG:
-          if (parser.getName().equals("aiml")
-              || parser.getName().equals("contextgroup")
-              || parser.getName().equals("topic"))
-            return;
-          throw new AimlSyntaxException("Syntax error: end tag '" + parser.getName() + "' without opening tag "+parser.getPositionDescription());
-        default:
-          assert (false) :"Something very unexpected happened";          
-      }
-      //parser.nextTag();
-    } while (true);
+    try {
+      do {
+        switch (parser.getEventType()) {
+          case XmlPullParser.START_TAG:
+            if (parser.getName().equals("category")) {
+              doCategory();
+            } else if (parser.getName().equals("contextgroup")) {
+              doContextGroup();
+            } else if (parser.getName().equals("topic")) {
+              doTopic();
+            } else
+              throw new AimlSyntaxException("Syntax error: expected category, contextgroup or topic "+parser.getPositionDescription());
+            break;
+          case XmlPullParser.END_TAG:
+            if (parser.getName().equals("aiml")
+                || parser.getName().equals("contextgroup")
+                || parser.getName().equals("topic"))
+              return;
+            throw new AimlSyntaxException("Syntax error: end tag '" + parser.getName() + "' without opening tag "+parser.getPositionDescription());
+          default:
+            assert (false) :"Something very unexpected happened";          
+        }
+        //parser.nextTag();
+      } while (true);
+    } catch (MultipleContextsException e) {
+      throw new AimlSyntaxException("Syntax error, paralell contexts and/or context overloading not allowed. Context " + e.getMessage() + " " + parser.getPositionDescription(),e);
+    }
   }
 
-  private void doTopic() throws IOException, XmlPullParserException, AimlParserException {
+  private void doTopic() throws IOException, XmlPullParserException, AimlParserException, MultipleContextsException {
     require(XmlPullParser.START_TAG,"topic");
-    requireAttrib("name");
+    currentPath.save();
+    String pattern = requireAttrib("name");
+    currentPath.add("topic",pattern);
     parser.nextTag();
     doCategoryList();
     require(XmlPullParser.END_TAG,"topic");
-    parser.nextTag();    
+    parser.nextTag();
+    currentPath.restore();
   }
 
-  private void doContextGroup() throws IOException, XmlPullParserException, AimlParserException {
+  private void doContextGroup() throws IOException, XmlPullParserException, AimlParserException, MultipleContextsException {
     require(XmlPullParser.START_TAG,"contextgroup");
     parser.nextTag();
+    currentPath.save();
     doContextList();
     doCategoryList();
     require(XmlPullParser.END_TAG,"contextgroup");
     parser.nextTag();
+    currentPath.restore();
   }
 
-  private void doContextList() throws XmlPullParserException, AimlSyntaxException, IOException {
+  private void doContextList() throws XmlPullParserException, AimlSyntaxException, IOException, MultipleContextsException {
     do {
       doContextDef();
     } while (isEvent(XmlPullParser.START_TAG,"context"));
   }
 
-  private void doCategory() throws IOException, XmlPullParserException, AimlSyntaxException {
+  private void doCategory() throws IOException, XmlPullParserException, AimlSyntaxException, MultipleContextsException {
     require(XmlPullParser.START_TAG,"category");
     parser.nextTag();
+    currentPath.save();
     if (isEvent(XmlPullParser.START_TAG,"pattern")) {
       doPatternC();
     }
@@ -143,7 +159,9 @@ public class AIMLParser {
     require(XmlPullParser.START_TAG,"template","expected 'template' element in category");
     doTemplate();
     require(XmlPullParser.END_TAG,"category");
-    parser.nextTag();    
+    parser.nextTag();
+    // TODO: add path to classifier
+    currentPath.restore();
   }
 
   private void doTemplate() throws IOException, XmlPullParserException, AimlSyntaxException {
@@ -169,11 +187,12 @@ public class AIMLParser {
     
   }
 
-  private void doContextDef() throws IOException, XmlPullParserException, AimlSyntaxException {
+  private void doContextDef() throws IOException, XmlPullParserException, AimlSyntaxException, MultipleContextsException {
     require(XmlPullParser.START_TAG,"context");
-    requireAttrib("name");
+    String name = requireAttrib("name");
     parser.next();
-    doPattern();
+    String pattern = doPattern();
+    currentPath.add(name,pattern);
     require(XmlPullParser.END_TAG,"context");
     parser.nextTag();
   }
@@ -219,20 +238,22 @@ public class AIMLParser {
     return result;
   }
 
-  private void doThatC() throws IOException, XmlPullParserException, AimlSyntaxException {
+  private void doThatC() throws IOException, XmlPullParserException, AimlSyntaxException, MultipleContextsException {
     require(XmlPullParser.START_TAG,"that");
     parser.next();
-    doPattern();
+    String pattern = doPattern();
+    currentPath.add("that",pattern);
     require(XmlPullParser.END_TAG,"that");
-    parser.nextTag();    
+    parser.nextTag();
   }
 
-  private void doPatternC() throws IOException, XmlPullParserException, AimlSyntaxException {
+  private void doPatternC() throws IOException, XmlPullParserException, AimlSyntaxException, MultipleContextsException {
     require(XmlPullParser.START_TAG,"pattern");
     parser.next();
-    doPattern();
+    String pattern=doPattern();
+    currentPath.add("input",pattern);
     require(XmlPullParser.END_TAG,"pattern");
-    parser.nextTag();    
+    parser.nextTag();
   }
 
   public void load(Reader in) throws IOException, XmlPullParserException, AimlParserException {
@@ -287,17 +308,31 @@ public class AIMLParser {
 
     public void testCategoryList() throws Exception {
       load(new FileInputStream("tests/categoryList-ok.aiml"),"UTF-8");
+    }
+    public void testCategoryListBadStart() throws Exception {
       loadFail(new FileInputStream("tests/categoryList-badstart.aiml"),"UTF-8",AimlSyntaxException.class);
+    }
+    public void testCategoryListBadStart2() throws Exception {
       loadFail(new FileInputStream("tests/categoryList-badstart2.aiml"),"UTF-8",AimlSyntaxException.class);
+    }
+    public void testCategoryListBadEnd() throws Exception {
       loadFail(new FileInputStream("tests/categoryList-badend.aiml"),"UTF-8",AimlSyntaxException.class);
     }
-    
+        
     public void testLoadPatterns() throws Exception {
       load(new FileInputStream("tests/patterns.aiml"),"UTF-8");
-      loadFail(new FileInputStream("tests/patterns-bad1.aiml"),"UTF-8",AimlSyntaxException.class);
-      loadFail(new FileInputStream("tests/patterns-bad2.aiml"),"UTF-8",AimlSyntaxException.class);
-      loadFail(new FileInputStream("tests/patterns-bad3.aiml"),"UTF-8",AimlSyntaxException.class);
-      loadFail(new FileInputStream("tests/patterns-bad4.aiml"),"UTF-8",AimlSyntaxException.class);
+    }
+    public void testLoadPatternsBad1() throws Exception {
+      loadFail(new FileInputStream("tests/patterns-bad1.aiml"),"UTF-8",AimlSyntaxException.class);      
+    }
+    public void testLoadPatternsBad2() throws Exception {
+      loadFail(new FileInputStream("tests/patterns-bad1.aiml"),"UTF-8",AimlSyntaxException.class);      
+    }
+    public void testLoadPatternsBad3() throws Exception {
+      loadFail(new FileInputStream("tests/patterns-bad1.aiml"),"UTF-8",AimlSyntaxException.class);      
+    }
+    public void testLoadPatternsBad4() throws Exception {
+      loadFail(new FileInputStream("tests/patterns-bad1.aiml"),"UTF-8",AimlSyntaxException.class);      
     }
   }
   
@@ -309,6 +344,24 @@ public class AIMLParser {
     Bot b = new Bot("foobar");
     b.setConstant("name","foobar");
     b.setConstant("baz","bar");
+    
+    ContextInfo.registerContext(new StringContext("input"));
+    ContextInfo.registerContext(new StringContext("that"));
+    ContextInfo.registerContext(new StringContext("topic"));
+    
+    ContextInfo.registerContext(new StringContext("alpha"));
+    ContextInfo.registerContext(new StringContext("beta"));
+    ContextInfo.registerContext(new StringContext("gama"));
+    ContextInfo.registerContext(new StringContext("delta"));
+    
+    ContextInfo.registerContext(new StringContext("foo"));
+    ContextInfo.registerContext(new StringContext("bar"));
+    
+    ContextInfo.registerContext(new StringContext("ichi"));
+    ContextInfo.registerContext(new StringContext("ni"));
+    ContextInfo.registerContext(new StringContext("san"));
+
+    
     AIMLParser ap= new AIMLParser(b);
     TestSuite t = new TestSuite();
     t.setName("AIMLParser.AIMLParserTest");

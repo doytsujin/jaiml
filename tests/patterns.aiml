@@ -130,4 +130,34 @@
 			</category>
 		</contextgroup>
 	</topic>
+	
+	<category>
+	<pattern>itchi</pattern>
+	<template/>
+	</category>
+	
+	<category>
+	<pattern>scratchy</pattern>
+	<that>itchi</that>
+	<template/>
+	</category>	
+	
+	<contextgroup>
+		<context name="input">itchi</context>
+		
+		<category>
+		<that>uno</that>
+		<template/>
+		</category>
+
+		<category>
+		<that>dva</that>
+		<template/>
+		</category>
+
+		<category>
+		<that>drei</that>
+		<template/>
+		</category>
+	</contextgroup>
 </aiml>

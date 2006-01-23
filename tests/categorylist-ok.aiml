@@ -7,157 +7,116 @@ this version should pass without errors
 -->
 <aiml version="1.0.1">
 
-<category>
-<template></template>
-</category>
+	<category>
+	<template></template>
+	</category>
+	
+	<category>
+	<template></template>
+	</category>
+	
+	<category>
+	<template></template>
+	</category>
+	
+	<contextgroup>
+		<context name="foo"></context>
 
-<category>
-<template></template>
-</category>
+		<category>
+		<template></template>
+		</category>
+		
+		<contextgroup>
+			<context name="bar"></context>
 
-<category>
-<template></template>
-</category>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-<topic name="FOO">
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-</topic>
-
-<topic name="BAR">
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<topic name="FOO">
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-</topic>
-
-<contextgroup>
-<context name="foo"></context>
-<category>
-<template></template>
-</category>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-<category>
-<template></template>
-</category>
-
-</contextgroup>
-
-</topic>
+			<category>
+			<template></template>
+			</category>
+			
+			<category>
+			<template></template>
+			</category>		
+		</contextgroup>
+		
+		<category>
+		<template></template>
+		</category>	
+	</contextgroup>
+	
+	<topic name="FOO">
+		<category>
+		<template></template>
+		</category>
+		
+		<category>
+		<template></template>
+		</category>
+		
+		<category>
+		<template></template>
+		</category>
+		
+		<contextgroup>
+			<context name="foo"></context>
+		
+			<category>
+			<template></template>
+			</category>
+			
+			<contextgroup>
+				<context name="bar"></context>
+			
+				<category>
+				<template></template>
+				</category>
+				
+				<category>
+				<template></template>
+				</category>	
+			</contextgroup>
+			
+			<category>
+			<template></template>
+			</category>		
+		</contextgroup>	
+	</topic>
+	
+	<topic name="BAR">
+		<category>
+		<template></template>
+		</category>
+		
+		<category>
+		<template></template>
+		</category>
+		
+		<category>
+		<template></template>
+		</category>
+		
+		<contextgroup>
+		<context name="foo"></context>
+		<category>
+		<template></template>
+		</category>
+			
+		<contextgroup>
+			<context name="bar"></context>
+		
+			<category>
+			<template></template>
+			</category>
+			
+			<category>
+			<template></template>
+			</category>	
+		</contextgroup>
+		
+		<category>
+		<template></template>
+		</category>	
+		</contextgroup>
+	
+	</topic>
 
 </aiml>

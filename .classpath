@@ -2,7 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="D:/.windows/jbproject/xmlpull_1_1_3_4b/xmlpull_1_1_3_4b.jar"/>
+	<classpathentry sourcepath="D:/.windows/jbproject/xmlpull_1_1_3_4b/src/java/api" kind="lib" path="D:/.windows/jbproject/xmlpull_1_1_3_4b/xmlpull_1_1_3_4b.jar"/>
 	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.1/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry sourcepath="/matcher/src" kind="lib" path="/matcher/classes"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
