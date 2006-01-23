@@ -14,6 +14,10 @@
 
 package aiml.classifier;
 
+import aiml.classifier.node.EndOfStringNode;
+import aiml.classifier.node.StringNode;
+import aiml.classifier.node.WildcardNode;
+
 /**
  * <p>This class encapsulates all AIML pattern matching functionality.</p>
  *
@@ -91,5 +95,17 @@ public class AIMLMatcher {
   public static void reset() {
     tree = null;
     count = 0;
+  }
+  
+  /**
+   * <p>This is a convenience method to register the default (or hopefully most
+   * optimal) node handler classes. When using this method, you don't have to think
+   * about all the different aiml.classifier.node.* implementations.</p>
+   * @see aiml.classifier.node
+   */
+  public static void registerDefaultNodeHandlers() {
+    StringNode.register();
+    EndOfStringNode.register();
+    WildcardNode.register();    
   }
 }

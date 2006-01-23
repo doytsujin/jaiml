@@ -78,9 +78,7 @@ public class PatternMatcherDemo
   public PatternMatcherDemo() {
     //HashMapNode.register();
     //StringBranchNode.register();
-    StringNode.register();
-    EndOfStringNode.register();
-    WildcardNode.register();
+    AIMLMatcher.registerDefaultNodeHandlers();
   }
 
   //Initialize the applet
