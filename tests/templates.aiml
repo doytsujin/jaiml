@@ -1,0 +1,13 @@
+<aiml version="1.0">
+
+<category>
+<pattern>foo</pattern>
+<template>
+  foo
+  <bot name="name"/>
+  bar
+</template>
+</category>
+  
+
+</aiml>

@@ -179,7 +179,7 @@ public class AIMLParser {
     require(XmlPullParser.START_TAG,"template");
     ScriptElement s = new BlockElement();
     s=s.parse(parser);
-    log.info("template: ["+ s +"]");
+    log.info("template: {"+ s +"}");
     require(XmlPullParser.END_TAG,"template");
     parser.nextTag();
     return s;
@@ -331,6 +331,10 @@ public class AIMLParser {
     }
     public void testLoadPatternsBad4() throws Exception {
       loadFail(new FileInputStream("tests/patterns-bad1.aiml"),"UTF-8",AimlSyntaxException.class);      
+    }
+    
+    public void testLoadTemplate() throws Exception {
+      load(new FileInputStream("tests/templates.aiml"),"UTF-8");
     }
   }
   

@@ -38,7 +38,7 @@ public class BlockElement implements ScriptElement {
   }
   
   public String toString() {
-    return "["+items.toString()+"]";    
+    return items.toString();    
   }
 
   public String execute(MatchState m) {
