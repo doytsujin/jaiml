@@ -20,6 +20,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.bot.Bot;
+import aiml.bot.InvalidConstantException;
 
 import junit.framework.*;
 import junit.textui.TestRunner;
@@ -202,13 +203,20 @@ PatternLoop:
   }
 
 
-  private void doBotConst() throws IOException, XmlPullParserException, AimlSyntaxException {
+  private String doBotConst() throws IOException, XmlPullParserException, AimlSyntaxException {
     require(XmlPullParser.START_TAG,"bot");
-    requireAttrib("name");
     if (!parser.isEmptyElementTag())
       throw new AimlSyntaxException("Syntax error while parsing bot constant in pattern: element must be empty "+parser.getPositionDescription());
+    String name = requireAttrib("name");
+    String result;
+    try {
+      result = bot.getConstant(name);
+    } catch (InvalidConstantException e) {
+      throw new AimlSyntaxException("Syntax error: "+ e.getMessage() + " " + parser.getPositionDescription());
+    }
     parser.nextTag();
-    parser.next();    
+    parser.next();
+    return result;
   }
 
   private void doThatC() throws IOException, XmlPullParserException, AimlSyntaxException {
