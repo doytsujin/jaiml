@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.MatchState;
+
 public class TextElement implements ScriptElement {
   private String text = null;
   public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException {
@@ -13,9 +15,14 @@ public class TextElement implements ScriptElement {
     return this;
   }
 
-  public String evaluate() {
-    return printable(text);
+  public String evaluate(MatchState m) {
+    return "\"" + printable(text) + "\"";
   }
+
+  public String execute(MatchState m) {
+    return "print(\"" + printable(text) + "\");";
+  }
+
   protected String printable(char ch) {
     if(ch == '\n') {
         return "\\n";
@@ -44,5 +51,9 @@ public class TextElement implements ScriptElement {
       }
       s = buf.toString();
       return s;
+  }
+  
+  public String toString() {
+    return "\"" + printable(text) + "\"";
   }
 }

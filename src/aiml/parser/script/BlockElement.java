@@ -2,10 +2,12 @@ package aiml.parser.script;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 
 public class BlockElement implements ScriptElement {
@@ -26,15 +28,24 @@ public class BlockElement implements ScriptElement {
       return this;
   }
 
-  public String evaluate() {
+  public String evaluate(MatchState m) {
     StringBuffer result =  new StringBuffer();
-    for (ScriptElement item : items) {
-      result.append(item.evaluate());
+    for (Iterator<ScriptElement> i = items.iterator(); i.hasNext(); ) {
+      result.append(i.next().evaluate(m));
+      if (i.hasNext()) result.append(" + ");
     }
     return result.toString();
   }
   
   public String toString() {
-    return super.toString() + "["+items.toString()+"]";    
+    return "["+items.toString()+"]";    
+  }
+
+  public String execute(MatchState m) {
+    StringBuffer result =  new StringBuffer();
+    for (ScriptElement item : items) {
+      result.append(item.execute(m)).append('\n');
+    }
+    return result.toString();
   }
 }

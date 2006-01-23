@@ -19,7 +19,6 @@ public class ElementParserFactory {
   
   private ElementParserFactory() {
     super();
-    // TODO Auto-generated constructor stub
   }
   
   public static void addElementParser(String name, Class<? extends ScriptElement> c) {

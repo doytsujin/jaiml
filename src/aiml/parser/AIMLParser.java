@@ -179,7 +179,7 @@ public class AIMLParser {
     require(XmlPullParser.START_TAG,"template");
     ScriptElement s = new BlockElement();
     s=s.parse(parser);
-    log.info("template: ["+ s.evaluate() +"]");
+    log.info("template: ["+ s +"]");
     require(XmlPullParser.END_TAG,"template");
     parser.nextTag();
     return s;

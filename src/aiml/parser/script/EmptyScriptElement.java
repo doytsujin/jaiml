@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 
 public class EmptyScriptElement implements ScriptElement {
@@ -13,8 +14,14 @@ public class EmptyScriptElement implements ScriptElement {
     return this;
   }
 
-  public String evaluate() {
+  public String evaluate(MatchState m) {
     return "";
   }
 
+  public String execute(MatchState m) {
+    return "";
+  }
+  public String toString() {
+    return "";
+  }
 }
