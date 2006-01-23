@@ -90,7 +90,7 @@ public class Path {
      * @return a string representation of this Pattern object
      */
     public String toString() {
-      return context + ":\"" + pattern + "\"";
+      return ContextInfo.getContext(context).getName() + "=\"" + pattern + "\"";
     }
   }
 
