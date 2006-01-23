@@ -1,7 +1,7 @@
 <aiml version="1.0">
 
 <category>
-<pattern>foo</pattern>
+<pattern>bot constant</pattern>
 <template>
   foo
   <bot name="name"/>
@@ -9,5 +9,21 @@
 </template>
 </category>
   
+<category>
+<pattern>set element</pattern>
+<template>
+one:<set name="empty"/>
+two:<set name="empty2"></set>
+three:<set name="string">somestring</set>
+four:<set name="botconst"><bot name="name"/></set>
+five:<set name="botconsmixed1">aaa<bot name="name"/></set>
+six:<set name="botconstmixed2">aaa<bot name="name"/>bbb</set>
+seven:<set name="botconstmixed3"><bot name="name"/>bbb</set>
+eight:<set name="botconstmixed4">aaa<bot name="name"/>aaa<bot name="name"/></set>
+nine:<set name="botconstmixed5"><bot name="name"/><bot name="name"/><bot name="name"/></set>
+ten:<set name="botconstnested">aa<bot name="name"/>bb<set name="nested">ddd<set name="nested2">ggg</set>sss</set>fff</set>
+
+</template>
+</category>
 
 </aiml>

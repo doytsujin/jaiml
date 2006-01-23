@@ -16,6 +16,7 @@ public class ElementParserFactory {
   static {
     text=TextElement.class;
     elements.put("bot",BotElement.class);
+    elements.put("set",SetElement.class);
   }
   
   private ElementParserFactory() {
