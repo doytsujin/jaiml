@@ -15,13 +15,13 @@ public class EmptyScriptElement implements ScriptElement {
   }
 
   public String evaluate(MatchState m) {
-    return "";
+    return "\"\"";
   }
 
   public String execute(MatchState m) {
     return "";
   }
   public String toString() {
-    return "";
+    return "\"\"";
   }
 }

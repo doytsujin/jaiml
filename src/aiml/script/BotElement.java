@@ -23,15 +23,15 @@ public class BotElement implements ScriptElement {
   }
 
   public String evaluate(MatchState m) {
-    return "$bot["+name+"]";
+    return "$_bot['"+name+"']";
   }
 
   public String execute(MatchState m) {
-    return "print($bot["+name+"]);";
+    return "print($_bot['"+name+"']);";
   }
 
   public String toString() {
-    return "$bot['"+name+"']";
+    return "$_bot['"+name+"']";
   }
 
 }
