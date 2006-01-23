@@ -178,20 +178,20 @@ public class AIMLParser {
     parser.nextTag();
   }
 
-  private void doPattern() throws IOException, XmlPullParserException, AimlSyntaxException {
-PatternLoop:    
+  private String doPattern() throws IOException, XmlPullParserException, AimlSyntaxException {
+    StringBuffer result=new StringBuffer();
     do {
       switch (parser.getEventType()) {
         case XmlPullParser.START_TAG:
           if (parser.getName().equals("bot"))
-            doBotConst();
+            result.append(doBotConst());
           else
             throw new AimlSyntaxException("Unexpected start tag '" + parser.getName() + "' while parsing pattern, only 'bot' allowed "+parser.getPositionDescription());
           break;
         case XmlPullParser.END_TAG:
-          break PatternLoop;
+          return result.toString();
         case XmlPullParser.TEXT:
-          //append text to pattern
+          result.append(parser.getText());
           parser.next();
           break;
         case XmlPullParser.END_DOCUMENT:
