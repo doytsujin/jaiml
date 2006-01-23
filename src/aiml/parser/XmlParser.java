@@ -643,6 +643,7 @@ TextLoop:
     processNamespaces=false;
     isMarked=false;
     readDocdecl=false;
+    ch='\0';
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
