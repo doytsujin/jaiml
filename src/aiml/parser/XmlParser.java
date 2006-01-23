@@ -652,8 +652,7 @@ TextLoop:
       defineEntityReplacementText("gt",">");
       defineEntityReplacementText("quot","\"");
       defineEntityReplacementText("apos","'");
-    } catch (XmlPullParserException e) {
-    };
+    } catch (XmlPullParserException e) {}
   }
 
   private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException {
