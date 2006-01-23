@@ -1,0 +1,133 @@
+<aiml version="1.0">
+	<category>
+		<pattern>foobar</pattern>
+		<template/>
+	</category>
+
+	<category>
+		<pattern>foobar <bot name="name"/></pattern>
+		<template/>
+	</category>
+
+	<category>
+		<pattern>foobar <bot name="name"/></pattern>
+		<that>what is your foozle <bot name="baz"/></that>
+		<template/>
+	</category>
+
+	<category>
+		<pattern>foobar <bot name="name"/><bot name="baz"/><bot name="baz"/></pattern>
+		<context name="alpha">fo shizzle my <bot name="name"/></context>
+		<template/>
+	</category>
+
+	<category>
+		<pattern>foobar <bot name="name"/>-karfoozle-<bot name="baz"/>-moozle-<bot name="baz"/></pattern>
+		<context name="beta">fo shizzle my <bot name="name"/></context>
+		<template/>
+	</category>
+
+	<category>
+		<pattern>foobar <bot name="name"/>-karfoozle-<bot name="baz"/>-moozle-<bot name="baz"/> wizzle</pattern>
+		<context name="gama">fo shizzle my <bot name="name"/></context>
+		<template/>
+	</category>
+
+	<category>
+		<pattern><![CDATA[foobar <bot name="name"/><bot name="baz"/><bot name="baz"/>]]></pattern>
+		<context name="delta">fo shizzle my <bot name="name"/></context>
+		<template/>
+	</category>
+
+    <contextgroup>
+      <context name="ichi">one</context>
+      <context name="ni">two</context>
+      <context name="san">three</context>
+		<category>
+			<pattern>foobar</pattern>
+			<template/>
+		</category>
+	
+		<category>
+			<pattern>foobar <bot name="name"/></pattern>
+			<template/>
+		</category>
+	
+		<category>
+			<pattern>foobar <bot name="name"/></pattern>
+			<that>what is your foozle <bot name="baz"/></that>
+			<template/>
+		</category>
+	
+		<category>
+			<pattern>foobar <bot name="name"/><bot name="baz"/><bot name="baz"/></pattern>
+			<context name="alpha">fo shizzle my <bot name="name"/></context>
+			<template/>
+		</category>
+	
+		<category>
+			<pattern>foobar <bot name="name"/>-karfoozle-<bot name="baz"/>-moozle-<bot name="baz"/></pattern>
+			<context name="beta">fo shizzle my <bot name="name"/></context>
+			<template/>
+		</category>
+	
+		<category>
+			<pattern>foobar <bot name="name"/>-karfoozle-<bot name="baz"/>-moozle-<bot name="baz"/> wizzle</pattern>
+			<context name="gama">fo shizzle my <bot name="name"/></context>
+			<template/>
+		</category>
+	
+		<category>
+			<pattern><![CDATA[foobar <bot name="name"/><bot name="baz"/><bot name="baz"/>]]></pattern>
+			<context name="delta">fo shizzle my <bot name="name"/></context>
+			<template/>
+		</category>
+	</contextgroup>
+	
+	<topic name="wizzle">
+	    <contextgroup>
+	      <context name="ichi">one</context>
+	      <context name="ni">two</context>
+	      <context name="san">three</context>
+			<category>
+				<pattern>foobar</pattern>
+				<template/>
+			</category>
+		
+			<category>
+				<pattern>foobar <bot name="name"/></pattern>
+				<template/>
+			</category>
+		
+			<category>
+				<pattern>foobar <bot name="name"/></pattern>
+				<that>what is your foozle <bot name="baz"/></that>
+				<template/>
+			</category>
+		
+			<category>
+				<pattern>foobar <bot name="name"/><bot name="baz"/><bot name="baz"/></pattern>
+				<context name="alpha">fo shizzle my <bot name="name"/></context>
+				<template/>
+			</category>
+		
+			<category>
+				<pattern>foobar <bot name="name"/>-karfoozle-<bot name="baz"/>-moozle-<bot name="baz"/></pattern>
+				<context name="beta">fo shizzle my <bot name="name"/></context>
+				<template/>
+			</category>
+		
+			<category>
+				<pattern>foobar <bot name="name"/>-karfoozle-<bot name="baz"/>-moozle-<bot name="baz"/> wizzle</pattern>
+				<context name="gama">fo shizzle my <bot name="name"/></context>
+				<template/>
+			</category>
+		
+			<category>
+				<pattern><![CDATA[foobar <bot name="name"/><bot name="baz"/><bot name="baz"/>]]></pattern>
+				<context name="delta">fo shizzle my <bot name="name"/></context>
+				<template/>
+			</category>
+		</contextgroup>
+	</topic>
+</aiml>

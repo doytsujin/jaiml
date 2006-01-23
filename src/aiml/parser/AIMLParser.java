@@ -291,6 +291,10 @@ public class AIMLParser {
       loadFail(new FileInputStream("tests/categoryList-badstart2.aiml"),"UTF-8",AimlSyntaxException.class);
       loadFail(new FileInputStream("tests/categoryList-badend.aiml"),"UTF-8",AimlSyntaxException.class);
     }
+    
+    public void testLoadPatterns() throws Exception {
+      load(new FileInputStream("tests/patterns.aiml"),"UTF-8");
+    }
   }
   
   private AIMLParserTest getTest(String name) {
