@@ -8,113 +8,114 @@ this version should pass without errors
 <aiml version="1.0.1">
 
 	<category>
-	<template></template>
+	<template>foo</template>
 	</category>
 	
 	<category>
-	<template></template>
+	<template>bar</template>
 	</category>
 	
 	<category>
-	<template></template>
+	<template>baz</template>
 	</category>
 	
 	<contextgroup>
 		<context name="foo"></context>
 
 		<category>
-		<template></template>
+		<template>foo1</template>
 		</category>
 		
 		<contextgroup>
 			<context name="bar"></context>
 
 			<category>
-			<template></template>
+			<template>foo11</template>
 			</category>
 			
 			<category>
-			<template></template>
+			<template>bar11</template>
 			</category>		
 		</contextgroup>
 		
 		<category>
-		<template></template>
+		<template>bar1</template>
 		</category>	
 	</contextgroup>
 	
 	<topic name="FOO">
 		<category>
-		<template></template>
+		<template>foo2</template>
 		</category>
 		
 		<category>
-		<template></template>
+		<template>bar2</template>
 		</category>
 		
 		<category>
-		<template></template>
+		<template>baz2</template>
 		</category>
 		
 		<contextgroup>
 			<context name="foo"></context>
 		
 			<category>
-			<template></template>
+			<template>foo21</template>
 			</category>
 			
 			<contextgroup>
 				<context name="bar"></context>
 			
 				<category>
-				<template></template>
+				<template>foo211</template>
 				</category>
 				
 				<category>
-				<template></template>
+				<template>bar211</template>
 				</category>	
 			</contextgroup>
 			
 			<category>
-			<template></template>
+			<template>bar21</template>
 			</category>		
 		</contextgroup>	
 	</topic>
 	
 	<topic name="BAR">
 		<category>
-		<template></template>
+		<template>foo3</template>
 		</category>
 		
 		<category>
-		<template></template>
+		<template>bar3</template>
 		</category>
 		
 		<category>
-		<template></template>
+		<template>baz3</template>
 		</category>
 		
 		<contextgroup>
 		<context name="foo"></context>
-		<category>
-		<template></template>
-		</category>
-			
-		<contextgroup>
-			<context name="bar"></context>
-		
+
 			<category>
-			<template></template>
+			<template>foo31</template>
 			</category>
+				
+			<contextgroup>
+				<context name="bar"></context>
+			
+				<category>
+				<template>foo311</template>
+				</category>
+				
+				<category>
+				<template>bar311</template>
+				</category>	
+			</contextgroup>
 			
 			<category>
-			<template></template>
+			<template>bar31</template>
 			</category>	
-		</contextgroup>
-		
-		<category>
-		<template></template>
-		</category>	
 		</contextgroup>
 	
 	</topic>

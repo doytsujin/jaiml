@@ -28,6 +28,9 @@ import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
 import aiml.context.ContextInfo;
 import aiml.context.StringContext;
+import aiml.parser.script.BlockElement;
+import aiml.parser.script.ElementParserFactory;
+import aiml.parser.script.ScriptElement;
 
 import junit.framework.*;
 import junit.textui.TestRunner;
@@ -148,7 +151,7 @@ public class AIMLParser {
     } while (isEvent(XmlPullParser.START_TAG,"context"));
   }
 
-  private void doCategory() throws IOException, XmlPullParserException, AimlSyntaxException, MultipleContextsException {
+  private void doCategory() throws IOException, XmlPullParserException, MultipleContextsException, AimlParserException {
     require(XmlPullParser.START_TAG,"category");
     parser.nextTag();
     currentPath.save();
@@ -163,37 +166,23 @@ public class AIMLParser {
     require(XmlPullParser.START_TAG,"template","expected 'template' element in category");
     doTemplate();
     require(XmlPullParser.END_TAG,"category");
-    parser.nextTag();
-    // TODO: add category to classifier
     try {
       AIMLMatcher.add(currentPath,currentPath.toString());
     } catch (DuplicatePathException e) {
       log.warning("Duplicate category " + currentPath + " " + parser.getPositionDescription());
     }
+    parser.nextTag();
     currentPath.restore();
   }
 
-  private void doTemplate() throws IOException, XmlPullParserException, AimlSyntaxException {
+  private ScriptElement doTemplate() throws IOException, XmlPullParserException, AimlParserException {
     require(XmlPullParser.START_TAG,"template");
-    parser.next();
-    doAIMLScript();
+    ScriptElement s = new BlockElement();
+    s=s.parse(parser);
+    log.info("template: ["+ s.evaluate() +"]");
     require(XmlPullParser.END_TAG,"template");
     parser.nextTag();
-    
-  }
-
-  private void doAIMLScript() throws XmlPullParserException {
-    // TODO Auto-generated method stub
-    do {
-      switch(parser.getEventType()) {
-        case XmlPullParser.END_TAG:
-          return;
-        default:
-          throw new UnsupportedOperationException("doAIMLScript()"+parser.getPositionDescription());
-      }
-      // TODO parser.next();
-    } while (true);
-    
+    return s;
   }
 
   private void doContextDef() throws IOException, XmlPullParserException, AimlSyntaxException, MultipleContextsException {
@@ -371,6 +360,7 @@ public class AIMLParser {
     ContextInfo.registerContext(new StringContext("san"));
 
     AIMLMatcher.registerDefaultNodeHandlers();
+    ElementParserFactory.addElementParser("block",BlockElement.class);
     
     AIMLParser ap= new AIMLParser(b);
     TestSuite t = new TestSuite();
