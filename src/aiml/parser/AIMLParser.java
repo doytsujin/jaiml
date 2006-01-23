@@ -294,6 +294,10 @@ public class AIMLParser {
     
     public void testLoadPatterns() throws Exception {
       load(new FileInputStream("tests/patterns.aiml"),"UTF-8");
+      loadFail(new FileInputStream("tests/patterns-bad1.aiml"),"UTF-8",AimlSyntaxException.class);
+      loadFail(new FileInputStream("tests/patterns-bad2.aiml"),"UTF-8",AimlSyntaxException.class);
+      loadFail(new FileInputStream("tests/patterns-bad3.aiml"),"UTF-8",AimlSyntaxException.class);
+      loadFail(new FileInputStream("tests/patterns-bad4.aiml"),"UTF-8",AimlSyntaxException.class);
     }
   }
   

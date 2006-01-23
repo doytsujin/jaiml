@@ -1,0 +1,6 @@
+<aiml version="1.0">
+	<category>
+		<pattern>foobar<botconst name="somehting"/></pattern>
+		<template/>
+	</category>
+</aiml>
