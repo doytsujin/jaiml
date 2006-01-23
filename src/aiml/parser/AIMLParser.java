@@ -28,9 +28,9 @@ import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
 import aiml.context.ContextInfo;
 import aiml.context.StringContext;
-import aiml.parser.script.BlockElement;
-import aiml.parser.script.ElementParserFactory;
-import aiml.parser.script.ScriptElement;
+import aiml.script.BlockElement;
+import aiml.script.ElementParserFactory;
+import aiml.script.ScriptElement;
 
 import junit.framework.*;
 import junit.textui.TestRunner;

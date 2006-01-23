@@ -1,4 +1,4 @@
-package aiml.parser.script;
+package aiml.script;
 
 import java.io.IOException;
 import java.util.ArrayList;
