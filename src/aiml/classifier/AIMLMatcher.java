@@ -15,6 +15,7 @@
 package aiml.classifier;
 
 import aiml.classifier.node.EndOfStringNode;
+import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
 import aiml.classifier.node.WildcardNode;
 
@@ -63,6 +64,7 @@ public class AIMLMatcher {
    * @throws DuplicatePathException
    */
   public static void add(Path path, Object o) throws DuplicatePathException {
+    assert (PatternNodeFactory.getCount()>0) : "You have to register node types";
     if (tree == null) {
       if (path.getLength() != 0) {
         tree = new PatternContextNode(path.iterator(), path);

@@ -45,7 +45,15 @@ public class PatternNodeFactory {
   public static void registerNode(Creatable nodeType) {
     nodeTypes.add(nodeType);
   }
-
+  
+  /**
+   * Get the number of registered node types
+   * @return the number of registered node types
+   */
+  public static int getCount() {
+    return nodeTypes.size();
+  }
+  
   /**
    * Return an instance of a node class most appropriate for the pattern.
    * @param depth the depth
