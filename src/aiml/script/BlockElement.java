@@ -16,7 +16,7 @@ public class BlockElement implements ScriptElement {
   
   public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
     blockName=parser.getName();
-    ScriptElement lastScript=new EmptyScriptElement();
+    ScriptElement lastScript=new EmptyElement();
     parser.next();
     while (!((parser.getEventType()==XmlPullParser.END_TAG) && parser.getName().equals(blockName))) {
       lastScript = ElementParserFactory.getElementParser(parser);
