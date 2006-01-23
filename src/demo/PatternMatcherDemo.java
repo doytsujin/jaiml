@@ -196,8 +196,9 @@ public class PatternMatcherDemo
    * @param s a path
    * @throws BadPathFormatException
    * @throws DuplicatePathException
+   * @throws MultipleContextsException 
    */
-  void addPath(String s) throws BadPathFormatException, DuplicatePathException{
+  void addPath(String s) throws BadPathFormatException, DuplicatePathException, MultipleContextsException{
     Matcher m = pathpattern.matcher(s);
     Path path = new Path();
     while (m.find()) {
@@ -401,6 +402,8 @@ public class PatternMatcherDemo
     } catch (DuplicatePathException x) {
       output.append("Duplicate path: " + input.getText() + "\n");
     } catch (UnknownContextException x) {
+      output.append(x.getMessage()+"\n");
+    } catch (MultipleContextsException x) {
       output.append(x.getMessage()+"\n");
     }
   }

@@ -108,8 +108,9 @@ public class Path {
    * <code>new String[][] {{"contextname","pattern"},{"othercontext","differentpattern"},...}</code>
    * </p>
    * @param path an array of name-pattern pairs
+   * @throws MultipleContextsException 
    */
-  public void add(String[][] path) {
+  public void add(String[][] path) throws MultipleContextsException {
     for (int i = 0; i < path.length; i++) {
       add(path[i][0], path[i][1]);
     }
@@ -119,10 +120,11 @@ public class Path {
    * Adds a single context pattern to the path.
    * @param context the context
    * @param pattern the pattern
+   * @throws MultipleContextsException 
    *
    * @throws MultipleContextsException
    */
-  public void add(String context, String pattern) {
+  public void add(String context, String pattern) throws MultipleContextsException {
     //if (context.equals("input") && pattern.equals("64 F *"))
     //  System.out.println("["+context+"]\""+pattern+"\"");
     Context c = ContextInfo.getContext(context);
@@ -135,7 +137,7 @@ public class Path {
       while (i.hasNext()) {
         Pattern pi = i.next();
         if (pi.context == p.context) {
-          throw new MultipleContextsException();
+          throw new MultipleContextsException(c.getName());
         }
         if (pi.context > p.context) {
           i.previous();
