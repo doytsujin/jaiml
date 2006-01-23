@@ -19,6 +19,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import aiml.bot.Bot;
+
 import junit.framework.*;
 import junit.textui.TestRunner;
 
@@ -26,10 +28,12 @@ import junit.textui.TestRunner;
 public class AIMLParser {
   
   XmlPullParser parser;
+  Bot bot;
   
-  public AIMLParser() throws XmlPullParserException {
+  public AIMLParser(Bot bot) throws XmlPullParserException {
     XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
     parser = factory.newPullParser();
+    this.bot=bot;
   }
   
   private boolean isEvent(int eventType, String name) throws XmlPullParserException {
@@ -286,7 +290,10 @@ PatternLoop:
   }
   
   public static Test suite() throws XmlPullParserException {
-    AIMLParser ap= new AIMLParser();
+    Bot b = new Bot("foobar");
+    b.setConstant("name","foobar");
+    b.setConstant("baz","bar");
+    AIMLParser ap= new AIMLParser(b);
     TestSuite t = new TestSuite();
     t.setName("AIMLParser.AIMLParserTest");
     Method[] methods = AIMLParserTest.class.getMethods();
