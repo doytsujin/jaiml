@@ -9,10 +9,10 @@ import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
-public class SetElement extends SimpleScriptElement implements ScriptElement {
+public class SetElement extends SimpleScriptElement implements Script {
   private String nameAttr;
 
-  public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
     nameAttr=parser.getAttributeValue(null,"name");
     if (nameAttr==null)
       throw new AimlSyntaxException("Syntax error: mandatory attribute 'name' missing from element '" + parser.getName() + "' "+ parser.getPositionDescription());

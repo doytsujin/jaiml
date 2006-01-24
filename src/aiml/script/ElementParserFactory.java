@@ -10,8 +10,8 @@ import aiml.parser.AimlParserException;
 
 public class ElementParserFactory {
   
-  private static HashMap<String,Class<? extends ScriptElement>> elements = new HashMap<String, Class<? extends ScriptElement>>();
-  private static Class<? extends ScriptElement> text;
+  private static HashMap<String,Class<? extends Script>> elements = new HashMap<String, Class<? extends Script>>();
+  private static Class<? extends Script> text;
   
   static {
     text=TextElement.class;
@@ -24,15 +24,15 @@ public class ElementParserFactory {
     super();
   }
   
-  public static void addElementParser(String name, Class<? extends ScriptElement> c) {
+  public static void addElementParser(String name, Class<? extends Script> c) {
     elements.put(name, c);    
   }
   
-  public static void addTextParser(Class<? extends ScriptElement> c) {
+  public static void addTextParser(Class<? extends Script> c) {
     text=c;
   }
   
-  public static ScriptElement getElementParser(XmlPullParser parser) throws XmlPullParserException, AimlParserException, IOException {
+  public static Script getElementParser(XmlPullParser parser) throws XmlPullParserException, AimlParserException, IOException {
     try {
       switch (parser.getEventType()) {
         case XmlPullParser.TEXT:

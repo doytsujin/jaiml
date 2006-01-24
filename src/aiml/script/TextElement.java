@@ -7,9 +7,9 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.classifier.MatchState;
 
-public class TextElement implements ScriptElement {
+public class TextElement implements Script {
   private String text = null;
-  public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException {
     text=parser.getText();
     parser.next();
     return this;

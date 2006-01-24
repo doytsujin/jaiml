@@ -28,9 +28,9 @@ import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
 import aiml.context.ContextInfo;
 import aiml.context.StringContext;
-import aiml.script.BlockElement;
+import aiml.script.Block;
 import aiml.script.ElementParserFactory;
-import aiml.script.ScriptElement;
+import aiml.script.Script;
 
 import junit.framework.*;
 import junit.textui.TestRunner;
@@ -164,7 +164,7 @@ public class AIMLParser {
     if (isEvent(XmlPullParser.START_TAG,"context"))
       doContextList();
     require(XmlPullParser.START_TAG,"template","expected 'template' element in category");
-    ScriptElement s = doTemplate();
+    Script s = doTemplate();
     require(XmlPullParser.END_TAG,"category");
     try {
       AIMLMatcher.add(currentPath,s);
@@ -176,9 +176,9 @@ public class AIMLParser {
     currentPath.restore();
   }
 
-  private ScriptElement doTemplate() throws IOException, XmlPullParserException, AimlParserException {
+  private Script doTemplate() throws IOException, XmlPullParserException, AimlParserException {
     require(XmlPullParser.START_TAG,"template");
-    ScriptElement s = new BlockElement();
+    Script s = new Block();
     s=s.parse(parser);
     require(XmlPullParser.END_TAG,"template");
     parser.nextTag();
@@ -364,7 +364,7 @@ public class AIMLParser {
     ContextInfo.registerContext(new StringContext("san"));
 
     AIMLMatcher.registerDefaultNodeHandlers();
-    ElementParserFactory.addElementParser("block",BlockElement.class);
+    ElementParserFactory.addElementParser("block",Block.class);
     
     AIMLParser ap= new AIMLParser(b);
     TestSuite t = new TestSuite();

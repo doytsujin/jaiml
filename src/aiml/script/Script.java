@@ -8,9 +8,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 
-public interface ScriptElement {
+public interface Script {
  
-  public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException;
+  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException;
   
   public String evaluate(MatchState m);
   

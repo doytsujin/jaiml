@@ -9,10 +9,10 @@ import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
-public class GetElement extends SimpleScriptElement implements ScriptElement {
+public class GetElement extends SimpleScriptElement implements Script {
   private String nameAttr;
 
-  public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
     nameAttr=parser.getAttributeValue(null,"name");
     if (nameAttr==null)
       throw new AimlSyntaxException("Syntax error: mandatory attribute 'name' missing from element '" + parser.getName() + "' "+ parser.getPositionDescription());
@@ -20,7 +20,7 @@ public class GetElement extends SimpleScriptElement implements ScriptElement {
   }
 
   public String evaluate(MatchState m) {
-    if (content instanceof EmptyElement)
+    if (content instanceof EmptyScript)
       return "$" + nameAttr;
     else
       return "(isset($" + nameAttr +") ? $" + nameAttr +" : "+content.evaluate(m)+")";
@@ -29,13 +29,13 @@ public class GetElement extends SimpleScriptElement implements ScriptElement {
   public String execute(MatchState m) {
     return "if (isset($" + nameAttr +")\n "+
            "\tprint($" + nameAttr +");\n" + 
-           ((content instanceof EmptyElement) ? "":
+           ((content instanceof EmptyScript) ? "":
              "else\n"+
              "\t"+content.execute(m));
   }
   
   public String toString() {
-    if (content instanceof EmptyElement)
+    if (content instanceof EmptyScript)
       return "$" + nameAttr;
     else
       return "(isset($" + nameAttr +") ? $" + nameAttr +" : "+content+")";

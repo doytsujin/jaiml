@@ -10,13 +10,13 @@ import org.xmlpull.v1.XmlPullParserException;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 
-public class BlockElement implements ScriptElement {
+public class Block implements Script {
   String blockName;
-  ArrayList<ScriptElement> items = new ArrayList<ScriptElement>();
+  ArrayList<Script> items = new ArrayList<Script>();
   
-  public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
     blockName=parser.getName();
-    ScriptElement lastScript=new EmptyElement();
+    Script lastScript=new EmptyScript();
     parser.next();
     while (!((parser.getEventType()==XmlPullParser.END_TAG) && parser.getName().equals(blockName))) {
       lastScript = ElementParserFactory.getElementParser(parser);
@@ -30,7 +30,7 @@ public class BlockElement implements ScriptElement {
 
   public String evaluate(MatchState m) {
     StringBuffer result =  new StringBuffer();
-    for (Iterator<ScriptElement> i = items.iterator(); i.hasNext(); ) {
+    for (Iterator<Script> i = items.iterator(); i.hasNext(); ) {
       result.append(i.next().evaluate(m));
       if (i.hasNext()) result.append(" + ");
     }
@@ -43,7 +43,7 @@ public class BlockElement implements ScriptElement {
 
   public String execute(MatchState m) {
     StringBuffer result =  new StringBuffer();
-    for (ScriptElement item : items) {
+    for (Script item : items) {
       result.append(item.execute(m)).append('\n');
     }
     return result.toString();

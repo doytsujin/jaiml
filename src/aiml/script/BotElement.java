@@ -9,9 +9,9 @@ import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
-public class BotElement implements ScriptElement {
+public class BotElement implements Script {
   private String name;
-  public ScriptElement parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
     if (!parser.isEmptyElementTag())
       throw new AimlSyntaxException("Syntax error while parsing bot constant in template: element must be empty "+parser.getPositionDescription());
     name=parser.getAttributeValue(null,"name");
