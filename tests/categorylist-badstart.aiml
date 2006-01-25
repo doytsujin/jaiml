@@ -1,0 +1,19 @@
+<!-- categorylist.aiml
+This file illustrates proper parsing of nested category/contextgroup structures.
+It will stop being sufficient once the semantics are in place (except for mandatory
+name attributes in topics, no contexts are defined.
+
+this version should fail due to the incorrect <meta> tag
+-->
+<aiml version="1.0.1">
+
+<meta name="author" content="Kim Sullivan"/>
+<category>
+<template></template>
+</category>
+
+<category>
+<template></template>
+</category>
+
+</aiml>

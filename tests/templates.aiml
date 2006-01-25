@@ -1,0 +1,132 @@
+<aiml version="1.0">
+
+<category>
+<pattern>bot constant</pattern>
+<template>
+  foo
+  <bot name="name"/>
+  bar
+</template>
+</category>
+  
+<category>
+<pattern>set element</pattern>
+<template>
+one:<set name="empty"/>
+two:<set name="empty2"></set>
+three:<set name="string">somestring</set>
+four:<set name="botconst"><bot name="name"/></set>
+five:<set name="botconsmixed1">aaa<bot name="name"/></set>
+six:<set name="botconstmixed2">aaa<bot name="name"/>bbb</set>
+seven:<set name="botconstmixed3"><bot name="name"/>bbb</set>
+eight:<set name="botconstmixed4">aaa<bot name="name"/>aaa<bot name="name"/></set>
+nine:<set name="botconstmixed5"><bot name="name"/><bot name="name"/><bot name="name"/></set>
+ten:<set name="botconstnested">aa<bot name="name"/>bb<set name="nested">ddd<set name="nested2">ggg</set>sss</set>fff</set>
+</template>
+</category>
+
+<category>
+<pattern>get element</pattern>
+<template>
+one:<get name="empty"/>
+two:<get name="empty2"></get>
+three:<get name="string">somestring</get>
+four:<get name="botconst"><bot name="name"/></get>
+five:<get name="botconsmixed1">aaa<bot name="name"/></get>
+six:<get name="botconstmixed2">aaa<bot name="name"/>bbb</get>
+seven:<get name="botconstmixed3"><bot name="name"/>bbb</get>
+eight:<get name="botconstmixed4">aaa<bot name="name"/>aaa<bot name="name"/></get>
+nine:<get name="botconstmixed5"><bot name="name"/><bot name="name"/><bot name="name"/></get>
+ten:<get name="botconstnested">aa<bot name="name"/>bb<get name="nested">ddd<get name="nested2">ggg</get>sss</get>fff</get>
+</template>
+</category>
+
+<category>
+<pattern>random element</pattern>
+<template>
+one:
+<random>
+	<li>one</li>
+	<li>aaa<bot name="name"/></li>
+	<li><get name="empty"/></li>
+	<li><random>
+			<li>one</li>
+			<li>two</li>
+		</random></li>
+	<li>ran<random>
+			<li>one</li>
+			<li>two</li>
+		</random>dom</li>
+</random>
+<random>
+	<li>not really random</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>if</pattern>
+<template>
+<condition name="foo" value="bar">some text</condition>
+<condition name="foo" value="bar"></condition>
+<condition name="foo" value="bar"/>
+</template>
+</category>
+
+<category>
+<pattern>switch</pattern>
+<template>
+one:
+<condition name="foo">
+	<li value="foo">some text</li>
+	<li value="bar"></li>
+	<li value="baz"/>
+	<li/>
+</condition>
+two:
+<condition name="foo">
+	<li value="foo">some text</li>
+</condition>
+three:
+<condition name="foo">
+	<li>default</li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>ifelse</pattern>
+<template>
+one:
+<condition>
+	<li name="a" value="foo">some text</li>
+	<li name="b" value="bar"></li>
+	<li name="c" value="baz"/>
+	<li>default</li>
+</condition>
+two:
+<condition>
+	<li name="a" value="foo">some text</li>
+</condition>
+three:
+<condition>
+	<li>default</li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>wildcard reference</pattern>
+<template>
+simple: <star/>
+with index: <star index = "2"/>
+with standart context <star context = "topic"/>
+with standart context and index <star context = "topic" index = "5"/>
+with user defined context <star context = "foo"/>
+with user defined context and index <star context = "foo" index = "3"/>
+shorthand <thatstar/><topicstar/>
+shorthand with index: <thatstar index="2"/><thatstar index="5"/>
+</template>
+</category>
+
+</aiml>

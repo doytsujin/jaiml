@@ -1,0 +1,123 @@
+<!-- categorylist-ok.aiml
+This file illustrates proper parsing of nested category/contextgroup structures.
+It will stop being sufficient once the semantics are in place (except for
+mandatory name attributes in topics, no contexts are defined.
+
+this version should pass without errors
+-->
+<aiml version="1.0.1">
+
+	<category>
+	<template>foo</template>
+	</category>
+	
+	<category>
+	<template>bar</template>
+	</category>
+	
+	<category>
+	<template>baz</template>
+	</category>
+	
+	<contextgroup>
+		<context name="foo"></context>
+
+		<category>
+		<template>foo1</template>
+		</category>
+		
+		<contextgroup>
+			<context name="bar"></context>
+
+			<category>
+			<template>foo11</template>
+			</category>
+			
+			<category>
+			<template>bar11</template>
+			</category>		
+		</contextgroup>
+		
+		<category>
+		<template>bar1</template>
+		</category>	
+	</contextgroup>
+	
+	<topic name="FOO">
+		<category>
+		<template>foo2</template>
+		</category>
+		
+		<category>
+		<template>bar2</template>
+		</category>
+		
+		<category>
+		<template>baz2</template>
+		</category>
+		
+		<contextgroup>
+			<context name="foo"></context>
+		
+			<category>
+			<template>foo21</template>
+			</category>
+			
+			<contextgroup>
+				<context name="bar"></context>
+			
+				<category>
+				<template>foo211</template>
+				</category>
+				
+				<category>
+				<template>bar211</template>
+				</category>	
+			</contextgroup>
+			
+			<category>
+			<template>bar21</template>
+			</category>		
+		</contextgroup>	
+	</topic>
+	
+	<topic name="BAR">
+		<category>
+		<template>foo3</template>
+		</category>
+		
+		<category>
+		<template>bar3</template>
+		</category>
+		
+		<category>
+		<template>baz3</template>
+		</category>
+		
+		<contextgroup>
+		<context name="foo"></context>
+
+			<category>
+			<template>foo31</template>
+			</category>
+				
+			<contextgroup>
+				<context name="bar"></context>
+			
+				<category>
+				<template>foo311</template>
+				</category>
+				
+				<category>
+				<template>bar311</template>
+				</category>	
+			</contextgroup>
+			
+			<category>
+			<template>bar31</template>
+			</category>	
+		</contextgroup>
+	
+	</topic>
+
+</aiml>
