@@ -64,4 +64,55 @@ one:
 </template>
 </category>
 
+<category>
+<pattern>if</pattern>
+<template>
+<condition name="foo" value="bar">some text</condition>
+<condition name="foo" value="bar"></condition>
+<condition name="foo" value="bar"/>
+</template>
+</category>
+
+<category>
+<pattern>switch</pattern>
+<template>
+one:
+<condition name="foo">
+	<li value="foo">some text</li>
+	<li value="bar"></li>
+	<li value="baz"/>
+	<li/>
+</condition>
+two:
+<condition name="foo">
+	<li value="foo">some text</li>
+</condition>
+three:
+<condition name="foo">
+	<li>default</li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>ifelse</pattern>
+<template>
+one:
+<condition>
+	<li name="a" value="foo">some text</li>
+	<li name="b" value="bar"></li>
+	<li name="c" value="baz"/>
+	<li>default</li>
+</condition>
+two:
+<condition>
+	<li name="a" value="foo">some text</li>
+</condition>
+three:
+<condition>
+	<li>default</li>
+</condition>
+</template>
+</category>
+
 </aiml>

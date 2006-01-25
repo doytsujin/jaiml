@@ -19,6 +19,7 @@ public class ElementParserFactory {
     elements.put("set",SetElement.class);
     elements.put("get",GetElement.class);
     elements.put("random",RandomElement.class);
+    elements.put("condition",ConditionElement.class);
   }
   
   private ElementParserFactory() {
