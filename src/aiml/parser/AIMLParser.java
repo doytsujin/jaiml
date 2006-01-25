@@ -22,7 +22,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.bot.Bot;
 import aiml.bot.InvalidConstantException;
-import aiml.classifier.AIMLMatcher;
+import aiml.classifier.Classifier;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
@@ -167,7 +167,7 @@ public class AIMLParser {
     Script s = doTemplate();
     require(XmlPullParser.END_TAG,"category");
     try {
-      AIMLMatcher.add(currentPath,s);
+      Classifier.add(currentPath,s);
       log.info("added category "+currentPath+"{"+ s +"}");
     } catch (DuplicatePathException e) {
       log.warning("Duplicate category " + currentPath + " " + parser.getPositionDescription());
@@ -363,7 +363,7 @@ public class AIMLParser {
     ContextInfo.registerContext(new StringContext("ni"));
     ContextInfo.registerContext(new StringContext("san"));
 
-    AIMLMatcher.registerDefaultNodeHandlers();
+    Classifier.registerDefaultNodeHandlers();
     ElementParserFactory.addElementParser("block",Block.class);
     
     AIMLParser ap= new AIMLParser(b);

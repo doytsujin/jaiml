@@ -3,7 +3,7 @@
  * the end user, these particular classes may be considered the API to use the
  * aiml package:
  * <dl>
- * <dt>{@link aiml.classifier.AIMLMatcher aiml.classifier.AIMLMatcher}</dt>
+ * <dt>{@link aiml.classifier.Classifier aiml.classifier.Classifier}</dt>
  * <dd>The matching functionality</dd>
  * <dt>{@link aiml.classifier.Path aiml.classifier.Path}</dt>
  * <dd>Represents the path, or "category context". Create objects of this class to

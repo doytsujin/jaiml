@@ -27,7 +27,7 @@ import aiml.classifier.node.WildcardNode;
  * @version 1.0
  */
 
-public class AIMLMatcher {
+public class Classifier {
   /** The root context tree */
   private static ContextNode tree;
 
@@ -39,7 +39,7 @@ public class AIMLMatcher {
    * static, it's hidden. More robust techniques for making it a singleton might
    * be used in the future.
    */
-  private AIMLMatcher() {
+  private Classifier() {
   }
 
   /**
