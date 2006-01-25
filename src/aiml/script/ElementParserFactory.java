@@ -18,6 +18,7 @@ public class ElementParserFactory {
     elements.put("bot",BotElement.class);
     elements.put("set",SetElement.class);
     elements.put("get",GetElement.class);
+    elements.put("random",RandomElement.class);
   }
   
   private ElementParserFactory() {

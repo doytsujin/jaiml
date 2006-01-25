@@ -41,5 +41,27 @@ ten:<get name="botconstnested">aa<bot name="name"/>bb<get name="nested">ddd<get 
 </template>
 </category>
 
+<category>
+<pattern>random element</pattern>
+<template>
+one:
+<random>
+	<li>one</li>
+	<li>aaa<bot name="name"/></li>
+	<li><get name="empty"/></li>
+	<li><random>
+			<li>one</li>
+			<li>two</li>
+		</random></li>
+	<li>ran<random>
+			<li>one</li>
+			<li>two</li>
+		</random>dom</li>
+</random>
+<random>
+	<li>not really random</li>
+</random>
+</template>
+</category>
 
 </aiml>
