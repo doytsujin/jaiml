@@ -20,7 +20,8 @@ public class Block implements Script {
     parser.next();
     while (!((parser.getEventType()==XmlPullParser.END_TAG) && parser.getName().equals(blockName))) {
       lastScript = ElementParserFactory.getElementParser(parser);
-      items.add(lastScript);
+      if (!(lastScript instanceof EmptyScript))
+        items.add(lastScript);
     }
     if (items.size()<=1)
       return lastScript;
