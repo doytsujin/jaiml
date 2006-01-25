@@ -20,6 +20,9 @@ public class ElementParserFactory {
     elements.put("get",GetElement.class);
     elements.put("random",RandomElement.class);
     elements.put("condition",ConditionElement.class);
+    elements.put("star",StarElement.class);
+    elements.put("thatstar",StarElement.class);
+    elements.put("topicstar",StarElement.class);
   }
   
   private ElementParserFactory() {
