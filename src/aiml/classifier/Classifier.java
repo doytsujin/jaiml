@@ -92,7 +92,7 @@ public class Classifier {
    * needs to be changed, because this invalidates the whole data structure.</p>
    * <p>This must follow after resetting the ContextInfo structure, but can be used
    * as a stand-alone method to remove all patterns from the matching tree.</p>
-   * @see ContextInfo.reset()
+   * @see aiml.context.ContextInfo#reset()
    */
   public static void reset() {
     tree = null;
