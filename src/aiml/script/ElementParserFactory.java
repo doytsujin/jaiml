@@ -23,6 +23,7 @@ public class ElementParserFactory {
     elements.put("star",StarElement.class);
     elements.put("thatstar",StarElement.class);
     elements.put("topicstar",StarElement.class);
+    elements.put("srai",SraiElement.class);
   }
   
   private ElementParserFactory() {

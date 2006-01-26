@@ -129,4 +129,15 @@ shorthand with index: <thatstar index="2"/><thatstar index="5"/>
 </template>
 </category>
 
+<category>
+<pattern>srai</pattern>
+<template>
+empty: <srai/>
+empty: <srai></srai>
+text: <srai>some text</srai>
+textscript: <srai><get name="foo">default</get></srai>
+</template>
+</category>
+
+
 </aiml>
