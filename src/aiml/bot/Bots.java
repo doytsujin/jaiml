@@ -32,16 +32,16 @@ public class Bots {
     return bots.size();
   }
   
-  public static String getConst(String botname,String name) throws InvalidConstantException, InvalidBotException {
-    return getBot(botname).getConstant(name);
+  public static String getConst(String botname,String name) throws InvalidPropertyException, InvalidBotException {
+    return getBot(botname).getProperty(name);
   }
   
   public static boolean hasConstant(String botname,String name) throws InvalidBotException {
-    return getBot(botname).hasConstant(name);
+    return getBot(botname).hasProperty(name);
   }
   
   public static void setConstant(String botname,String name, String value) throws InvalidBotException {
-    getBot(botname).setConstant(name, value);
+    getBot(botname).setProperty(name, value);
   }
   
 }

@@ -4,23 +4,23 @@ import java.util.HashMap;
 
 public class Bot {
   private String name;
-  private HashMap<String,String> constants = new HashMap<String,String>();
+  private HashMap<String,String> properties = new HashMap<String,String>();
   public Bot(String name) {
     super();
     this.name=name;
   }
-  public void setConstant(String name,String value) {
-    constants.put(name,value);
+  public void setProperty(String name,String value) {
+    properties.put(name,value);
   }
   
-  public String getConstant(String name) throws InvalidConstantException {
-    if (constants.containsKey(name))
-      return constants.get(name);
-    else throw new InvalidConstantException("Bot constant '" + name + "' must be defined");
+  public String getProperty(String name) throws InvalidPropertyException {
+    if (properties.containsKey(name))
+      return properties.get(name);
+    else throw new InvalidPropertyException("Bot property '" + name + "' must be defined for bot "+this.name);
   }
   
-  public boolean hasConstant(String name) {
-    return constants.containsKey(name);
+  public boolean hasProperty(String name) {
+    return properties.containsKey(name);
   }
   
   public String getName() {

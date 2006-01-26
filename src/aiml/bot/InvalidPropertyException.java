@@ -1,23 +1,23 @@
 package aiml.bot;
 
-public class InvalidConstantException extends Exception {
+public class InvalidPropertyException extends Exception {
 
-  public InvalidConstantException() {
+  public InvalidPropertyException() {
     super();
     // TODO Auto-generated constructor stub
   }
 
-  public InvalidConstantException(String arg0) {
+  public InvalidPropertyException(String arg0) {
     super(arg0);
     // TODO Auto-generated constructor stub
   }
 
-  public InvalidConstantException(String arg0, Throwable arg1) {
+  public InvalidPropertyException(String arg0, Throwable arg1) {
     super(arg0,arg1);
     // TODO Auto-generated constructor stub
   }
 
-  public InvalidConstantException(Throwable arg0) {
+  public InvalidPropertyException(Throwable arg0) {
     super(arg0);
     // TODO Auto-generated constructor stub
   }

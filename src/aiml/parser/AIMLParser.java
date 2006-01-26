@@ -21,7 +21,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.bot.Bot;
-import aiml.bot.InvalidConstantException;
+import aiml.bot.InvalidPropertyException;
 import aiml.classifier.Classifier;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
@@ -201,7 +201,7 @@ public class AIMLParser {
       switch (parser.getEventType()) {
         case XmlPullParser.START_TAG:
           if (parser.getName().equals("bot"))
-            result.append(doBotConst());
+            result.append(doBotProperty());
           else
             throw new AimlSyntaxException("Unexpected start tag '" + parser.getName() + "' while parsing pattern, only 'bot' allowed "+parser.getPositionDescription());
           break;
@@ -220,15 +220,15 @@ public class AIMLParser {
   }
 
 
-  private String doBotConst() throws IOException, XmlPullParserException, AimlSyntaxException {
+  private String doBotProperty() throws IOException, XmlPullParserException, AimlSyntaxException {
     require(XmlPullParser.START_TAG,"bot");
     if (!parser.isEmptyElementTag())
-      throw new AimlSyntaxException("Syntax error while parsing bot constant in pattern: element must be empty "+parser.getPositionDescription());
+      throw new AimlSyntaxException("Syntax error while parsing bot element in pattern: element must be empty "+parser.getPositionDescription());
     String name = requireAttrib("name");
     String result;
     try {
-      result = bot.getConstant(name);
-    } catch (InvalidConstantException e) {
+      result = bot.getProperty(name);
+    } catch (InvalidPropertyException e) {
       throw new AimlSyntaxException("Syntax error: "+ e.getMessage() + " " + parser.getPositionDescription());
     }
     parser.nextTag();
@@ -344,8 +344,8 @@ public class AIMLParser {
   
   public static Test suite() throws XmlPullParserException {
     Bot b = new Bot("foobar");
-    b.setConstant("name","foobar");
-    b.setConstant("baz","bar");
+    b.setProperty("name","foobar");
+    b.setProperty("baz","bar");
     
     ContextInfo.registerContext(new StringContext("input"));
     ContextInfo.registerContext(new StringContext("that"));
