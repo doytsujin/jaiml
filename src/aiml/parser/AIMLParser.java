@@ -44,8 +44,7 @@ public class AIMLParser {
   Path currentPath;
   
   public AIMLParser(Bot bot) throws XmlPullParserException {
-    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-    parser = factory.newPullParser();
+    parser = XmlPullParserFactory.newInstance().newPullParser();
     this.bot=bot;
   }
   
