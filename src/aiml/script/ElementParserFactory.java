@@ -25,6 +25,10 @@ public class ElementParserFactory {
     elements.put("topicstar",StarElement.class);
     elements.put("srai",SraiElement.class);
     elements.put("think",ThinkElement.class);
+    elements.put("formal",FormalElement.class);
+    elements.put("uppercase",UppercaseElement.class);
+    elements.put("lowercase",LowercaseElement.class);
+    elements.put("sentence",SentenceElement.class);
   }
   
   private ElementParserFactory() {

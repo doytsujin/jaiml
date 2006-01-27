@@ -147,9 +147,51 @@ empty: <think></think>
 text->empty: <think>some text</think>
 script: <think><get name="foo">default</get></think>
 script with text: <think>text1<get name="foo">default</get>text2</think>
-
 </template>
 </category>
 
+<category>
+<pattern>formal</pattern>
+<template>
+empty: <formal/>
+empty: <formal></formal>
+text->empty: <formal>some text</formal>
+script: <formal><get name="foo">default</get></formal>
+script with text: <formal>text1<get name="foo">default</get>text2</formal>
+</template>
+</category>
+
+<category>
+<pattern>uppercase</pattern>
+<template>
+empty: <uppercase/>
+empty: <uppercase></uppercase>
+text->empty: <uppercase>some text</uppercase>
+script: <uppercase><get name="foo">default</get></uppercase>
+script with text: <uppercase>text1<get name="foo">default</get>text2</uppercase>
+</template>
+</category>
+
+<category>
+<pattern>lowercase</pattern>
+<template>
+empty: <lowercase/>
+empty: <lowercase></lowercase>
+text->empty: <lowercase>some text</lowercase>
+script: <lowercase><get name="foo">default</get></lowercase>
+script with text: <lowercase>text1<get name="foo">default</get>text2</lowercase>
+</template>
+</category>
+
+<category>
+<pattern>sentence</pattern>
+<template>
+empty: <sentence/>
+empty: <sentence></sentence>
+text->empty: <sentence>some text</sentence>
+script: <sentence><get name="foo">default</get></sentence>
+script with text: <sentence>text1<get name="foo">default</get>text2</sentence>
+</template>
+</category>
 
 </aiml>
