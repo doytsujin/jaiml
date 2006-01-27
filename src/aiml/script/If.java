@@ -2,7 +2,7 @@ package aiml.script;
 
 import aiml.classifier.MatchState;
 
-public class If extends SimpleScriptElement implements Script {
+public class If extends SimpleScriptElement {
   
   private String name;
   private String value;

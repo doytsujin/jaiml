@@ -11,15 +11,11 @@ import aiml.context.UnknownContextException;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
-public class StarElement implements Script {
+public class StarElement extends EmptyElement {
   int context;
   int index;
   public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
     String type = parser.getName();
-    if (!(parser.isEmptyElementTag())){
-      throw new AimlSyntaxException("Syntax error: wildcard reference tag myst be an empty element "+ parser.getPositionDescription());
-    }
-
     String contextName=parser.getAttributeValue(null,"context");    
     try {
       if (type.equals("thatstar") && contextName==null) {
@@ -48,10 +44,8 @@ public class StarElement implements Script {
     } catch (NumberFormatException e) {
       throw new AimlSyntaxException("Syntax error: index must be an integer number equal or greater than 1 "+parser.getPositionDescription(),e);
     }
-    parser.nextTag();
-    parser.next();
     
-    return this;
+    return super.parse(parser);
   }
 
   public String evaluate(MatchState m) {

@@ -9,7 +9,7 @@ import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
-public class GetElement extends SimpleScriptElement implements Script {
+public class GetElement extends SimpleScriptElement {
   private String nameAttr;
 
   public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
