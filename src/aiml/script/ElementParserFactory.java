@@ -29,6 +29,8 @@ public class ElementParserFactory {
     elements.put("uppercase",UppercaseElement.class);
     elements.put("lowercase",LowercaseElement.class);
     elements.put("sentence",SentenceElement.class);
+    elements.put("that",ThatElement.class);
+    elements.put("input",InputElement.class);
   }
   
   private ElementParserFactory() {

@@ -194,4 +194,16 @@ script with text: <sentence>text1<get name="foo">default</get>text2</sentence>
 </template>
 </category>
 
+<category>
+<pattern>that and input</pattern>
+<template>
+empty: <that/><input/>
+default index: <that index="1"/><input index="1"/>
+nondefault index: <that index="2"/><input index="3"/>
+default multi index: <that index="1,1"/><input index="1,1"/>
+nondefault multi index: <that index="2,1"/><input index="3,1"/>
+nondefault multi index 2: <that index="1,2"/><input index="1,3"/>
+nondefault multi index 3: <that index="4,2"/><input index="5,3"/>
+</template>
+</category>
 </aiml>
