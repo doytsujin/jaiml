@@ -31,6 +31,11 @@ public class ElementParserFactory {
     elements.put("sentence",SentenceElement.class);
     elements.put("that",ThatElement.class);
     elements.put("input",InputElement.class);
+    elements.put("version",VersionElement.class);
+    elements.put("size",SizeElement.class);
+    elements.put("id",IDElement.class);
+    elements.put("date",DateElement.class);
+
   }
   
   private ElementParserFactory() {
