@@ -16,17 +16,21 @@ public class Block implements Script {
   
   public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
     blockName=parser.getName();
-    Script lastScript=new EmptyScript();
+    Script lastScript;
     parser.next();
     while (!((parser.getEventType()==XmlPullParser.END_TAG) && parser.getName().equals(blockName))) {
       lastScript = ElementParserFactory.getElementParser(parser);
       if (!(lastScript instanceof EmptyScript))
         items.add(lastScript);
     }
-    if (items.size()<=1)
-      return lastScript;
-    else
-      return this;
+    switch (items.size()) {
+      case 1:
+        return items.get(0);
+      case 0:
+        return new EmptyScript();
+      default:
+        return this;
+    }
   }
 
   public String evaluate(MatchState m) {
