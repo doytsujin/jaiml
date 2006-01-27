@@ -24,6 +24,7 @@ public class ElementParserFactory {
     elements.put("thatstar",StarElement.class);
     elements.put("topicstar",StarElement.class);
     elements.put("srai",SraiElement.class);
+    elements.put("think",ThinkElement.class);
   }
   
   private ElementParserFactory() {

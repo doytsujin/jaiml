@@ -132,10 +132,22 @@ shorthand with index: <thatstar index="2"/><thatstar index="5"/>
 <category>
 <pattern>srai</pattern>
 <template>
-empty: <srai/>
+empty: <srai/> 
 empty: <srai></srai>
 text: <srai>some text</srai>
 textscript: <srai><get name="foo">default</get></srai>
+</template>
+</category>
+
+<category>
+<pattern>think</pattern>
+<template>
+empty: <think/>
+empty: <think></think>
+text->empty: <think>some text</think>
+script: <think><get name="foo">default</get></think>
+script with text: <think>text1<get name="foo">default</get>text2</think>
+
 </template>
 </category>
 
