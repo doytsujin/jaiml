@@ -35,6 +35,7 @@ public class ElementParserFactory {
     elements.put("size",SizeElement.class);
     elements.put("id",IDElement.class);
     elements.put("date",DateElement.class);
+    elements.put("sr",SrElement.class);
 
   }
   

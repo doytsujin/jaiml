@@ -1,5 +1,7 @@
 <aiml version="1.0">
-
+<!--
+  This file is only here to test the parser, not to check valid processing
+-->
 <category>
 <pattern>bot constant</pattern>
 <template>
@@ -216,5 +218,13 @@ size: <size/>
 version: <version/>
 </template>
 </category>
+
+<category>
+<pattern>sr</pattern>
+<template>
+sr: <sr/>
+</template>
+</category>
+
 
 </aiml>
