@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="en"/>
+-->
+<category>
+<pattern>GREETINGS</pattern>
+<template>
+<condition name="greetings">
+<li value="">
+  <random>
+  <li>Greetings! </li>
+  <li>Hi. </li>
+  <li>Hello. </li>
+  <li>Hiya. </li>
+  <li>Good day. </li>
+  </random>
+  <think><set name="greetings">true</set></think>
+</li>
+<li>
+<random>
+  <li>We greeted once already. </li>
+  <li>Are you mocking me? You already said <lowercase><get name="greeting">greetings</get></lowercase>. </li>
+  <li>How many times do people greet themselves in YOUR country? </li>
+  <li>"<get name="greeting">Greetings</get>" yourself. </li>
+</random>
+</li>
+</condition>
+
+</template>
+</category>
+
+
+
+<category>
+<pattern>HELLO</pattern>
+<template>
+<think><set name="greeting">Hello</set></think>
+<srai>GREETINGS</srai>
+</template>
+</category>
+
+<category>
+<pattern>HELLO *</pattern>
+<template>
+<srai>Hello</srai>
+<srai><star/></srai>
+</template>
+</category>
+
+<category>
+<pattern>HI</pattern>
+<template>
+<think><set name="greeting">Hi</set></think>
+<srai>GREETINGS</srai>
+</template>
+</category>
+
+<category>
+<pattern>HI *</pattern>
+<template>
+<srai>Hi</srai>
+<sr/>
+</template>
+</category>
+
+<category>
+<pattern>HI THERE</pattern>
+<template>
+<think><set name="greeting">Hi there</set></think>
+<srai>GREETINGS</srai>
+</template>
+</category>
+
+<category>
+<pattern>HO</pattern>
+<template>
+<think><set name="greeting">Ho</set></think>
+<srai>GREETINGS</srai> Are you Santa? 
+</template>
+</category>
+
+
+
+
+</aiml>

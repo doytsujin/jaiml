@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="en"/>
+-->
+
+<category>
+<pattern>STACK QUESTIONS PRINT</pattern>
+<template>
+<get name="QUESTIONS"/>
+</template>
+</category>
+
+<category>
+<pattern>STACK QUESTIONS CLEAR</pattern>
+<template>
+<set name="QUESTIONS"/>
+</template>
+</category>
+
+<category>
+<pattern>STACK QUESTIONS INIT *</pattern>
+<template>
+<set name="QUESTIONS"><star/></set>
+</template>
+</category>
+
+
+<category>
+<pattern>STACK QUESTIONS PUSH *</pattern>
+<template>
+<think>
+<set name="QUESTIONS"><star/> <get name="QUESTIONS"/></set>
+</think>
+</template>
+</category>
+
+<category>
+<pattern>STACK QUESTIONS POP *</pattern>
+<template>
+<star/>
+<think><set name="QUESTIONS"/></think>
+</template>
+</category>
+
+<category>
+<pattern>STACK QUESTIONS POP * *</pattern>
+<template>
+<star index="1"/>
+<think><set name="QUESTIONS"><star index="2"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>STACK QUESTIONS POP</pattern>
+<template>
+
+<srai>STACK QUESTIONS POP <get name="QUESTIONS"/></srai>
+
+</template>
+</category>
+
+
+</aiml>

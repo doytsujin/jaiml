@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="en"/>
+-->
+<category>
+<pattern>BOO</pattern>
+<template>
+<random>
+<li>Should this scare me? </li>
+<li>Is this supposed to scare me? </li>
+<li>Is this supposed to be scary? </li>
+<li>Boo yourself. </li>
+<li>Would you be offended if I said "Boo" to you? </li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>BOOBOO</pattern>
+<template>
+<random>
+<li>Should this scare me? </li>
+<li>Is this supposed to scare me? </li>
+<li>Is this supposed to be scary? </li>
+<li>Boo yourself. </li>
+<li>Would you be offended if I said "Booboo" to you? </li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>ASDF</pattern>
+<template>
+<random> 
+<li>ghjk</li>
+<li>qwer</li>
+<li>zxcv</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>FSAJKH</pattern>
+<template>
+<random> 
+<li>fsajkh</li>
+<li>rwuqiy</li>
+<li>vxmz,n</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>LJKDSFA</pattern>
+<template>
+<random> 
+<li>sdflkjw</li>
+<li>sdflkjh</li>
+<li>qrnmesd</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>FAS</pattern>
+<template>
+<random> 
+<li>tet</li>
+<li>sfa</li>
+<li>fsa</li>
+</random>
+</template>
+</category>
+
+
+<category>
+<pattern>FDSA</pattern>
+<template>
+<random> 
+<li>asdf</li>
+<li>rqwe</li>
+<li>zvxc</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>LKJSD</pattern>
+<template>
+<random> 
+<li>oiuqe</li>
+<li>mbncvz</li>
+<li>ouvzcx</li>
+</random>
+</template>
+</category>
+
+
+<category>
+<pattern>F</pattern>
+<template>
+<random> 
+<li>g</li>
+<li>F what? </li>
+<li>q</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>S</pattern>
+<template>
+<random> 
+<li>t</li>
+<li>Single letters will bring you nowhere. </li>
+<li>Single letters won't bring you anywhere. </li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>D</pattern>
+<template>
+<random> 
+<li>e</li>
+<li>Single letters will bring you nowhere. </li>
+<li>Single letters won't bring you anywhere. </li>
+</random>
+</template>
+</category>
+
+
+</aiml>

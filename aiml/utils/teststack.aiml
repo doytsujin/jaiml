@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<aiml version="1.0">
+<category>
+<pattern>TEST STACK</pattern>
+<template>
+<srai>TEST STACK A B C D E F</srai>
+</template>
+</category>
+
+<category>
+<pattern>TEST STACK *</pattern>
+<template>
+Depth 0<br/> 
+0Before: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+<srai><think/>SPUSH</srai><srai>slist<think/></srai><br/>
+<srai>NEST1 <star/></srai>
+<srai><think/>SPOP</srai><srai>slist<think/></srai><br/>
+0After: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+</template>
+</category>
+
+
+
+<category>
+<pattern>NEST1 * * * *</pattern>
+<template>
+Depth 1 [4]<br/> 
+1Before: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+<srai><think/>SPUSH4</srai><srai>slist<think/></srai><br/>
+<srai>NEST2 <star index="2"/> <star index="1"/> <star index="3"/></srai>
+<srai><think/>SPOP4</srai><srai>slist<think/></srai><br/>
+1After: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+
+</template>
+</category>
+
+<category>
+<pattern>NEST2 * * * </pattern>
+<template>
+Depth 2 [3]<br/> 
+2Before: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+<srai><think/>SPUSH3</srai><srai>slist<think/></srai><br/>
+<srai>NEST3 <star index="1"/> <star index="3"/> <star index="1"/></srai>
+<srai><think/>SPOP3</srai><srai>slist<think/></srai><br/>
+2After: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+
+</template>
+</category>
+
+<category>
+<pattern>NEST3 * * * </pattern>
+<template>
+Depth 3 [3]<br/> 
+3Before: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+<srai><think/>SPUSH3</srai><srai>slist<think/></srai><br/>
+<srai>NEST4 <star index="2"/> <star index="1"/></srai>
+<srai><think/>SPOP3</srai><srai>slist<think/></srai><br/>
+3After: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+
+</template>
+</category>
+
+<category>
+<pattern>NEST4 * * </pattern>
+<template>
+Depth 4 [2]<br/> 
+4Before: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+<srai><think/>SPUSH2</srai><srai>slist<think/></srai><br/>
+<srai>NEST5 <star index="1"/></srai>
+<srai><think/>SPOP2</srai><srai>slist<think/></srai><br/>
+4After: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+
+</template>
+</category>
+
+<category>
+<pattern>NEST5 * </pattern>
+<template>
+Depth 5 [1]<br/> 
+5Before: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+<srai><think/>SPUSH</srai><srai>slist<think/></srai><br/>
+<srai>NEST6</srai>
+<srai><think/>SPOP</srai><srai>slist<think/></srai><br/>
+5After: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+
+</template>
+</category>
+
+<category>
+<pattern>NEST6</pattern>
+<template>
+Depth 6 [0]<br/> 
+6Before: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+<srai>NEST7</srai>
+6After: [<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+</template>
+</category>
+
+<category>
+<pattern>NEST7</pattern>
+<template>
+Depth 7 [0]<br/> 
+Finally:[<star index="1"/>][<star index="2"/>][<star index="3"/>][<star index="4"/>]<br/>
+</template>
+</category>
+
+</aiml>

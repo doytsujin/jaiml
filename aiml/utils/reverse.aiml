@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="en"/>
+-->
+<category>
+<pattern>REVERSE * * </pattern>
+<template>
+<srai>REVERSE <star index="2"/></srai> <star/>
+</template>
+</category>
+
+<category>
+<pattern>REVERSE * </pattern>
+<template>
+<star/>
+</template>
+</category>
+
+</aiml>

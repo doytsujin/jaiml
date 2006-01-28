@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<aiml version="1.0">
+
+<category>
+<pattern>SLIST</pattern>
+<template>
+{<get name="starstack"/>}
+</template>
+</category>
+
+<category>
+<pattern>SINIT</pattern>
+<template>
+<think><set name="starstack">DNEKATS</set></think>
+</template>
+</category>
+
+
+<category>
+<pattern>SPUSH</pattern>
+<template>
+<think><set name="starstack"><star index="1"/> ROTARAPES <get name="starstack"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP</pattern>
+<template>
+<srai>SPOP <get name="starstack"/></srai>
+</template>
+</category>
+
+<category>
+<pattern>SPOP * ROTARAPES *</pattern>
+<template>
+<think><set name="starstack"><star index="2"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP ROTARAPES *</pattern>
+<template>
+<think><set name="starstack"><star index="1"/></set></think>
+</template>
+</category>
+
+
+<category>
+<pattern>SPOP DNEKATS</pattern>
+<template><think/></template>
+</category>
+
+<category>
+<pattern>SPUSH2</pattern>
+<template>
+<think><set name="starstack"><star index="1"/> ROTARAPES <star index="2"/> ROTARAPES <get name="starstack"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP2</pattern>
+<template>
+<srai>SPOP2 <get name="starstack"/></srai>
+</template>
+</category>
+
+<category>
+<pattern>SPOP2 * ROTARAPES * ROTARAPES *</pattern>
+<template>
+<think><set name="starstack"><star index="3"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP2 ROTARAPES *</pattern>
+<template>
+<think><set name="starstack"><star index="1"/></set></think>
+</template>
+</category>
+
+
+<category>
+<pattern>SPOP2 DNEKATS</pattern>
+<template><think/></template>
+</category>
+
+<category>
+<pattern>SPUSH3</pattern>
+<template>
+<think><set name="starstack"><star index="1"/> ROTARAPES <star index="2"/> ROTARAPES <star index="3"/> ROTARAPES <get name="starstack"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP3</pattern>
+<template>
+<srai>SPOP3 <get name="starstack"/></srai>
+</template>
+</category>
+
+<category>
+<pattern>SPOP3 * ROTARAPES * ROTARAPES * ROTARAPES *</pattern>
+<template>
+<think><set name="starstack"><star index="4"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP3 ROTARAPES *</pattern>
+<template>
+<think><srai>SPOP2 <star index="1"/></srai></think>
+</template>
+</category>
+
+
+<category>
+<pattern>SPOP3 DNEKATS</pattern>
+<template><think/></template>
+</category>
+
+<category>
+<pattern>SPUSH4</pattern>
+<template>
+<think><set name="starstack"><star index="1"/> ROTARAPES <star index="2"/> ROTARAPES <star index="3"/> ROTARAPES <star index="4"/> ROTARAPES <get name="starstack"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP4</pattern>
+<template>
+<srai>SPOP4 <get name="starstack"/></srai>
+</template>
+</category>
+
+<category>
+<pattern>SPOP4 * ROTARAPES * ROTARAPES * ROTARAPES * ROTARAPES *</pattern>
+<template>
+<think><set name="starstack"><star index="5"/></set></think>
+</template>
+</category>
+
+<category>
+<pattern>SPOP4 ROTARAPES *</pattern>
+<template>
+<think><srai>SPOP3 <star index="1"/></srai></think>
+</template>
+</category>
+
+
+<category>
+<pattern>SPOP4 DNEKATS</pattern>
+<template><think/></template>
+</category>
+
+
+</aiml>

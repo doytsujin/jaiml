@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="en"/>
+-->
+
+<category>
+<pattern>REVERSED * * </pattern>
+<template>
+<srai>STACK STAR1 PUSH <star/></srai>
+<srai>REVERSED <star index="2"/></srai> <srai>STACK STAR1 POP</srai>
+</template>
+</category>
+
+<category>
+<pattern>REVERSED * </pattern>
+<template>
+<star/>
+</template>
+</category>
+
+</aiml>

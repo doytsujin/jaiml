@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="en"/>
+-->
+<topic name="FUNCTION Q1">
+
+<category>
+<pattern>RESPONSE SAYQUESTION</pattern>
+<template>
+What letter comes first in the alphabet?<br/>
+A: b <br/>
+B: c <br/>
+C: a <br/>
+<srai>LOOP</srai>
+</template>
+</category>
+
+<category>
+<pattern>RESPONSE A</pattern>
+<template>
+Wrong, the right answer was C.<br/>
+<srai>NEXT QUESTION</srai>
+</template>
+</category>
+
+<category>
+<pattern>RESPONSE B</pattern>
+<template>
+Wrong, the right answer was C.<br/>
+<srai>NEXT QUESTION</srai>
+</template>
+</category>
+
+<category>
+<pattern>RESPONSE C</pattern>
+<template>
+Of course it's A.<br/>
+<srai>NEXT QUESTION</srai>
+</template>
+</category>
+
+
+<category>
+<pattern>RESPONSE *</pattern>
+<template>
+Please respond only A, B or C. <br/>
+<srai>SAYQUESTION</srai>
+</template>
+</category>
+</topic>
+</aiml>
