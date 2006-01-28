@@ -1405,22 +1405,5 @@ A simple "yes" or "no" will do the next time I ask you, ok? :-)
 </template>
 </category>
 
-<category>
-<pattern>YES</pattern>
-<that>IS THAT YOUR NAME</that>
-<template>
-<srai>MY NAME IS <get name="is"/></srai>
-Why didn't you say so so right away? :-)
-</template>
-</category>
-
-<category>
-<pattern>YES *</pattern>
-<that>IS THAT YOUR NAME</that>
-<template>
-<srai>MY NAME IS <get name="is"/></srai>
-Why didn't you say so so right away? :-)
-</template>
-</category>
 
 </aiml>
