@@ -19,6 +19,7 @@ import org.xmlpull.v1.*;
 
 public class XmlParser implements XmlPullParser {
   private Reader in;
+  private String location;
   private String encoding;
   char ch; //the current character in the input
   private HashMap<String, String> entityReplacementText = new HashMap<String, String>();
@@ -125,7 +126,10 @@ public class XmlParser implements XmlPullParser {
   public void setProperty(String name, Object value) throws XmlPullParserException {
     if (name == null)
       throw new IllegalArgumentException("Property name cannot be null");
-    throw new XmlPullParserException("Property " + name + " not supported");
+    if (name.equals("http://xmlpull.org/v1/doc/properties.html#location"))
+      location=value.toString();
+    else
+      throw new XmlPullParserException("Property " + name + " not supported");
   }
   public Object getProperty(String name) {
     if (name.equals("http://xmlpull.org/v1/doc/properties.html#xmldecl-version") && xmlDeclParsed) {
@@ -134,7 +138,9 @@ public class XmlParser implements XmlPullParser {
     if (name.equals("http://xmlpull.org/v1/doc/properties.html#xmldecl-standalone")) {
       return isStandalone;
     }
-    
+    if (name.equals("http://xmlpull.org/v1/doc/properties.html#location")) {
+      return location;
+    }
     return null;
   }
   public void setInput(java.io.Reader in) {
@@ -191,7 +197,7 @@ public class XmlParser implements XmlPullParser {
     return depth;
   }
   public String getPositionDescription() {
-    return "@" + getLineNumber() + ":" + getColumnNumber();
+    return location+"@" + getLineNumber() + ":" + getColumnNumber();
   }
   public int getLineNumber() {
     return lineNumber;
@@ -644,6 +650,7 @@ TextLoop:
     isMarked=false;
     readDocdecl=false;
     ch='\0';
+    location = "";
   }
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
