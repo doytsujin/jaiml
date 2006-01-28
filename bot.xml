@@ -1,0 +1,3 @@
+<bot id="test" enabled="true">
+	<learn>aiml/example/namegame.aiml</learn>
+</bot>
