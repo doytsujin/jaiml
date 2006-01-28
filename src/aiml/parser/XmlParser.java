@@ -145,9 +145,10 @@ public class XmlParser implements XmlPullParser {
   }
   public void setInput(java.io.Reader in) {
     resetState();
-    if (in!=null)
+    if (in!=null) {
       this.in = new BufferedReader(in);
-    else
+      location = in.toString();
+    } else
       this.in=null;
   }
   public void setInput(java.io.InputStream inputStream, java.lang.String inputEncoding) throws XmlPullParserException {
@@ -163,6 +164,7 @@ public class XmlParser implements XmlPullParser {
         isr = new InputStreamReader(inputStream);
       }
       in = new BufferedReader(isr);
+      location = in.toString();
     } catch (UnsupportedEncodingException e) {
       throw new XmlPullParserException("Unsupported encoding",null,e);
     }
@@ -197,7 +199,7 @@ public class XmlParser implements XmlPullParser {
     return depth;
   }
   public String getPositionDescription() {
-    return location+"@" + getLineNumber() + ":" + getColumnNumber();
+    return "in "+location+"@" + getLineNumber() + ":" + getColumnNumber();
   }
   public int getLineNumber() {
     return lineNumber;
