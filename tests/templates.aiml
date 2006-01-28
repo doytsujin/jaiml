@@ -226,5 +226,17 @@ sr: <sr/>
 </template>
 </category>
 
+<category>
+<pattern>subst</pattern>
+<template>
+empty:	<person/><person2/><gender/><subst name="person"/>
+empty:	<person></person><person2></person2><gender></gender><subst name="person"></subst>
+other:	<person>foo</person>
+	<person2>bar</person2>
+	<gender>baz</gender>
+	<subst name="custom">foo</subst>
+</template>
+</category>
+
 
 </aiml>

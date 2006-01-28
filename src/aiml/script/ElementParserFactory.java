@@ -36,6 +36,10 @@ public class ElementParserFactory {
     elements.put("id",IDElement.class);
     elements.put("date",DateElement.class);
     elements.put("sr",SrElement.class);
+    elements.put("gender",SubstElement.class);
+    elements.put("person",SubstElement.class);
+    elements.put("person2",SubstElement.class);
+    elements.put("subst",SubstElement.class);
 
   }
   
