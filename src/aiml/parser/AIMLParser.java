@@ -8,6 +8,8 @@ package aiml.parser;
  */
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -260,6 +262,21 @@ public class AIMLParser {
 
   public void load(InputStream in, String encoding) throws IOException, XmlPullParserException, AimlParserException {
     parser.setInput(in,encoding);
+    doAiml();
+  }
+
+  public void load(String file) throws XmlPullParserException, IOException, AimlParserException {
+    parser.setInput(new FileReader(file));
+    try {
+      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",file);
+    } catch (XmlPullParserException e) {}
+    doAiml();
+  }
+  public void load(String file, String encoding) throws XmlPullParserException, IOException, AimlParserException {
+    parser.setInput(new FileInputStream(file),encoding);
+    try {
+      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",file);
+    } catch (XmlPullParserException e) {}
     doAiml();
   }
 

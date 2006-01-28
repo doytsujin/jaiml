@@ -55,6 +55,9 @@ public class Bot {
   
   public void load(String file) throws XmlPullParserException, IOException, BotSyntaxException, AimlParserException {
     parser.setInput(new FileInputStream(file),"UTF-8");
+    try {
+      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",file);
+    } catch (XmlPullParserException e) {}
     require(XmlPullParser.START_DOCUMENT,null);
     parser.next();
     standalone = true;
@@ -153,7 +156,7 @@ public class Bot {
         logger.warning("file "+file+" does not exist");        
       } else {
         logger.info("Loading file "+file);
-        new AIMLParser(this).load(new FileInputStream(file),"UTF-8");
+        new AIMLParser(this).load(file.getPath(),"UTF-8");
       }  
       parser.nextTag();
     }    
