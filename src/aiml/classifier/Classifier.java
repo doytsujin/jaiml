@@ -67,14 +67,14 @@ public class Classifier {
     assert (PatternNodeFactory.getCount()>0) : "You have to register node types";
     if (tree == null) {
       if (path.getLength() != 0) {
-        tree = new PatternContextNode(path.iterator(), path);
+        tree = new PatternContextNode(path.iterator(), o);
       }
       else {
         tree = new LeafContextNode(o);
       }
     }
     else {
-      tree = tree.add(path.iterator(), path);
+      tree = tree.add(path.iterator(), o);
     }
     count++; //this is OK, because if the path isn't added, an exception gets thrown before we reach this
   }
