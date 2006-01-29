@@ -52,12 +52,13 @@ public class RandomElement implements Script {
 
   public String execute(MatchState m) {
     StringBuffer result = new StringBuffer();
-    result.append("switch(rand(1,").append(items.size()).append(") {");
+    result.append("switch(rand(1,").append(items.size()).append(")) {\n");
     int n=1;
     for (Script i : items) {
       result.append("case ").append(n).append(":\n");
       result.append("\t").append(i.execute(m)).append("\n");
       result.append("\tbreak;\n");
+      n++;
     }
     result.append('}');  
     return result.toString();
