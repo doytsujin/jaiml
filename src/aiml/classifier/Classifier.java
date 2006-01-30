@@ -18,6 +18,8 @@ import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
 import aiml.classifier.node.WildcardNode;
+import aiml.context.ContextInfo;
+import aiml.context.InputContext;
 
 /**
  * <p>This class encapsulates all AIML pattern matching functionality.</p>
@@ -57,6 +59,19 @@ public class Classifier {
     }
   }
 
+  /**
+   * Set the current input context to the parameter, and match it.
+   * @param input
+   * @return a complete match state if succesfull; <code>null</code> otherwise
+   */
+  public static MatchState match(String input) {
+    InputContext c = (InputContext)ContextInfo.getContext("input");
+    c.push(input);
+    MatchState m = match();
+    c.pop();
+    return m;
+  }
+  
   /**
    * Add a path to the matching tree.
    * @param path the path to be added
