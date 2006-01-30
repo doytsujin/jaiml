@@ -22,10 +22,10 @@ public class If extends SimpleScriptElement {
     return "(($" + name + "==\"" + value + "\") ? " + content.evaluate(m) + ": \"\")";
   }
 
-  public String execute(MatchState m) {
-    return "if ($" + name + "==" + value + ") {\n" +
-           "\t"+ content.execute(m) +
-           "\n}\n";
+  public String execute(MatchState m, int depth) {
+    return Formatter.tab(depth) + "if ($" + name + "==" + value + ") {\n" +
+           content.execute(m, depth+1) +
+           Formatter.tab(depth) + "\n}\n";
   }
   
   public String toString() {

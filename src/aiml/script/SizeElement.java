@@ -8,8 +8,8 @@ public class SizeElement extends EmptyElement {
     return "size()";
   }
 
-  public String execute(MatchState m) {
-    return "print(size())";
+  public String execute(MatchState m, int depth) {
+    return Formatter.tab(depth) + "print(size());";
   }
 
   public String toString() {

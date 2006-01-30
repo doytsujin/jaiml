@@ -82,21 +82,21 @@ public class Switch implements Script {
     return result.toString();
   }
 
-  public String execute(MatchState m) {
+  public String execute(MatchState m, int depth) {
     StringBuffer result = new StringBuffer();
-    result.append("switch($").append(name).append(") {");
+    result.append(Formatter.tab(depth)).append("switch($").append(name).append(") {\n");
     Iterator<Entry<String,Script>> i = cases.entrySet().iterator();
     for (;i.hasNext();) {
       Entry<String,Script> theCase = i.next();
-      result.append("case \"").append(theCase.getKey()).append("\":\n");
-      result.append("\t").append(theCase.getValue().execute(m)).append("\n");
-      result.append("\tbreak;\n");
+      result.append(Formatter.tab(depth+1)).append("case \"").append(theCase.getKey()).append("\":\n");
+      result.append(theCase.getValue().execute(m, depth+2)).append("\n");
+      result.append(Formatter.tab(depth+2)).append("break;\n");
     }
     if ((defaultCase !=null)) {
-      result.append("default:\n");
-      result.append('\t').append(defaultCase.execute(m));
+      result.append(Formatter.tab(depth+1)).append("default:\n");
+      result.append(defaultCase.execute(m, depth+2)).append('\n');
     }
-    result.append('}');  
+    result.append(Formatter.tab(depth)).append('}');  
     return result.toString();        
   }
 

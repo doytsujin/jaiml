@@ -50,17 +50,17 @@ public class RandomElement implements Script {
     
   }
 
-  public String execute(MatchState m) {
+  public String execute(MatchState m, int depth) {
     StringBuffer result = new StringBuffer();
-    result.append("switch(rand(1,").append(items.size()).append(")) {\n");
+    result.append(Formatter.tab(depth)).append("switch(rand(1,").append(items.size()).append(")) {\n");
     int n=1;
     for (Script i : items) {
-      result.append("case ").append(n).append(":\n");
-      result.append("\t").append(i.execute(m)).append("\n");
-      result.append("\tbreak;\n");
+      result.append(Formatter.tab(depth+1)).append("case ").append(n).append(":\n");
+      result.append(i.execute(m, depth+2)).append("\n");
+      result.append(Formatter.tab(depth+2)).append("break;\n");
       n++;
     }
-    result.append('}');  
+    result.append(Formatter.tab(depth)).append('}');  
     return result.toString();
   }
   

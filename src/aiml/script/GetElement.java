@@ -26,13 +26,13 @@ public class GetElement extends SimpleScriptElement {
       return "(isset($" + nameAttr +") ? $" + nameAttr +" : "+content.evaluate(m)+")";
   }
 
-  public String execute(MatchState m) {
-    return "if (isset($" + nameAttr +")\n "+
-           "\tprint($" + nameAttr +");\n" + 
+  public String execute(MatchState m, int depth) {
+    return Formatter.tab(depth) + "if (isset($" + nameAttr +"))\n "+
+           Formatter.tab(depth) + "\tprint($" + nameAttr +");\n" + 
            ((content instanceof EmptyScript) ? "":
-             "else {\n"+
-             "\t"+content.execute(m))+"\n"+
-             "}";
+           Formatter.tab(depth) + "else {\n"+
+           content.execute(m, depth+1))+"\n"+
+           Formatter.tab(depth) + "}";
   }
   
   public String toString() {

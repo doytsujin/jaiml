@@ -19,8 +19,8 @@ public class TextElement implements Script {
     return "\"" + printable(text) + "\"";
   }
 
-  public String execute(MatchState m) {
-    return "print(\"" + printable(text) + "\");";
+  public String execute(MatchState m, int depth) {
+    return Formatter.tab(depth) + "print(\"" + printable(text) + "\");";
   }
 
   protected String printable(char ch) {
@@ -30,6 +30,8 @@ public class TextElement implements Script {
         return "\\r";
     } else if(ch == '\t') {
         return "\\t";
+    } else if (ch == '"') {
+      return "\\\"";
     } if(ch > 127 || ch < 32) {
         StringBuffer buf = new StringBuffer("\\u");
         String hex = Integer.toHexString(ch);
@@ -39,7 +41,7 @@ public class TextElement implements Script {
         }
         buf.append(hex);
         return buf.toString();
-    }
+    } 
     return ""+ch;
   }
 

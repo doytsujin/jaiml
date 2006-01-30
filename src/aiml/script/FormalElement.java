@@ -8,8 +8,8 @@ public class FormalElement extends NonEmptyElement {
     return "formal("+content.evaluate(m)+")";
   }
 
-  public String execute(MatchState m) {
-    return "print(formal("+content.evaluate(m)+"))";
+  public String execute(MatchState m, int depth) {
+    return Formatter.tab(depth) + "print(formal("+content.evaluate(m)+"))";
   }
   
   public String toString() {

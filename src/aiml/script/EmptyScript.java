@@ -18,7 +18,7 @@ public class EmptyScript implements Script {
     return "\"\"";
   }
 
-  public String execute(MatchState m) {
+  public String execute(MatchState m, int depth) {
     return "";
   }
   public String toString() {

@@ -8,8 +8,8 @@ public class SraiElement extends SimpleScriptElement {
     return "srai(" + content.evaluate(m) + ")";
   }
 
-  public String execute(MatchState m) {
-    return "print(srai(" + content.evaluate(m) + "));";
+  public String execute(MatchState m, int depth) {
+    return Formatter.tab(depth) + "print(srai(" + content.evaluate(m) + "));";
   }
   
   public String toString(){

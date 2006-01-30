@@ -46,11 +46,12 @@ public class Block implements Script {
     return items.toString();    
   }
 
-  public String execute(MatchState m) {
+  public String execute(MatchState m, int depth) {
     StringBuffer result =  new StringBuffer();
     for (Script item : items) {
-      result.append(item.execute(m)).append('\n');
+      result.append(item.execute(m, depth)).append('\n');
     }
+    result.deleteCharAt(result.length()-1);
     return result.toString();
   }
 }

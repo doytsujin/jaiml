@@ -28,7 +28,7 @@ public class ConditionElement implements Script {
     throw new UnsupportedOperationException("evaluate()");
   }
 
-  public String execute(MatchState m) {
+  public String execute(MatchState m, int depth) {
     throw new UnsupportedOperationException("execute()");
   }
 
