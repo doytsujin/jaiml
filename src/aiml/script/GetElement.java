@@ -30,8 +30,9 @@ public class GetElement extends SimpleScriptElement {
     return "if (isset($" + nameAttr +")\n "+
            "\tprint($" + nameAttr +");\n" + 
            ((content instanceof EmptyScript) ? "":
-             "else\n"+
-             "\t"+content.execute(m));
+             "else {\n"+
+             "\t"+content.execute(m))+"\n"+
+             "}";
   }
   
   public String toString() {
