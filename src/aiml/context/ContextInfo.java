@@ -90,6 +90,9 @@ public class ContextInfo {
     if (contextNames.get(c.getName()) != null) {
       throw new DuplicateContextException();
     }
+    if (c.getName().equals("input") && !(c instanceof InputContext)) {
+      throw new BadContextClassException();
+    }
     c.setOrder(contexts.size());
     contexts.add(c);
     contextNames.put(c.getName(), c);
