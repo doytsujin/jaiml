@@ -8,7 +8,6 @@ package aiml.parser;
  */
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +16,11 @@ import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.logging.Logger;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -33,9 +37,6 @@ import aiml.context.StringContext;
 import aiml.script.Block;
 import aiml.script.ElementParserFactory;
 import aiml.script.Script;
-
-import junit.framework.*;
-import junit.textui.TestRunner;
 
 
 public class AIMLParser {
@@ -81,7 +82,7 @@ public class AIMLParser {
     require(XmlPullParser.START_TAG,"aiml","root element must be 'aiml'");
     String version=requireAttrib("version");
     if (!version.equals("1.0") && !version.equals("1.0.1"))
-      throw new InvalidAimlVersionException("Unsupported AIML version, refusing forward compatible processing mode");
+      throw new InvalidAimlVersionException("Unsupported AIML version, refusing forward compatible processing mode" + parser.getPositionDescription());
       
     parser.nextTag();
     currentPath=new Path();
@@ -267,16 +268,12 @@ public class AIMLParser {
 
   public void load(String file) throws XmlPullParserException, IOException, AimlParserException {
     parser.setInput(new FileReader(file));
-    try {
-      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",file);
-    } catch (XmlPullParserException e) {}
+    parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",file);
     doAiml();
   }
   public void load(String file, String encoding) throws XmlPullParserException, IOException, AimlParserException {
     parser.setInput(new FileInputStream(file),encoding);
-    try {
-      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",file);
-    } catch (XmlPullParserException e) {}
+    parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",file);
     doAiml();
   }
 
