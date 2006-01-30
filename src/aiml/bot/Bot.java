@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.context.ContextInfo;
 import aiml.context.StringContext;
+import aiml.context.StringInputContext;
 import aiml.parser.AIMLParser;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -42,7 +43,7 @@ public class Bot {
   public String getProperty(String name) throws InvalidPropertyException {
     if (properties.containsKey(name))
       return properties.get(name);
-    else throw new InvalidPropertyException("Bot property '" + name + "' must be defined for bot "+this.name);
+    else throw new InvalidPropertyException("Bot property '" + name + "' must be defined for bot '"+this.name+"'");
   }
   
   public boolean hasProperty(String name) {
@@ -138,7 +139,7 @@ public class Bot {
       doContexts();
     } else {
       // TODO provide actual implementations of topics...
-      ContextInfo.registerContext(new StringContext("input","dummy input"));
+      ContextInfo.registerContext(new StringInputContext("input"));
       ContextInfo.registerContext(new StringContext("that", "dummy that"));
       ContextInfo.registerContext(new StringContext("topic","dummy topic"));
     }
