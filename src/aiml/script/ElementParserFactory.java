@@ -12,9 +12,10 @@ public class ElementParserFactory {
   
   private static HashMap<String,Class<? extends Script>> elements = new HashMap<String, Class<? extends Script>>();
   private static Class<? extends Script> text;
-  
+  private static Class<? extends Script> defaultElementHandler;
   static {
     text=TextElement.class;
+    defaultElementHandler=OtherElement.class;
     elements.put("bot",BotElement.class);
     elements.put("set",SetElement.class);
     elements.put("get",GetElement.class);
@@ -66,7 +67,10 @@ public class ElementParserFactory {
         case XmlPullParser.START_TAG:
           if (elements.containsKey(parser.getName())) {
             return elements.get(parser.getName()).newInstance().parse(parser);
-          }  
+          }
+          if (defaultElementHandler !=null)
+            return defaultElementHandler.newInstance().parse(parser);
+          /* fall through */
         default:
           throw new AimlParserException("Unexpected " + XmlPullParser.TYPES[parser.getEventType()] + " " + parser.getName() + " " + parser.getPositionDescription());
       }          

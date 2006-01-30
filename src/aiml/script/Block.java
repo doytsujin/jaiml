@@ -32,6 +32,10 @@ public class Block implements Script {
         return this;
     }
   }
+  
+  public void addScript(Script s) {
+    items.add(s);
+  }
 
   public String evaluate(MatchState m) {
     StringBuffer result =  new StringBuffer();

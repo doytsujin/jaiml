@@ -9,6 +9,16 @@ import aiml.classifier.MatchState;
 
 public class TextElement implements Script {
   private String text = null;
+    
+  public TextElement() {
+    super();
+  }
+  
+  public TextElement(String text) {
+    super();
+    this.text = text;
+  }
+
   public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException {
     text=parser.getText();
     parser.next();
