@@ -193,9 +193,26 @@ public class Bot {
     
   }
 
-  private void doProperties() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doProperties()");
+  private void doProperties() throws BotSyntaxException, XmlPullParserException, IOException {
+    require(XmlPullParser.START_TAG,"properties");
+    parser.nextTag();
+    while (isEvent(XmlPullParser.START_TAG,"property")) {
+      doProperty();
+    }
+    require(XmlPullParser.END_TAG,"properties");
+    parser.nextTag();
+  }
+
+  private void doProperty() throws BotSyntaxException, XmlPullParserException, IOException {
+    require(XmlPullParser.START_TAG,"property");
+    if (!parser.isEmptyElementTag()) {
+      throw new BotSyntaxException("Syntax error: bot property definition must be empty " + parser.getPositionDescription());
+    }
+    String propName = requireAttrib("name");
+    String propValue = requireAttrib("value");
+    setProperty(propName,propValue);
+    parser.nextTag();
+    parser.nextTag();
     
   }
   
