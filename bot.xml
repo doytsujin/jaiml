@@ -1,3 +1,14 @@
-<bot id="test" enabled="true">
-	<learn>aiml/example/namegame.aiml</learn>
+<bot id="example" enabled="true">
+<properties>
+	<property name="name" value="Really Complicated"/>
+</properties>
+
+  	<learn>aiml/example/format.aiml</learn>
+  	<learn>aiml/example/garbage.aiml</learn>
+  	<learn>aiml/example/greeting.aiml</learn>
+  	<learn>aiml/example/interface.aiml</learn>
+  	<learn>aiml/example/namegame.aiml</learn>
+  	<learn>aiml/example/protected.aiml</learn>
+  	<learn>aiml/example/quit.aiml</learn>
+  	<learn>aiml/example/spelling.aiml</learn>
 </bot>
