@@ -27,6 +27,9 @@ public class Switch implements Script {
     if (defaultCase != null)
       throw new AimlSyntaxException("Syntax error: no cases allowed after the default case in switch type condition "+parser.getPositionDescription());
     
+    if (parser.getAttributeValue(null,"name")!=null) {
+      throw new AimlSyntaxException("Syntax error: name attribute in switch case not allowed "+parser.getPositionDescription());
+    }
     String value = parser.getAttributeValue(null,"value");
     if (value == null) {
       defaultCase = new Block().parse(parser);
