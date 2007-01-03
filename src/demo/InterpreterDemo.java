@@ -14,7 +14,7 @@ import aiml.bot.BotSyntaxException;
 import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.context.ContextInfo;
-import aiml.context.StringContext;
+import aiml.context.InputContext;
 import aiml.parser.AimlParserException;
 
 public class InterpreterDemo {
@@ -35,19 +35,16 @@ public class InterpreterDemo {
     Classifier.registerDefaultNodeHandlers();
     Bot b = new Bot();
     System.out.println("Loading bot...");
-    b.setProperty("name","scrapbook");
+    //b.setProperty("name","Really Complicated");
     b.load("bot.xml");
     System.out.println("done, loaded "+Classifier.getCount() + " categories.");
     System.out.println("Enter text to match, or /exit to quit");
-    
-    StringContext input = (StringContext)ContextInfo.getContext("input");
-    
+       
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     System.out.print("> ");
     String line = in.readLine();
     while (!line.equals("/exit")) {
-      input.setValue(line);      
-      MatchState m = Classifier.match();
+      MatchState m = Classifier.match(line);
       if (m!=null) {
         System.out.println(((aiml.script.Script)m.getResult()).execute(m, 0));        
       } else
