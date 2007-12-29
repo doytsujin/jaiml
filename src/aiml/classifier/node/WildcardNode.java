@@ -14,26 +14,32 @@
 
 package aiml.classifier.node;
 
-import aiml.classifier.*;
+import aiml.classifier.MatchState;
+import aiml.classifier.Pattern;
 
 /**
- * <p>A wildcard node in the pattern tree. This node reluctantly matches one or
+ * <p>
+ * A wildcard node in the pattern tree. This node reluctantly matches one or
  * more characters from the current context, until a match is found or a match
  * fails.</p
- *
- * <p>The current implementation optimizes only trailing wildcards (wildcards
- * that have no child pattern nodes).</p>
- *
- * <p> Another very powerful optimization utilizes look-ahead, where the set of
+ * 
+ * <p>
+ * The current implementation optimizes only trailing wildcards (wildcards that
+ * have no child pattern nodes).
+ * </p>
+ * 
+ * <p>
+ * Another very powerful optimization utilizes look-ahead, where the set of
  * characters that follow the wildcard is used to skip larger portions of the
  * input. This works only when there are no wildcards in the follow set. Look
- * ahead is currently not implemented.</p>
+ * ahead is currently not implemented.
+ * </p>
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class WildcardNode
-    extends PatternNode {
+public class WildcardNode extends PatternNode {
   /**
    * Sub patterns
    */
@@ -43,7 +49,9 @@ public class WildcardNode
    * Create a new empty wildcard of the specified type. This constructor is
    * private, the only way to create a new wildcard node is via the
    * <code>PatternNodeFactory</code> class.
-   * @param type the wildcard type
+   * 
+   * @param type
+   *                the wildcard type
    */
 
   private WildcardNode(int type) {
@@ -71,7 +79,7 @@ public class WildcardNode
 
     //if we're at the end of the pattern, don't create unnecessary EOS nodes
     if (depth == pattern.length()) {
-      return new AddResult(this,this,depth);
+      return new AddResult(this, this, depth);
     }
 
     if (next == null) {
@@ -102,7 +110,7 @@ public class WildcardNode
     } // if (next!=null)
     else { //this wildcard is "trailing" - add the rest of the input to it
       w.growRest();
-      match.depth +=w.getLength();
+      match.depth += w.getLength();
     }
 
     if (subContext != null) {
@@ -116,7 +124,6 @@ public class WildcardNode
     return false;
 
   }
-
 
   /**
    * Register this node type in PatternNodeFactory. This actually registers 2

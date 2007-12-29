@@ -9,7 +9,8 @@ import aiml.parser.AimlParserException;
 
 public abstract class NonEmptyElement extends SimpleScriptElement {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
     super.parse(parser);
     if (content instanceof EmptyScript)
       return content;

@@ -12,22 +12,26 @@ import aiml.parser.AimlSyntaxException;
 public class SetElement extends SimpleScriptElement {
   private String nameAttr;
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
-    nameAttr=parser.getAttributeValue(null,"name");
-    if (nameAttr==null)
-      throw new AimlSyntaxException("Syntax error: mandatory attribute 'name' missing from element '" + parser.getName() + "' "+ parser.getPositionDescription());
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
+    nameAttr = parser.getAttributeValue(null, "name");
+    if (nameAttr == null)
+      throw new AimlSyntaxException(
+          "Syntax error: mandatory attribute 'name' missing from element '" +
+              parser.getName() + "' " + parser.getPositionDescription());
     return super.parse(parser);
   }
 
   public String evaluate(MatchState m) {
-    return "($" + nameAttr +"="+content.evaluate(m)+")";
+    return "($" + nameAttr + "=" + content.evaluate(m) + ")";
   }
 
   public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print($" + nameAttr +"="+content.evaluate(m)+");";
+    return Formatter.tab(depth) + "print($" + nameAttr + "=" +
+        content.evaluate(m) + ");";
   }
-  
+
   public String toString() {
-    return "$" + nameAttr +"=" + content;
+    return "$" + nameAttr + "=" + content;
   }
 }

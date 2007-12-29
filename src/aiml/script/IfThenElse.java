@@ -12,23 +12,24 @@ import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
 public class IfThenElse implements Script {
-   
+
   private class Entry {
     private String name;
     private String value;
     private Script content;
-    
+
     public Entry(String name, String value, Script content) {
       this.name = name;
       this.value = value;
       this.content = content;
     }
-    
+
     public boolean isTrue() {
       // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Actual evaluation of condition not supported yet.");
+      throw new UnsupportedOperationException(
+          "Actual evaluation of condition not supported yet.");
     }
- 
+
     public String toString() {
       return "(($" + name + "==\"" + value + "\") ? " + content + " : \"\")";
     }
@@ -36,42 +37,59 @@ public class IfThenElse implements Script {
 
   ArrayList<Entry> conditions = new ArrayList<Entry>();
   Script defaultBlock;
-  
-  private void parseEntry(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
-    if (!(parser.getEventType()==XmlPullParser.START_TAG && parser.getName().equals("li")))
-      throw new AimlSyntaxException("Syntax error: expecting start tag 'li' while parsing if-else conditions "+parser.getPositionDescription());
+
+  private void parseEntry(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
+    if (!(parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals(
+        "li")))
+      throw new AimlSyntaxException(
+          "Syntax error: expecting start tag 'li' while parsing if-else conditions " +
+              parser.getPositionDescription());
 
     if (defaultBlock != null)
-      throw new AimlSyntaxException("Syntax error: no conditions allowed after the default block in if-else conditions "+parser.getPositionDescription());
-    
-    String name = parser.getAttributeValue(null,"name");
-    String value = parser.getAttributeValue(null,"value");
+      throw new AimlSyntaxException(
+          "Syntax error: no conditions allowed after the default block in if-else conditions " +
+              parser.getPositionDescription());
+
+    String name = parser.getAttributeValue(null, "name");
+    String value = parser.getAttributeValue(null, "value");
     if (value == null && name == null) {
       defaultBlock = new Block().parse(parser);
-    } else if (value != null && name!= null){
-      conditions.add(new Entry(name, value,new Block().parse(parser)));      
+    } else if (value != null && name != null) {
+      conditions.add(new Entry(name, value, new Block().parse(parser)));
     } else {
-      throw new AimlSyntaxException("Syntax error, both name and value attributes must be present in if-else condition " +parser.getPositionDescription());
+      throw new AimlSyntaxException(
+          "Syntax error, both name and value attributes must be present in if-else condition " +
+              parser.getPositionDescription());
     }
-    
-    if (!(parser.getEventType()==XmlPullParser.END_TAG && parser.getName().equals("li")))
-      throw new AimlSyntaxException("Syntax error: expecting end tag 'li' while parsing switch type condition cases "+parser.getPositionDescription());
+
+    if (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
+        "li")))
+      throw new AimlSyntaxException(
+          "Syntax error: expecting end tag 'li' while parsing switch type condition cases " +
+              parser.getPositionDescription());
     parser.nextTag();
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
     parser.nextTag();
     do {
       parseEntry(parser);
-    } while (!(parser.getEventType()==XmlPullParser.END_TAG && parser.getName().equals("condition")));
-    
-    if (conditions.size()==1 && defaultBlock == null ) {
-      Logger.getLogger(this.getClass().getName()).warning("if-else type condition at "+parser.getPositionDescription() + " contains only one condition");
+    } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
+        "condition")));
+
+    if (conditions.size() == 1 && defaultBlock == null) {
+      Logger.getLogger(this.getClass().getName()).warning(
+          "if-else type condition at " + parser.getPositionDescription() +
+              " contains only one condition");
       parser.next();
       Entry e = conditions.get(0);
-      return new If(e.name,e.value,e.content);
-    } else if (conditions.size()==0 && defaultBlock != null ) {
-      Logger.getLogger(this.getClass().getName()).warning("if-else type condition at "+parser.getPositionDescription() + " contains only default block");
+      return new If(e.name, e.value, e.content);
+    } else if (conditions.size() == 0 && defaultBlock != null) {
+      Logger.getLogger(this.getClass().getName()).warning(
+          "if-else type condition at " + parser.getPositionDescription() +
+              " contains only default block");
       parser.next();
       return defaultBlock;
     } else {
@@ -87,7 +105,8 @@ public class IfThenElse implements Script {
     result.append('(');
     for (Entry condition : conditions) {
       //(($name=="value") ? content : ($name=="value") ? content : ... : default);
-      result.append('(').append(condition.name).append("==").append(condition.value).append(") ? ");
+      result.append('(').append(condition.name).append("==").append(
+          condition.value).append(") ? ");
       result.append(condition.content.evaluate(m)).append(" : ");
     }
     if (defaultBlock != null)
@@ -102,20 +121,22 @@ public class IfThenElse implements Script {
     StringBuffer result = new StringBuffer();
     for (Entry condition : conditions) {
       //(($name=="value") ? content : ($name=="value") ? content : ... : default);
-      result.append(Formatter.tab(depth)).append("if ($").append(condition.name).append("==\"").append(condition.value).append("\") {\n");
-      result.append(condition.content.execute(m, depth+1)).append('\n');
+      result.append(Formatter.tab(depth)).append("if ($").append(condition.name).append(
+          "==\"").append(condition.value).append("\") {\n");
+      result.append(condition.content.execute(m, depth + 1)).append('\n');
       result.append(Formatter.tab(depth)).append("} else ");
     }
     if (defaultBlock != null)
-     result.append("{\n").append(defaultBlock.execute(m, depth+1)).append("\n}\n");
+      result.append("{\n").append(defaultBlock.execute(m, depth + 1)).append(
+          "\n}\n");
     else
       result.append("{}\n");
 
     return result.toString();
   }
 
-  
   public String toString() {
-    return "ifElse(" + conditions.toString() + ((defaultBlock!=null) ? defaultBlock : "") + ")";
+    return "ifElse(" + conditions.toString() +
+        ((defaultBlock != null) ? defaultBlock : "") + ")";
   }
 }

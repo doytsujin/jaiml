@@ -1,7 +1,6 @@
 package aiml.script;
 
 import aiml.classifier.MatchState;
-import aiml.context.ContextInfo;
 
 public class SrElement extends EmptyElement {
 

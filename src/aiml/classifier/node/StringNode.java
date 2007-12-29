@@ -14,17 +14,18 @@
 
 package aiml.classifier.node;
 
-import aiml.classifier.*;
+import aiml.classifier.MatchState;
+import aiml.classifier.Pattern;
 
 /**
  * A single string node. This represents a "compressed" part of the tree, with
  * no branches, in an attempt to speed up the matching process.
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class StringNode
-    extends PatternNode {
+public class StringNode extends PatternNode {
 
   /**
    * the next node in the tree
@@ -47,8 +48,11 @@ public class StringNode
    * Create a string node with the specified pattern and subtree. Contrary to
    * most other methods, this actually uses the whole pattern, not a part of the
    * pattern starting at depth.
-   * @param pattern the pattern
-   * @param next the subtree
+   * 
+   * @param pattern
+   *                the pattern
+   * @param next
+   *                the subtree
    */
   public StringNode(String pattern, PatternNode next) {
     type = PatternNode.STRING;
@@ -58,8 +62,11 @@ public class StringNode
 
   /**
    * Add the pattern to itself. Preform any necessary tree splitting.
-   * @param depth int
-   * @param pattern String
+   * 
+   * @param depth
+   *                int
+   * @param pattern
+   *                String
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
@@ -84,8 +91,7 @@ public class StringNode
     String thissegment;
     if (nextw == -1) {
       thissegment = pattern.substring(depth).toUpperCase();
-    }
-    else {
+    } else {
       thissegment = pattern.substring(depth, nextw).toUpperCase();
 
     }
@@ -96,8 +102,7 @@ public class StringNode
       plength = s.length();
       /*now I could properly finish initialization, but this would only
        duplicate the code from the next case, so let's combine them.*/
-    }
-    else { //so, we have this segment to add, now check prefix length
+    } else { //so, we have this segment to add, now check prefix length
       plength = Pattern.prefixLength(s, thissegment);
     }
 
@@ -105,8 +110,7 @@ public class StringNode
       depth += plength;
       if (depth == pattern.length()) { //even better, we're practically done. there are no remaining characters in the pattern
         result = new AddResult(this, this, depth);
-      }
-      else { //we still have to add the rest of the pattern
+      } else { //we still have to add the rest of the pattern
         if (next == null) {
           next = PatternNodeFactory.getInstance(depth, pattern);
         }
@@ -127,11 +131,10 @@ public class StringNode
     //split prefix
     depth += plength;
     PatternNode node = new StringNode(thissegment.substring(0, plength),
-                                      this.removePrefix(plength));
+        this.removePrefix(plength));
     if (depth == pattern.length()) { //the new node is the final one, don't create unnecessary EOS nodes...
       result = new AddResult(node, node, depth);
-    }
-    else {
+    } else {
 
       result = node.add(depth - plength, pattern);
 
@@ -149,35 +152,31 @@ public class StringNode
       if (match.depth == cValue.length()) { //this context value is done, match subcontext
         if (subContext != null && subContext.match(match)) {
           return true;
-        }
-        else { //subcontext match fail
+        } else { //subcontext match fail
           match.depth -= plength;
           return false;
         }
-      }
-      else { //this context value is not done, match subtrees
+      } else { //this context value is not done, match subtrees
         if (next != null && next.match(match)) {
           return true;
-        }
-        else {
+        } else {
           match.depth -= plength;
           return false;
 
         }
       }
-    }
-    else { //no match in the first place
+    } else { //no match in the first place
       return false;
     }
   }
 
   /**
    * Returns the pattern this node represents. Actually, this might be replaced
-   * by something like <code>Set getFirst()</code> in the future, because that's
-   * what it is used for (and, for further optimizations of wildcard matching,
-   * it will more closely resemble the FIRST-FOLLOW functions used in computer
-   * linguistics.
-   *
+   * by something like <code>Set getFirst()</code> in the future, because
+   * that's what it is used for (and, for further optimizations of wildcard
+   * matching, it will more closely resemble the FIRST-FOLLOW functions used in
+   * computer linguistics.
+   * 
    * @return the pattern
    */
   public String getPattern() {
@@ -185,10 +184,12 @@ public class StringNode
   }
 
   /**
-   * Removes the prefix of the specified length and returns the new modified node.
-   * If, after removing the prefix nothing remains, changes the implementation
-   * to EndOfStringNode.
-   * @param length int
+   * Removes the prefix of the specified length and returns the new modified
+   * node. If, after removing the prefix nothing remains, changes the
+   * implementation to EndOfStringNode.
+   * 
+   * @param length
+   *                int
    * @return PatternNode
    */
   public PatternNode removePrefix(int length) {
@@ -212,9 +213,8 @@ public class StringNode
     PatternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
 
-        return (depth != pattern.length()
-                && pattern.length() > 0
-                && !Pattern.isWildcard(depth, pattern));
+        return (depth != pattern.length() && pattern.length() > 0 && !Pattern.isWildcard(
+            depth, pattern));
       }
 
       public PatternNode getInstance() {

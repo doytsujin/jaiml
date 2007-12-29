@@ -15,8 +15,9 @@
 package aiml.context;
 
 /**
- * This exception gets thrown when someone tries to register a context for 'input'
- * that is not an implementation of InputContext.
+ * This exception gets thrown when someone tries to register a context for
+ * 'input' that is not an implementation of InputContext.
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */

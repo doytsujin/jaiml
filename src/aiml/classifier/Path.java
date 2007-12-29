@@ -14,27 +14,42 @@
 
 package aiml.classifier;
 
-import java.util.*;
-import aiml.context.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
+import aiml.context.Context;
+import aiml.context.ContextInfo;
 
 /**
- * <p>This class keeps a collection of context definitions that represent a single category.
- * In AIML, this is often referred to as the "context of the category" (in
- * opposition to a single context like the input, or topic). It uses the
+ * <p>
+ * This class keeps a collection of context definitions that represent a single
+ * category. In AIML, this is often referred to as the "context of the category"
+ * (in opposition to a single context like the input, or topic). It uses the
  * "deprecated" name Path instead of something like CategoryContext, mainly
- * because I feel there are already too much classes containing the name "context".</p>
- *
- * <p>This class keeps a collection of the patterns of a category. Due to the
- * ordered nature of contexts, I think it is best to keep them in a priority queue,
- *  which is exactly what this class does - provides acess to an ordered list of
- * context patterns</p>
- * <p><i>Note to self:</i> Will have to implement the cloneable interface and
- * make deep copies of paths, because when reading AIML files, individual contexts
- * can come in- and out of scope. Also, the feature of having multiple contexts of the same
- * type for a category will have to be solved somehow.</p>
- * <p><i>Note to self II:</i> This class will have to be reworked some time, for
+ * because I feel there are already too much classes containing the name
+ * "context".
+ * </p>
+ * 
+ * <p>
+ * This class keeps a collection of the patterns of a category. Due to the
+ * ordered nature of contexts, I think it is best to keep them in a priority
+ * queue, which is exactly what this class does - provides acess to an ordered
+ * list of context patterns
+ * </p>
+ * <p>
+ * <i>Note to self:</i> Will have to implement the cloneable interface and make
+ * deep copies of paths, because when reading AIML files, individual contexts
+ * can come in- and out of scope. Also, the feature of having multiple contexts
+ * of the same type for a category will have to be solved somehow.
+ * </p>
+ * <p>
+ * <i>Note to self II:</i> This class will have to be reworked some time, for
  * more general contexts than just pattern strings... maybe replace "pattern"
- * with "condition" or "constraint" or something like that</p>
+ * with "condition" or "constraint" or something like that
+ * </p>
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
@@ -43,11 +58,12 @@ public class Path {
   /** An internal linked list to represent the priority queue */
   private LinkedList<Pattern> contextQueue = new LinkedList<Pattern>();
 
-  /** An internal stack of previous path states (used for loading)*/
+  /** An internal stack of previous path states (used for loading) */
   private LinkedList<LinkedList<Pattern>> historyStack = new LinkedList<LinkedList<Pattern>>();
 
   /**
    * A wrapper for a context pattern.
+   * 
    * @author Kim Sullivan
    * @version 1.0
    */
@@ -60,8 +76,11 @@ public class Path {
 
     /**
      * Creates a new Pattern and sets it's context and value
-     * @param context the context
-     * @param pattern the pattern
+     * 
+     * @param context
+     *                the context
+     * @param pattern
+     *                the pattern
      */
     public Pattern(int context, String pattern) {
       this.context = context;
@@ -70,6 +89,7 @@ public class Path {
 
     /**
      * Gets the context of the pattern
+     * 
      * @return the context of the pattern
      */
     public int getContext() {
@@ -78,6 +98,7 @@ public class Path {
 
     /**
      * Gets the pattern
+     * 
      * @return the pattern
      */
     public String getPattern() {
@@ -85,8 +106,9 @@ public class Path {
     }
 
     /**
-     * Returns a string representation of the Pattern object. The resulting string
-     * contains info about the pattern, and the context.
+     * Returns a string representation of the Pattern object. The resulting
+     * string contains info about the pattern, and the context.
+     * 
      * @return a string representation of this Pattern object
      */
     public String toString() {
@@ -95,20 +117,25 @@ public class Path {
   }
 
   /**
-   * The default constructor that creates a new empty path. Other overloaded constructors
-   * are not provided, because in real-world situations the path will be
-   * built incrementally as the <context> tags will be read.
+   * The default constructor that creates a new empty path. Other overloaded
+   * constructors are not provided, because in real-world situations the path
+   * will be built incrementally as the <context> tags will be read.
    */
   public Path() {
   }
 
   /**
-   * <p>Adds a whole bunch of patterns to the path.</p>
-   * <p>The array takes the form of:
+   * <p>
+   * Adds a whole bunch of patterns to the path.
+   * </p>
+   * <p>
+   * The array takes the form of:
    * <code>new String[][] {{"contextname","pattern"},{"othercontext","differentpattern"},...}</code>
    * </p>
-   * @param path an array of name-pattern pairs
-   * @throws MultipleContextsException 
+   * 
+   * @param path
+   *                an array of name-pattern pairs
+   * @throws MultipleContextsException
    */
   public void add(String[][] path) throws MultipleContextsException {
     for (int i = 0; i < path.length; i++) {
@@ -118,13 +145,17 @@ public class Path {
 
   /**
    * Adds a single context pattern to the path.
-   * @param context the context
-   * @param pattern the pattern
-   * @throws MultipleContextsException 
-   *
+   * 
+   * @param context
+   *                the context
+   * @param pattern
+   *                the pattern
+   * @throws MultipleContextsException
+   * 
    * @throws MultipleContextsException
    */
-  public void add(String context, String pattern) throws MultipleContextsException {
+  public void add(String context, String pattern)
+      throws MultipleContextsException {
     //if (context.equals("input") && pattern.equals("64 F *"))
     //  System.out.println("["+context+"]\""+pattern+"\"");
     Context c = ContextInfo.getContext(context);
@@ -132,8 +163,7 @@ public class Path {
     ListIterator<Pattern> i = contextQueue.listIterator();
     if (!i.hasNext()) {
       i.add(p);
-    }
-    else {
+    } else {
       while (i.hasNext()) {
         Pattern pi = i.next();
         if (pi.context == p.context) {
@@ -151,24 +181,26 @@ public class Path {
   }
 
   /**
-   * Saves the current path onto a stack (used for loading nested context groups)
+   * Saves the current path onto a stack (used for loading nested context
+   * groups)
    */
   @SuppressWarnings("unchecked")
   public void save() {
-    historyStack.addFirst((LinkedList<Pattern>)contextQueue.clone());
+    historyStack.addFirst((LinkedList<Pattern>) contextQueue.clone());
   }
 
   /**
    * Restores the last path.
-   *
+   * 
    * @throws NoSuchElementException
    */
   public void restore() {
-    contextQueue=historyStack.removeFirst();
+    contextQueue = historyStack.removeFirst();
   }
 
   /**
    * Returns a string representation of this path.
+   * 
    * @return a string representation of this path
    */
   public String toString() {
@@ -177,6 +209,7 @@ public class Path {
 
   /**
    * Returns an unmodifiable iterator of the priority queue.
+   * 
    * @return the unmodifiable iterator
    */
   public ListIterator iterator() {
@@ -185,6 +218,7 @@ public class Path {
 
   /**
    * Returns the length of the path - the number of patterns.
+   * 
    * @return the length of the path
    */
   public int getLength() {

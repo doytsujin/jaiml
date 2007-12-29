@@ -11,14 +11,18 @@ import aiml.parser.AimlSyntaxException;
 public abstract class SimpleScriptElement implements Script {
 
   protected Script content;
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
     String name = parser.getName();
-    content = new Block().parse(parser);    
-    if (parser.getEventType()==XmlPullParser.END_TAG && parser.getName().equals(name)) {
+    content = new Block().parse(parser);
+    if (parser.getEventType() == XmlPullParser.END_TAG &&
+        parser.getName().equals(name)) {
       parser.next();
       return this;
     } else
-      throw new AimlSyntaxException("Syntax error: expected end tag '" + name + "' "+parser.getPositionDescription());
+      throw new AimlSyntaxException("Syntax error: expected end tag '" + name +
+          "' " + parser.getPositionDescription());
   }
-  
+
 }

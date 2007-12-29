@@ -11,26 +11,29 @@ import aiml.parser.AimlSyntaxException;
 
 public class ThinkElement extends NonEmptyElement {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
     String name = parser.getName();
-    content = new ElementBlock().parse(parser);    
-    if (parser.getEventType()==XmlPullParser.END_TAG && parser.getName().equals(name)) {
+    content = new ElementBlock().parse(parser);
+    if (parser.getEventType() == XmlPullParser.END_TAG &&
+        parser.getName().equals(name)) {
       parser.next();
       return this;
     } else
-      throw new AimlSyntaxException("Syntax error: expected end tag '" + name + "' "+parser.getPositionDescription());
+      throw new AimlSyntaxException("Syntax error: expected end tag '" + name +
+          "' " + parser.getPositionDescription());
   }
 
   public String evaluate(MatchState m) {
-    return "think("+content.evaluate(m)+")";
+    return "think(" + content.evaluate(m) + ")";
   }
 
   public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "think("+content.evaluate(m)+");";
+    return Formatter.tab(depth) + "think(" + content.evaluate(m) + ");";
   }
-  
+
   public String toString() {
-    return "think("+content+")";
+    return "think(" + content + ")";
   }
-  
+
 }

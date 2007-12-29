@@ -14,25 +14,26 @@
 
 package aiml.classifier.node;
 
-import java.util.*;
+import java.util.HashMap;
 
-import aiml.classifier.*;
+import aiml.classifier.MatchState;
+import aiml.classifier.Pattern;
 
 /**
  * A single character branch in the strings portion of the pattern tree. All by
- * themselves, StringBranchNodes implementan uncompressed trie. To make
- * storage effective, compressed string nodes have to be implemented.
+ * themselves, StringBranchNodes implementan uncompressed trie. To make storage
+ * effective, compressed string nodes have to be implemented.
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class StringBranchNode
-    extends PatternNode {
+public class StringBranchNode extends PatternNode {
 
   /**
    * a map to store the branches
    */
-  private HashMap<Character,PatternNode> map = new HashMap<Character,PatternNode>();
+  private HashMap<Character, PatternNode> map = new HashMap<Character, PatternNode>();
 
   /**
    * Create a new empty string branch node. The type is PatternNode.STRING
@@ -51,10 +52,13 @@ public class StringBranchNode
 
   /**
    * Add the pattern to itself. Since this already represents a branch node, no
-   * optimizations/splitting are preformed, except when adding an end of a string, or a
-   * wildcard.
-   * @param depth int
-   * @param pattern String
+   * optimizations/splitting are preformed, except when adding an end of a
+   * string, or a wildcard.
+   * 
+   * @param depth
+   *                int
+   * @param pattern
+   *                String
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
@@ -90,8 +94,7 @@ public class StringBranchNode
     char c;
     try {
       c = Character.toUpperCase(match.getContextValue().charAt(match.depth));
-    }
-    catch (StringIndexOutOfBoundsException e) {
+    } catch (StringIndexOutOfBoundsException e) {
       return false; //the current context is an empty string
     }
     PatternNode node = map.get(new Character(c));
@@ -100,14 +103,12 @@ public class StringBranchNode
       match.depth++;
       if (node.match(match)) {
         return true;
-      }
-      else {
+      } else {
         //restore the previous match state
         match.depth--;
         return false;
       }
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -119,9 +120,8 @@ public class StringBranchNode
     PatternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
 
-        return (depth != pattern.length()
-                && pattern.length() > 0
-                && !Pattern.isWildcard(depth, pattern));
+        return (depth != pattern.length() && pattern.length() > 0 && !Pattern.isWildcard(
+            depth, pattern));
       }
 
       public PatternNode getInstance() {

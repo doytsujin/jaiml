@@ -10,7 +10,8 @@ import aiml.parser.AimlParserException;
 
 public class EmptyScript implements Script {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
     return this;
   }
 
@@ -21,6 +22,7 @@ public class EmptyScript implements Script {
   public String execute(MatchState m, int depth) {
     return "";
   }
+
   public String toString() {
     return "\"\"";
   }

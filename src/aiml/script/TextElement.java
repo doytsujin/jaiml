@@ -9,18 +9,19 @@ import aiml.classifier.MatchState;
 
 public class TextElement implements Script {
   private String text = null;
-    
+
   public TextElement() {
     super();
   }
-  
+
   public TextElement(String text) {
     super();
     this.text = text;
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException {
-    text=parser.getText();
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException {
+    text = parser.getText();
     parser.next();
     return this;
   }
@@ -34,37 +35,38 @@ public class TextElement implements Script {
   }
 
   protected String printable(char ch) {
-    if(ch == '\n') {
-        return "\\n";
-    } else if(ch == '\r') {
-        return "\\r";
-    } else if(ch == '\t') {
-        return "\\t";
+    if (ch == '\n') {
+      return "\\n";
+    } else if (ch == '\r') {
+      return "\\r";
+    } else if (ch == '\t') {
+      return "\\t";
     } else if (ch == '"') {
       return "\\\"";
-    } if(ch > 127 || ch < 32) {
-        StringBuffer buf = new StringBuffer("\\u");
-        String hex = Integer.toHexString(ch);
-        for (int i = 0; i < 4-hex.length(); i++)
-        {
-            buf.append('0');
-        }
-        buf.append(hex);
-        return buf.toString();
-    } 
-    return ""+ch;
+    }
+    if (ch > 127 || ch < 32) {
+      StringBuffer buf = new StringBuffer("\\u");
+      String hex = Integer.toHexString(ch);
+      for (int i = 0; i < 4 - hex.length(); i++) {
+        buf.append('0');
+      }
+      buf.append(hex);
+      return buf.toString();
+    }
+    return "" + ch;
   }
 
   protected String printable(String s) {
-      if(s == null) return null;
-      StringBuffer buf = new StringBuffer();
-      for(int i = 0; i < s.length(); ++i) {
-          buf.append(printable(s.charAt(i)));
-      }
-      s = buf.toString();
-      return s;
+    if (s == null)
+      return null;
+    StringBuffer buf = new StringBuffer();
+    for (int i = 0; i < s.length(); ++i) {
+      buf.append(printable(s.charAt(i)));
+    }
+    s = buf.toString();
+    return s;
   }
-  
+
   public String toString() {
     return "\"" + printable(text) + "\"";
   }

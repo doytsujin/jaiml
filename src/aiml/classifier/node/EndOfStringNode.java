@@ -14,19 +14,20 @@
 
 package aiml.classifier.node;
 
-import aiml.classifier.*;
+import aiml.classifier.MatchState;
 
 /**
- * <p>The "End of string" node matches an end of a string. It can be used in special
- * circumstances, for example when a previous branch node consumed the rest of
- * the context value.
+ * <p>
+ * The "End of string" node matches an end of a string. It can be used in
+ * special circumstances, for example when a previous branch node consumed the
+ * rest of the context value.
  * </p>
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class EndOfStringNode
-    extends PatternNode {
+public class EndOfStringNode extends PatternNode {
   PatternNode next;
 
   /** Create a new end of string node */
@@ -38,7 +39,9 @@ public class EndOfStringNode
    * Create a new end of string node, with a subtree. In this case, the EOS node
    * works like a break in longer sequences of patterns, or works like a
    * terminator after a consuming branch.
-   * @param next the subtree
+   * 
+   * @param next
+   *                the subtree
    */
   public EndOfStringNode(PatternNode next) {
     this.next = next;
@@ -47,8 +50,11 @@ public class EndOfStringNode
 
   /**
    * Adds the pattern to itself.
-   * @param depth the current depth
-   * @param pattern the pattern to add
+   * 
+   * @param depth
+   *                the current depth
+   * @param pattern
+   *                the pattern to add
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
@@ -57,8 +63,7 @@ public class EndOfStringNode
       //System.out.println("AddEOS");
       return new AddResult(this, this, depth);
 
-    }
-    else {
+    } else {
       //System.out.println("AddEOS.next");
       if (next == null) {
         next = PatternNodeFactory.getInstance(depth, pattern);
@@ -71,20 +76,21 @@ public class EndOfStringNode
   }
 
   /**
-   * Matches the current context value starting at the depth specified in the match state.
-   * @param match MatchState
+   * Matches the current context value starting at the depth specified in the
+   * match state.
+   * 
+   * @param match
+   *                MatchState
    * @return boolean
    */
   public boolean match(MatchState match) {
     if (match.depth == match.getContextValue().length()) {
       //we have a winner, at least for now
       return subContext.match(match);
-    }
-    else {
+    } else {
       if (next != null) {
         return next.match(match);
-      }
-      else {
+      } else {
         return false;
       }
     }

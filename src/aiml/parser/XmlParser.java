@@ -7,15 +7,25 @@ package aiml.parser;
  * @author Kim Sullivan
  * @version 1.0
  */
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.xmlpull.v1.*;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class XmlParser implements XmlPullParser {
   private Reader in;
@@ -29,31 +39,39 @@ public class XmlParser implements XmlPullParser {
     String value;
     boolean isdefault = false;
     String type = "CDATA";
+
     Attribute(String name, String value) {
       assert (name != null && !name.equals("")) : "Name must not be empty";
       assert (value != null) : "Value must not be null";
       this.name = name;
       this.value = value;
     }
+
     String getNamespace() {
       return "";
     }
+
     String getName() {
       return name;
     }
+
     String getPrefix() {
       return null;
     }
+
     String getType() {
       return type;
     }
+
     boolean isDefault() {
       return isdefault;
     }
+
     String getValue() {
       return value;
     }
   }
+
   private HashMap<String, Attribute> attributeMap = new HashMap<String, Attribute>();
   private ArrayList<Attribute> attributeList = new ArrayList<Attribute>();
 
@@ -71,14 +89,11 @@ public class XmlParser implements XmlPullParser {
   private Boolean isStandalone;
   private String encodingDeclared;
   private boolean xmlDeclParsed;
-  
-  private enum InternalState{
-    DOCUMENT_START,
-    PROLOG,
-    CONTENT,
-    EPILOG,
-    DOCUMENT_END;
+
+  private enum InternalState {
+    DOCUMENT_START, PROLOG, CONTENT, EPILOG, DOCUMENT_END;
   }
+
   private InternalState internalState;
   private int markedLineNumber;
   private int markedColNumber;
@@ -110,29 +125,37 @@ public class XmlParser implements XmlPullParser {
     resetState();
   }
 
-  public void setFeature(String name, boolean state) throws XmlPullParserException {
+  public void setFeature(String name, boolean state)
+      throws XmlPullParserException {
     if (eventType != START_DOCUMENT)
-      throw new XmlPullParserException("Features can only be set before the first call to next or nextToken");
+      throw new XmlPullParserException(
+          "Features can only be set before the first call to next or nextToken");
     if (name.equals(FEATURE_PROCESS_NAMESPACES))
-      processNamespaces=state;
-    else if(state)
-      throw new XmlPullParserException("Feature " + name + " can't be activated");
+      processNamespaces = state;
+    else if (state)
+      throw new XmlPullParserException("Feature " + name +
+          " can't be activated");
   }
+
   public boolean getFeature(java.lang.String name) {
     if (name.equals(FEATURE_PROCESS_NAMESPACES))
       return processNamespaces;
     return false;
   }
-  public void setProperty(String name, Object value) throws XmlPullParserException {
+
+  public void setProperty(String name, Object value)
+      throws XmlPullParserException {
     if (name == null)
       throw new IllegalArgumentException("Property name cannot be null");
     if (name.equals("http://xmlpull.org/v1/doc/properties.html#location"))
-      location=value.toString();
+      location = value.toString();
     else
       throw new XmlPullParserException("Property " + name + " not supported");
   }
+
   public Object getProperty(String name) {
-    if (name.equals("http://xmlpull.org/v1/doc/properties.html#xmldecl-version") && xmlDeclParsed) {
+    if (name.equals("http://xmlpull.org/v1/doc/properties.html#xmldecl-version") &&
+        xmlDeclParsed) {
       return "1.0";
     }
     if (name.equals("http://xmlpull.org/v1/doc/properties.html#xmldecl-standalone")) {
@@ -143,22 +166,25 @@ public class XmlParser implements XmlPullParser {
     }
     return null;
   }
+
   public void setInput(java.io.Reader in) {
     resetState();
-    if (in!=null) {
+    if (in != null) {
       this.in = new BufferedReader(in);
       location = in.toString();
     } else
-      this.in=null;
+      this.in = null;
   }
-  public void setInput(java.io.InputStream inputStream, java.lang.String inputEncoding) throws XmlPullParserException {
+
+  public void setInput(java.io.InputStream inputStream,
+      java.lang.String inputEncoding) throws XmlPullParserException {
     resetState();
-    if (inputStream==null)
+    if (inputStream == null)
       throw new IllegalArgumentException("Input stream must not be null");
     try {
       InputStreamReader isr;
       if (inputEncoding != null) {
-        isr = new InputStreamReader(inputStream,inputEncoding);
+        isr = new InputStreamReader(inputStream, inputEncoding);
         encoding = inputEncoding; //isr.getEncoding();
       } else {
         isr = new InputStreamReader(inputStream);
@@ -166,146 +192,175 @@ public class XmlParser implements XmlPullParser {
       in = new BufferedReader(isr);
       location = in.toString();
     } catch (UnsupportedEncodingException e) {
-      throw new XmlPullParserException("Unsupported encoding",null,e);
+      throw new XmlPullParserException("Unsupported encoding", null, e);
     }
   }
+
   public String getInputEncoding() {
     return encoding;
   }
-  public void defineEntityReplacementText(String entityName, String replacementText) throws XmlPullParserException {
+
+  public void defineEntityReplacementText(String entityName,
+      String replacementText) throws XmlPullParserException {
     if (entityReplacementText.containsKey(entityName))
-      throw new XmlPullParserException("Cannot redefine entity replacement text");
-    entityReplacementText.put(entityName,replacementText);
+      throw new XmlPullParserException(
+          "Cannot redefine entity replacement text");
+    entityReplacementText.put(entityName, replacementText);
   }
+
   public int getNamespaceCount(int depth) throws XmlPullParserException {
     return 0;
   }
+
   public String getNamespacePrefix(int pos) throws XmlPullParserException {
     return null;
   }
+
   public String getNamespaceUri(int pos) throws XmlPullParserException {
     return null;
   }
+
   public String getNamespace(String prefix) {
     switch (eventType) {
-      case START_TAG:
-      case END_TAG:
-        return NO_NAMESPACE;
-      default:
-        return null;
+    case START_TAG:
+    case END_TAG:
+      return NO_NAMESPACE;
+    default:
+      return null;
     }
   }
+
   public int getDepth() {
     return depth;
   }
+
   public String getPositionDescription() {
-    return "in "+location+"@" + getLineNumber() + ":" + getColumnNumber();
+    return "in " + location + "@" + getLineNumber() + ":" + getColumnNumber();
   }
+
   public int getLineNumber() {
     return lineNumber;
   }
+
   public int getColumnNumber() {
     return colNumber;
   }
+
   public boolean isWhitespace() throws XmlPullParserException {
-    switch(eventType) {
-      case IGNORABLE_WHITESPACE:
-        return true;
-      case TEXT:
-      case CDSECT:
-        return isWhitespace;
-      default:
-        throw new XmlPullParserException("Whitespace can only be queried for ignorable whitespace, text and cdata sections");
+    switch (eventType) {
+    case IGNORABLE_WHITESPACE:
+      return true;
+    case TEXT:
+    case CDSECT:
+      return isWhitespace;
+    default:
+      throw new XmlPullParserException(
+          "Whitespace can only be queried for ignorable whitespace, text and cdata sections");
     }
-    
+
   }
+
   public String getText() {
     switch (eventType) {
-      case START_DOCUMENT:
-      case END_DOCUMENT:
-      case START_TAG:
-      case END_TAG:
-      case DOCDECL:
-        return null;
-      default:
-        return text;
+    case START_DOCUMENT:
+    case END_DOCUMENT:
+    case START_TAG:
+    case END_TAG:
+    case DOCDECL:
+      return null;
+    default:
+      return text;
     }
   }
+
   public char[] getTextCharacters(int[] holderForStartAndLength) {
     switch (eventType) {
-      case START_DOCUMENT:
-      case END_DOCUMENT:
-      case START_TAG:
-      case END_TAG:
-      case DOCDECL:
-        return null;
-      case ENTITY_REF:
-        return getTextCharacters(refName,holderForStartAndLength);
-      default:
-        return getTextCharacters(text,holderForStartAndLength);
+    case START_DOCUMENT:
+    case END_DOCUMENT:
+    case START_TAG:
+    case END_TAG:
+    case DOCDECL:
+      return null;
+    case ENTITY_REF:
+      return getTextCharacters(refName, holderForStartAndLength);
+    default:
+      return getTextCharacters(text, holderForStartAndLength);
     }
   }
+
   public String getNamespace() {
     switch (eventType) {
-      case START_TAG:
-      case END_TAG:
-        return "";
-      default:
-        return null;
+    case START_TAG:
+    case END_TAG:
+      return "";
+    default:
+      return null;
     }
   }
+
   public String getName() {
     switch (eventType) {
-      case START_TAG:
-      case END_TAG:
-        return name;
-      case ENTITY_REF:
-        return refName;
-      default:
-        return null;
+    case START_TAG:
+    case END_TAG:
+      return name;
+    case ENTITY_REF:
+      return refName;
+    default:
+      return null;
     }
   }
+
   public String getPrefix() {
     return null;
   }
+
   public boolean isEmptyElementTag() throws XmlPullParserException {
     if (eventType == START_TAG)
       return isEmptyElemTag;
     else
-      throw new XmlPullParserException("The function isEmptyElementTag() can only be called for start-tags");
+      throw new XmlPullParserException(
+          "The function isEmptyElementTag() can only be called for start-tags");
   }
+
   public int getAttributeCount() {
     if (eventType == START_TAG)
       return attributeList.size();
     else
       return -1;
   }
+
   public String getAttributeNamespace(int index) {
     if (eventType != START_TAG)
       throw new IndexOutOfBoundsException();
     return attributeList.get(index).getNamespace();
   }
+
   public String getAttributeName(int index) {
     if (eventType != START_TAG)
       throw new IndexOutOfBoundsException();
     return attributeList.get(index).getName();
   }
+
   public String getAttributePrefix(int index) {
     if (eventType != START_TAG)
       throw new IndexOutOfBoundsException();
     return attributeList.get(index).getPrefix();
   }
+
   public String getAttributeType(int index) {
     return attributeList.get(index).getType();
   }
+
   public boolean isAttributeDefault(int index) {
     return attributeList.get(index).isDefault();
   }
+
   public String getAttributeValue(int index) {
     if (eventType != START_TAG)
       throw new IndexOutOfBoundsException();
     return attributeList.get(index).getValue();
   }
+
   public String getAttributeValue(String namespace, String name) {
     assert (namespace == null) : "Namespaces not supported";
     if (eventType != START_TAG)
@@ -315,320 +370,363 @@ public class XmlParser implements XmlPullParser {
     else
       return null;
   }
+
   public int getEventType() throws XmlPullParserException {
     return eventType;
   }
+
   public int next() throws IOException, XmlPullParserException {
-    if (in==null)
+    if (in == null)
       throw new XmlPullParserException("Input must not be null");
     StringBuffer textBuffer = new StringBuffer();
-TextLoop:
-    do {
+    TextLoop: do {
       switch (internalState) {
-        case DOCUMENT_START:
-          nextChar();
-          tryXmlDecl();
-          internalState=InternalState.PROLOG;
-        case PROLOG:  
-          if (CharacterClasses.isS(ch)) {
-            nextS();
-            eventType=IGNORABLE_WHITESPACE;
-            internalState=InternalState.PROLOG;
-            continue TextLoop;
-          } else if (ch=='<') {
-            nextChar();
-            nextMarkupContent();
-            switch (eventType) {
-              case CDSECT:
-              case END_TAG:
-                throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
-              case START_TAG:
-                internalState=InternalState.CONTENT;
-                return eventType;
-              case DOCDECL:
-              case PROCESSING_INSTRUCTION:
-              case COMMENT:
-                continue TextLoop;
-              default:
-                throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
-            }
-          } else if(ch==EOF){
-            throw new EOFException("Unexpected end of file inside XML prolog");
-          } else { 
-            throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
-          }
-        case CONTENT:
-          if (eventType==START_TAG && isEmptyElemTag) { //special handling for empty elements
-            eventType=END_TAG;
-            return eventType;
-          }
-          if (eventType==END_TAG) depth--;
-          switch (ch) {
-            case '<':
-              markInput(2);
-              nextChar();
-              switch (ch) {
-                case '!':
-                case '?':
-                  unmarkInput();
-                  eventType=TEXT;
-                  nextMarkupContent();
-                  if (eventType==CDSECT) {
-                    textBuffer.append(text);                    
-                  }
-                  continue TextLoop;
-                default:
-                  if (textBuffer.length()>0) {
-                    resetInput();
-                    eventType=TEXT;
-                    text=textBuffer.toString();
-                    return eventType;
-                  }
-                  nextMarkupContent();
-                  if (eventType==END_TAG && depth==1) internalState=InternalState.EPILOG;
-                  return eventType;
-              }
-            
-            case '&':
-              text=nextReference();
-              if (text==null)
-                throw new XmlPullParserException("Unknown reference '" + refName + "' encountered",this,null);
-              else
-                textBuffer.append(text);
-              eventType=TEXT;
-              continue TextLoop;
-            case EOF:
-              if (depth==0) {
-                internalState=InternalState.DOCUMENT_END;
-                eventType=END_DOCUMENT;
-                return eventType;
-              }
-              throw new EOFException("Unexpected end of file inside ROOT element");
-            default:
-              textBuffer.append(nextCharData());
-              eventType=TEXT;
-              continue TextLoop;
-          }
-        case EPILOG:
-          if (eventType==END_TAG) depth--;
-          if (CharacterClasses.isS(ch)) {
-            text=nextS();
-            eventType=IGNORABLE_WHITESPACE;
-            continue TextLoop;
-          } else if (ch=='<') {
-            nextChar();
-            if (eventType!=TEXT) {
-              nextMarkupContent();
-              switch (eventType) {
-                case CDSECT:
-                case END_TAG:
-                case START_TAG:  
-                case DOCDECL:
-                  throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
-                case PROCESSING_INSTRUCTION:
-                case COMMENT:
-                  continue TextLoop;
-                default:
-                  throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
-              }
-            }
-          } else if(ch==EOF){
-            internalState=InternalState.DOCUMENT_END;
-            eventType=END_DOCUMENT;
-            return eventType;
-          } else { 
-            throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
-          }
-        case DOCUMENT_END:
-          return END_DOCUMENT;
-        default:
-          throw new XmlPullParserException("Inconsistent parser state, please reset input");
-      }
-    } while (true);
-  }
-  public int nextToken() throws IOException, XmlPullParserException {
-    if (in==null)
-      throw new XmlPullParserException("Input must not be null");
-    switch (internalState) {
       case DOCUMENT_START:
         nextChar();
         tryXmlDecl();
-        internalState=InternalState.PROLOG;
-      case PROLOG:  
+        internalState = InternalState.PROLOG;
+      case PROLOG:
         if (CharacterClasses.isS(ch)) {
-          text=nextS();
-          eventType=IGNORABLE_WHITESPACE;
-          internalState=InternalState.PROLOG;
-          return eventType;
-        } else if (ch=='<') {
+          nextS();
+          eventType = IGNORABLE_WHITESPACE;
+          internalState = InternalState.PROLOG;
+          continue TextLoop;
+        } else if (ch == '<') {
           nextChar();
           nextMarkupContent();
           switch (eventType) {
-            case CDSECT:
-            case END_TAG:
-              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
-            case START_TAG:
-              internalState=InternalState.CONTENT;
-              return eventType;
-            case DOCDECL:
-            case PROCESSING_INSTRUCTION:
-            case COMMENT:
-              return eventType;
-            default:
-              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+          case CDSECT:
+          case END_TAG:
+            throw new XmlPullParserException(
+                "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+                this, null);
+          case START_TAG:
+            internalState = InternalState.CONTENT;
+            return eventType;
+          case DOCDECL:
+          case PROCESSING_INSTRUCTION:
+          case COMMENT:
+            continue TextLoop;
+          default:
+            throw new XmlPullParserException(
+                "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+                this, null);
           }
-        } else if(ch==EOF){
+        } else if (ch == EOF) {
           throw new EOFException("Unexpected end of file inside XML prolog");
-        } else { 
-          throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+        } else {
+          throw new XmlPullParserException(
+              "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+              this, null);
         }
       case CONTENT:
-        if (eventType==START_TAG && isEmptyElemTag) { //special handling for empty elements
-          eventType=END_TAG;
+        if (eventType == START_TAG && isEmptyElemTag) { //special handling for empty elements
+          eventType = END_TAG;
           return eventType;
         }
-        if (eventType==END_TAG) depth--;
+        if (eventType == END_TAG)
+          depth--;
         switch (ch) {
-          case '<':
-            nextChar();
+        case '<':
+          markInput(2);
+          nextChar();
+          switch (ch) {
+          case '!':
+          case '?':
+            unmarkInput();
+            eventType = TEXT;
             nextMarkupContent();
-            if (eventType==END_TAG && depth==1) internalState=InternalState.EPILOG;
-            return eventType;
-          case '&':
-            text=nextReference();
-            eventType=ENTITY_REF;
-            return eventType;
-          case EOF:
-            if (depth==0) {
-              internalState=InternalState.DOCUMENT_END;
-              eventType=END_DOCUMENT;
+            if (eventType == CDSECT) {
+              textBuffer.append(text);
+            }
+            continue TextLoop;
+          default:
+            if (textBuffer.length() > 0) {
+              resetInput();
+              eventType = TEXT;
+              text = textBuffer.toString();
               return eventType;
             }
-            throw new EOFException("Unexpected end of file inside ROOT element");
-          default:
-            text=nextCharData();
-            eventType=TEXT;
+            nextMarkupContent();
+            if (eventType == END_TAG && depth == 1)
+              internalState = InternalState.EPILOG;
             return eventType;
+          }
+
+        case '&':
+          text = nextReference();
+          if (text == null)
+            throw new XmlPullParserException("Unknown reference '" + refName +
+                "' encountered", this, null);
+          else
+            textBuffer.append(text);
+          eventType = TEXT;
+          continue TextLoop;
+        case EOF:
+          if (depth == 0) {
+            internalState = InternalState.DOCUMENT_END;
+            eventType = END_DOCUMENT;
+            return eventType;
+          }
+          throw new EOFException("Unexpected end of file inside ROOT element");
+        default:
+          textBuffer.append(nextCharData());
+          eventType = TEXT;
+          continue TextLoop;
         }
       case EPILOG:
-        if (eventType==END_TAG) depth--;
+        if (eventType == END_TAG)
+          depth--;
         if (CharacterClasses.isS(ch)) {
-          text=nextS();
-          eventType=IGNORABLE_WHITESPACE;
-          return eventType;
-        } else if (ch=='<') {
+          text = nextS();
+          eventType = IGNORABLE_WHITESPACE;
+          continue TextLoop;
+        } else if (ch == '<') {
           nextChar();
-          nextMarkupContent();
-          switch (eventType) {
+          if (eventType != TEXT) {
+            nextMarkupContent();
+            switch (eventType) {
             case CDSECT:
             case END_TAG:
-            case START_TAG:  
+            case START_TAG:
             case DOCDECL:
-              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
+              throw new XmlPullParserException(
+                  "Syntax error, only comments, processing instructions and whitespace allowed in document epilog",
+                  this, null);
             case PROCESSING_INSTRUCTION:
             case COMMENT:
-              return eventType;
+              continue TextLoop;
             default:
-              throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document epilog",this,null);
+              throw new XmlPullParserException(
+                  "Syntax error, only comments, processing instructions and whitespace allowed in document epilog",
+                  this, null);
+            }
           }
-        } else if(ch==EOF){
-          internalState=InternalState.DOCUMENT_END;
-          eventType=END_DOCUMENT;
+        } else if (ch == EOF) {
+          internalState = InternalState.DOCUMENT_END;
+          eventType = END_DOCUMENT;
           return eventType;
-        } else { 
-          throw new XmlPullParserException("Syntax error, only comments, processing instructions and whitespace allowed in document prolog",this,null);
+        } else {
+          throw new XmlPullParserException(
+              "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+              this, null);
         }
       case DOCUMENT_END:
         return END_DOCUMENT;
       default:
-        throw new XmlPullParserException("Inconsistent parser state, please reset input");
+        throw new XmlPullParserException(
+            "Inconsistent parser state, please reset input");
+      }
+    } while (true);
+  }
+
+  public int nextToken() throws IOException, XmlPullParserException {
+    if (in == null)
+      throw new XmlPullParserException("Input must not be null");
+    switch (internalState) {
+    case DOCUMENT_START:
+      nextChar();
+      tryXmlDecl();
+      internalState = InternalState.PROLOG;
+    case PROLOG:
+      if (CharacterClasses.isS(ch)) {
+        text = nextS();
+        eventType = IGNORABLE_WHITESPACE;
+        internalState = InternalState.PROLOG;
+        return eventType;
+      } else if (ch == '<') {
+        nextChar();
+        nextMarkupContent();
+        switch (eventType) {
+        case CDSECT:
+        case END_TAG:
+          throw new XmlPullParserException(
+              "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+              this, null);
+        case START_TAG:
+          internalState = InternalState.CONTENT;
+          return eventType;
+        case DOCDECL:
+        case PROCESSING_INSTRUCTION:
+        case COMMENT:
+          return eventType;
+        default:
+          throw new XmlPullParserException(
+              "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+              this, null);
+        }
+      } else if (ch == EOF) {
+        throw new EOFException("Unexpected end of file inside XML prolog");
+      } else {
+        throw new XmlPullParserException(
+            "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+            this, null);
+      }
+    case CONTENT:
+      if (eventType == START_TAG && isEmptyElemTag) { //special handling for empty elements
+        eventType = END_TAG;
+        return eventType;
+      }
+      if (eventType == END_TAG)
+        depth--;
+      switch (ch) {
+      case '<':
+        nextChar();
+        nextMarkupContent();
+        if (eventType == END_TAG && depth == 1)
+          internalState = InternalState.EPILOG;
+        return eventType;
+      case '&':
+        text = nextReference();
+        eventType = ENTITY_REF;
+        return eventType;
+      case EOF:
+        if (depth == 0) {
+          internalState = InternalState.DOCUMENT_END;
+          eventType = END_DOCUMENT;
+          return eventType;
+        }
+        throw new EOFException("Unexpected end of file inside ROOT element");
+      default:
+        text = nextCharData();
+        eventType = TEXT;
+        return eventType;
+      }
+    case EPILOG:
+      if (eventType == END_TAG)
+        depth--;
+      if (CharacterClasses.isS(ch)) {
+        text = nextS();
+        eventType = IGNORABLE_WHITESPACE;
+        return eventType;
+      } else if (ch == '<') {
+        nextChar();
+        nextMarkupContent();
+        switch (eventType) {
+        case CDSECT:
+        case END_TAG:
+        case START_TAG:
+        case DOCDECL:
+          throw new XmlPullParserException(
+              "Syntax error, only comments, processing instructions and whitespace allowed in document epilog",
+              this, null);
+        case PROCESSING_INSTRUCTION:
+        case COMMENT:
+          return eventType;
+        default:
+          throw new XmlPullParserException(
+              "Syntax error, only comments, processing instructions and whitespace allowed in document epilog",
+              this, null);
+        }
+      } else if (ch == EOF) {
+        internalState = InternalState.DOCUMENT_END;
+        eventType = END_DOCUMENT;
+        return eventType;
+      } else {
+        throw new XmlPullParserException(
+            "Syntax error, only comments, processing instructions and whitespace allowed in document prolog",
+            this, null);
+      }
+    case DOCUMENT_END:
+      return END_DOCUMENT;
+    default:
+      throw new XmlPullParserException(
+          "Inconsistent parser state, please reset input");
     }
   }
-  public void require(int type, String namespace, String name) throws IOException, XmlPullParserException {
+
+  public void require(int type, String namespace, String name)
+      throws IOException, XmlPullParserException {
     StringBuffer err = new StringBuffer();
     StringBuffer msg = new StringBuffer();
     if (type != getEventType()) {
       err.append(" type,");
-      msg.append(' ').append(TYPES[ type ]);
+      msg.append(' ').append(TYPES[type]);
     }
-    if (namespace != null &&  !namespace.equals( getNamespace () ) ) {
+    if (namespace != null && !namespace.equals(getNamespace())) {
       err.append(" namespace,");
       msg.append(' ').append(namespace);
     }
-    if (name != null &&  !name.equals( getName() ) ) {
+    if (name != null && !name.equals(getName())) {
       err.append(" name,");
       msg.append(" name=").append(name);
     }
-    
-    if (err.length()>0)
-      throw new XmlPullParserException("Wrong" + err +" expected "+ msg,this,null);
+
+    if (err.length() > 0)
+      throw new XmlPullParserException("Wrong" + err + " expected " + msg,
+          this, null);
   }
+
   public String nextText() throws IOException, XmlPullParserException {
-    if(getEventType() != START_TAG) {
+    if (getEventType() != START_TAG) {
       throw new XmlPullParserException(
-        "parser must be on START_TAG to read next text", this, null);
-   }
-   next();
-   if(eventType == TEXT) {
+          "parser must be on START_TAG to read next text", this, null);
+    }
+    next();
+    if (eventType == TEXT) {
       String result = getText();
       next();
-      if(eventType != END_TAG) {
+      if (eventType != END_TAG) {
         throw new XmlPullParserException(
-           "event TEXT must be immediately followed by END_TAG", this, null);
-       }
-       return result;
-   } else if(eventType == END_TAG) {
+            "event TEXT must be immediately followed by END_TAG", this, null);
+      }
+      return result;
+    } else if (eventType == END_TAG) {
       return "";
-   } else {
+    } else {
       throw new XmlPullParserException(
-        "parser must be on START_TAG or TEXT to read text", this, null);
-   }  }
+          "parser must be on START_TAG or TEXT to read text", this, null);
+    }
+  }
+
   public int nextTag() throws IOException, XmlPullParserException {
     next();
-    if(eventType == TEXT &&  isWhitespace()) {   // skip whitespace
-       next();
+    if (eventType == TEXT && isWhitespace()) { // skip whitespace
+      next();
     }
-    if (eventType != START_TAG &&  eventType != END_TAG) {
-       throw new XmlPullParserException("expected start or end tag", this, null);
+    if (eventType != START_TAG && eventType != END_TAG) {
+      throw new XmlPullParserException("expected start or end tag", this, null);
     }
     return eventType;
   }
 
-  private static char[] getTextCharacters(String s, int[] holderForStartAndLength) {
+  private static char[] getTextCharacters(String s,
+      int[] holderForStartAndLength) {
     holderForStartAndLength[0] = 0;
     holderForStartAndLength[1] = s.length();
     char[] result = new char[s.length()];
-    s.getChars(0,s.length(),result,0);
+    s.getChars(0, s.length(), result, 0);
     return result;
   }
 
   private char getChar() {
     return ch;
   }
-  
+
   private void markInput(int readAheadLimit) throws IOException {
-    assert(in.markSupported()) : "Mark operation must be supported";
+    assert (in.markSupported()) : "Mark operation must be supported";
     in.mark(readAheadLimit);
-    markedLineNumber=lineNumber;
-    markedColNumber=colNumber;
-    markedReadCR=readCR;
-    isMarked=true;
-    markedCharacter=ch;
+    markedLineNumber = lineNumber;
+    markedColNumber = colNumber;
+    markedReadCR = readCR;
+    isMarked = true;
+    markedCharacter = ch;
   }
-  
+
   private void resetInput() throws IOException {
-    assert(isMarked) : "Cannot reset unmarked input";
+    assert (isMarked) : "Cannot reset unmarked input";
     in.reset();
-    lineNumber=markedLineNumber;
-    colNumber=markedColNumber;
-    ch=markedCharacter;
-    isMarked=false;
-    readCR=markedReadCR;
+    lineNumber = markedLineNumber;
+    colNumber = markedColNumber;
+    ch = markedCharacter;
+    isMarked = false;
+    readCR = markedReadCR;
   }
+
   private void unmarkInput() {
-    isMarked=false;
+    isMarked = false;
   }
-  
+
   private void resetState() {
     lineNumber = 1;
     colNumber = 0;
@@ -640,40 +738,45 @@ TextLoop:
     in = null;
     encoding = null;
     eventType = START_DOCUMENT;
-    isStandalone=null;
-    encodingDeclared=null;
-    xmlDeclParsed=false;
-    name=null;
-    text=null;
-    refName=null;
-    internalState=InternalState.DOCUMENT_START;
-    isWhitespace=false;
-    processNamespaces=false;
-    isMarked=false;
-    readDocdecl=false;
-    ch='\0';
+    isStandalone = null;
+    encodingDeclared = null;
+    xmlDeclParsed = false;
+    name = null;
+    text = null;
+    refName = null;
+    internalState = InternalState.DOCUMENT_START;
+    isWhitespace = false;
+    processNamespaces = false;
+    isMarked = false;
+    readDocdecl = false;
+    ch = '\0';
     location = "";
   }
+
   private void setDefaultEntityReplacementText() {
     entityReplacementText.clear();
     try {
-      defineEntityReplacementText("amp","&");
-      defineEntityReplacementText("lt","<");
-      defineEntityReplacementText("gt",">");
-      defineEntityReplacementText("quot","\"");
-      defineEntityReplacementText("apos","'");
-    } catch (XmlPullParserException e) {}
+      defineEntityReplacementText("amp", "&");
+      defineEntityReplacementText("lt", "<");
+      defineEntityReplacementText("gt", ">");
+      defineEntityReplacementText("quot", "\"");
+      defineEntityReplacementText("apos", "'");
+    } catch (XmlPullParserException e) {
+    }
   }
 
-  private void requireChar(char what, String failMessage) throws XmlPullParserException, IOException {
+  private void requireChar(char what, String failMessage)
+      throws XmlPullParserException, IOException {
     if (ch != what)
-      throw new XmlPullParserException(failMessage,this,null);
+      throw new XmlPullParserException(failMessage, this, null);
     nextChar();
   }
-  private void requireString(String what, String failMessage) throws XmlPullParserException, IOException {
+
+  private void requireString(String what, String failMessage)
+      throws XmlPullParserException, IOException {
     for (int i = 0; i < what.length(); i++) {
       if (ch != what.charAt(i))
-        throw new XmlPullParserException(failMessage,this,null);
+        throw new XmlPullParserException(failMessage, this, null);
       nextChar();
     }
   }
@@ -684,39 +787,41 @@ TextLoop:
   }
 
   private char nextChar() throws IOException {
-    if (ch==LF) {
+    if (ch == LF) {
       lineNumber++;
       colNumber = 0;
     }
     ch = (char) in.read();
     colNumber++;
     switch (ch) { //normalize end of line markers and count the position
-      case LF:
-        if (readCR) { // Processing CRLF, so silently skip the LF
-          ch = (char) in.read();
-          if (ch==CR) {
-            ch = LF;
-          } else
-            readCR=false;
-        } else {
+    case LF:
+      if (readCR) { // Processing CRLF, so silently skip the LF
+        ch = (char) in.read();
+        if (ch == CR) {
+          ch = LF;
+        } else
           readCR = false;
-        }
-        break;
-      case CR:
-        ch = LF;
-        readCR = true;
-        break;
-      default:
+      } else {
         readCR = false;
+      }
+      break;
+    case CR:
+      ch = LF;
+      readCR = true;
+      break;
+    default:
+      readCR = false;
     }
 
     return ch;
   }
+
   private String nextS() throws XmlPullParserException, IOException {
     //[3]   	S	   ::=   	(#x20 | #x9 | #xD | #xA)+
     StringBuffer result = new StringBuffer();
     if (!CharacterClasses.isS(ch))
-      throw new XmlPullParserException("Syntax error, expecting whitespace",this,null);
+      throw new XmlPullParserException("Syntax error, expecting whitespace",
+          this, null);
     do {
       result.append(ch);
       nextChar();
@@ -727,24 +832,32 @@ TextLoop:
   private String nextName() throws XmlPullParserException, IOException {
     //[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*
     if (!CharacterClasses.isNameFirst(ch))
-      throw new XmlPullParserException("Syntax error, expecting production\n[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*",this,null);
+      throw new XmlPullParserException(
+          "Syntax error, expecting production\n[5]   	Name	   ::=   	(Letter | '_' | ':') (NameChar)*",
+          this, null);
     StringBuffer result = new StringBuffer();
     result.append(ch);
     while ((nextChar() != EOF) && CharacterClasses.isNameChar(ch))
       result.append(ch);
     return result.toString();
   }
+
   private void nextEq() throws XmlPullParserException, IOException {
     // [25]   	Eq	   ::=   	S? '=' S?
     if (!CharacterClasses.isS(ch) && ch != EQ)
-      throw new XmlPullParserException("Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?",this,null);
+      throw new XmlPullParserException(
+          "Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?",
+          this, null);
     skipS();
-    requireChar(EQ,"Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?");
+    requireChar(EQ,
+        "Syntax error, expecting production\n[25]   	Eq	   ::=   	S? '=' S?");
     skipS();
   }
+
   private String nextReference() throws XmlPullParserException, IOException {
     //[67]   	Reference	   ::=   	EntityRef | CharRef
-    requireChar(AMP,"Syntax error, production [67] Referencee must start with &");
+    requireChar(AMP,
+        "Syntax error, production [67] Referencee must start with &");
     StringBuffer result = new StringBuffer();
     String name;
     if (CharacterClasses.isNameFirst(ch)) { //[68]   	EntityRef	   ::=   	'&' Name ';'
@@ -752,7 +865,7 @@ TextLoop:
       if (entityReplacementText.containsKey(name))
         result.append(entityReplacementText.get(name));
       else
-        result=null;
+        result = null;
     } else if (ch == HASH) {//[66]   	CharRef	   ::=   	'&#' [0-9]+ ';' | '&#x' [0-9a-fA-F]+ ';'
       nextChar();
       int radix;
@@ -765,7 +878,9 @@ TextLoop:
           if (CharacterClasses.isHexDigit(ch))
             codepointBuffer.append(ch);
           else
-            throw new XmlPullParserException("Syntax error, invalid hexadecimal digit '" + ch + "' in character reference",this,null);
+            throw new XmlPullParserException(
+                "Syntax error, invalid hexadecimal digit '" + ch +
+                    "' in character reference", this, null);
           nextChar();
         } while (CharacterClasses.isHexDigit(ch));
       } else {//[66]   	CharRef	   ::=   	'&#' [0-9]+ ';'
@@ -775,25 +890,31 @@ TextLoop:
           if (CharacterClasses.isDecDigit(ch))
             codepointBuffer.append(ch);
           else
-            throw new XmlPullParserException("Syntax error, invalid decimal digit '" + ch + "' in character reference",this,null);
+            throw new XmlPullParserException(
+                "Syntax error, invalid decimal digit '" + ch +
+                    "' in character reference", this, null);
           nextChar();
         } while (CharacterClasses.isDecDigit(ch));
       }
       int codepoint;
       try {
         name = name + codepointBuffer.toString();
-        codepoint = Integer.parseInt(codepointBuffer.toString(),radix);
+        codepoint = Integer.parseInt(codepointBuffer.toString(), radix);
       } catch (NumberFormatException e) {
-        throw new XmlPullParserException("Syntax error, bad character reference '" + codepointBuffer + "'",this,null);
+        throw new XmlPullParserException(
+            "Syntax error, bad character reference '" + codepointBuffer + "'",
+            this, null);
       }
       result.appendCodePoint(codepoint);
     } else {
-      throw new XmlPullParserException("Syntax error, bad entity reference",this,null);
+      throw new XmlPullParserException("Syntax error, bad entity reference",
+          this, null);
     }
 
-    requireChar(SEMICOLON,"Syntax error, production [67] Reference must end with ';'");
-    refName=name;
-    if (result==null)
+    requireChar(SEMICOLON,
+        "Syntax error, production [67] Reference must end with ';'");
+    refName = name;
+    if (result == null)
       return null;
     else
       return result.toString();
@@ -803,7 +924,9 @@ TextLoop:
     //[10]   	AttValue	   ::=   	'"' ([^<&"] | Reference)* '"' |  "'" ([^<&'] | Reference)* "'"
     if ((ch != QUOT) && (ch != APOS)) {
       //System.out.println("((["+ch+"]!=["+QUOT+"]) || ([["+ch+"]!=["+APOS+"]))");
-      throw new XmlPullParserException("Syntax error, attribute value must begin with quote or apostrophe",this,null);
+      throw new XmlPullParserException(
+          "Syntax error, attribute value must begin with quote or apostrophe",
+          this, null);
     }
     char delim = ch;
     StringBuffer result = new StringBuffer();
@@ -820,27 +943,29 @@ TextLoop:
         continue;
       }
       switch (ch) {
-        case LT:
+      case LT:
+        throw new XmlPullParserException(
+            "Syntax error, character '<' not allowed in attribute value", this,
+            null);
+      case AMP:
+        String replacement = nextReference();
+
+        /* Weeelll... the specification states that
+         * "The replacement text of any entity referred to directly or 
+         * indirectly in an attribute value MUST NOT contain a <"
+         * http://www.w3.org/TR/REC-xml/#CleanAttrVals
+         * (and it's been like that since the second revision).
+         * BUT, the test cases assume that the character < can be included 
+         * in attribute values via references... who am I to argue?
+         */
+        /*
+        if (replacement.contains("<"))
           throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value",this,null);
-        case AMP:
-          String replacement = nextReference();
-          
-          /* Weeelll... the specification states that
-           * "The replacement text of any entity referred to directly or 
-           * indirectly in an attribute value MUST NOT contain a <"
-           * http://www.w3.org/TR/REC-xml/#CleanAttrVals
-           * (and it's been like that since the second revision).
-           * BUT, the test cases assume that the character < can be included 
-           * in attribute values via references... who am I to argue?
-           */
-          /*
-          if (replacement.contains("<"))
-            throw new XmlPullParserException("Syntax error, character '<' not allowed in attribute value",this,null);
-          */  
-          result.append(replacement);
-          continue;
-        default:
-          result.append(ch);
+        */
+        result.append(replacement);
+        continue;
+      default:
+        result.append(ch);
       }
       nextChar();
     } while (true);
@@ -852,9 +977,11 @@ TextLoop:
     nextEq();
     String value = nextAttValue();
     if (attributeMap.containsKey(name))
-      throw new XmlPullParserException("Violation of WFC: Unique Att Spec (An attribute name MUST NOT appear more than once in the same start-tag or empty-element tag.)",this,null);
-    Attribute a = new Attribute(name,value);
-    attributeMap.put(name,a);
+      throw new XmlPullParserException(
+          "Violation of WFC: Unique Att Spec (An attribute name MUST NOT appear more than once in the same start-tag or empty-element tag.)",
+          this, null);
+    Attribute a = new Attribute(name, value);
+    attributeMap.put(name, a);
     attributeList.add(a);
   }
 
@@ -872,13 +999,13 @@ TextLoop:
        */
       StringBuffer result = new StringBuffer();
       boolean seenQ = false;
-PIContent:
-      do {
+      PIContent: do {
         if (!CharacterClasses.isChar(ch)) {
           if (ch == EOF)
             throw new EOFException("Unexpected end of input while parsing PI");
           else
-            throw new XmlPullParserException("Syntax error, invalid character while parsing PI",this,null);
+            throw new XmlPullParserException(
+                "Syntax error, invalid character while parsing PI", this, null);
         }
         if (!seenQ) {
           //S ::= '?' A | '>' S {out('>')} | C S {out(C)}
@@ -889,14 +1016,14 @@ PIContent:
         } else {
           //A ::= '?' A {out('?')} | '>' {break} | C S {out('?') out (C)}
           switch (ch) {
-            case QUES:
-              result.append('?');
-              break; //what we're outputting here is not this '?' but the one before that
-            case GT:
-              break PIContent; //a simple break would just terminate the switch, not the do {} while block.
-            default:
-              result.append('?').append(ch);
-              seenQ = false;
+          case QUES:
+            result.append('?');
+            break; //what we're outputting here is not this '?' but the one before that
+          case GT:
+            break PIContent; //a simple break would just terminate the switch, not the do {} while block.
+          default:
+            result.append('?').append(ch);
+            seenQ = false;
           }
         }
         nextChar();
@@ -905,14 +1032,19 @@ PIContent:
       return result.toString();
     } else {
       //'?>'
-      requireChar(QUES,"Syntax error, in production [16] PI: PITarget must be followed by whitespace, or immediately terminated with '?>'");
-      requireChar(GT,"Syntax error, in production [16] PI: PITarget must be followed by whitespace, or immediately terminated with '?>'");
+      requireChar(
+          QUES,
+          "Syntax error, in production [16] PI: PITarget must be followed by whitespace, or immediately terminated with '?>'");
+      requireChar(
+          GT,
+          "Syntax error, in production [16] PI: PITarget must be followed by whitespace, or immediately terminated with '?>'");
       return "";
     }
 
   }
 
-  private String nextCommentContent() throws IOException, XmlPullParserException {
+  private String nextCommentContent() throws IOException,
+      XmlPullParserException {
     //[15]   	Comment	   ::=   	'<!--' ((Char - '-') | ('-' (Char - '-')))* '-->'
     //Assumes we already read '<!--'
     //As with PI's we're actually looking for the terminating '--'
@@ -927,9 +1059,12 @@ PIContent:
     do {
       if (!CharacterClasses.isChar(ch)) {
         if (ch == EOF)
-          throw new EOFException("Unexpected end of input while parsing Comment");
+          throw new EOFException(
+              "Unexpected end of input while parsing Comment");
         else
-          throw new XmlPullParserException("Syntax error, invalid character while parsing Comment",this,null);
+          throw new XmlPullParserException(
+              "Syntax error, invalid character while parsing Comment", this,
+              null);
       }
       if (!seenDash) {
         if (ch == DASH)
@@ -947,7 +1082,7 @@ PIContent:
       nextChar();
     } while (true);
     nextChar();
-    requireChar(GT,"Syntax error, comment must be terminated with '-->'");
+    requireChar(GT, "Syntax error, comment must be terminated with '-->'");
     return result.toString();
   }
 
@@ -962,51 +1097,53 @@ PIContent:
      */
     StringBuffer result = new StringBuffer();
     int seenRAB = 0;
-    isWhitespace=true;
-CDContent:
-    do {
+    isWhitespace = true;
+    CDContent: do {
       if (!CharacterClasses.isChar(ch)) {
         if (ch == EOF)
-          throw new EOFException("Unexpected end of input while parsing Comment");
+          throw new EOFException(
+              "Unexpected end of input while parsing Comment");
         else
-          throw new XmlPullParserException("Syntax error, invalid character while parsing Comment",this,null);
+          throw new XmlPullParserException(
+              "Syntax error, invalid character while parsing Comment", this,
+              null);
       }
       switch (seenRAB) {
-        case 0:
-          if (ch == RAB) {
-            seenRAB = 1;
-          } else {
-            if (isWhitespace && !CharacterClasses.isS(ch))
-              isWhitespace=false;
-            result.append(ch);
-          }
+      case 0:
+        if (ch == RAB) {
+          seenRAB = 1;
+        } else {
+          if (isWhitespace && !CharacterClasses.isS(ch))
+            isWhitespace = false;
+          result.append(ch);
+        }
+        break;
+      case 1:
+        if (ch == RAB) {
+          seenRAB = 2;
+        } else {
+          seenRAB = 0;
+          if (isWhitespace)
+            isWhitespace = false;
+          result.append(']').append(ch);
+        }
+        break;
+      case 2:
+        switch (ch) {
+        case RAB:
+          if (isWhitespace)
+            isWhitespace = false;
+          result.append(']');
           break;
-        case 1:
-          if (ch == RAB) {
-            seenRAB = 2;
-          } else {
-            seenRAB = 0;
-            if (isWhitespace)
-              isWhitespace=false;
-            result.append(']').append(ch);
-          }
-          break;
-        case 2:
-          switch (ch) {
-            case RAB:
-              if (isWhitespace)
-                isWhitespace=false;
-              result.append(']');
-              break;
-            case GT:
-              break CDContent;
-            default:
-              seenRAB = 0;
-              if (isWhitespace)
-                isWhitespace=false;
-              result.append(']').append(']').append(ch);
-          }
-          break;
+        case GT:
+          break CDContent;
+        default:
+          seenRAB = 0;
+          if (isWhitespace)
+            isWhitespace = false;
+          result.append(']').append(']').append(ch);
+        }
+        break;
       }
       nextChar();
     } while (true);
@@ -1025,70 +1162,74 @@ CDContent:
      */
     StringBuffer result = new StringBuffer();
     int seenRAB = 0;
-    isWhitespace=true;
-CharData:
-    do {      
+    isWhitespace = true;
+    CharData: do {
       if (!CharacterClasses.isChar(ch)) {
         if (ch == EOF)
-          throw new EOFException("Unexpected end of input while parsing Character data");
+          throw new EOFException(
+              "Unexpected end of input while parsing Character data");
         else
-          throw new XmlPullParserException("Syntax error, invalid character while parsing Character data",this,null);
+          throw new XmlPullParserException(
+              "Syntax error, invalid character while parsing Character data",
+              this, null);
       }
       switch (seenRAB) {
-        case 0:
-          switch (ch) {
-            case (RAB):
-              seenRAB = 1;
-              break;
-            case (AMP):
-            case (LT):
-              break CharData;
-            default:
-              if (isWhitespace && !CharacterClasses.isS(ch))
-                isWhitespace=false;
-              result.append(ch);
-          }
+      case 0:
+        switch (ch) {
+        case (RAB):
+          seenRAB = 1;
           break;
-        case 1:
-          switch (ch) {
-            case (RAB):
-              seenRAB = 2;
-              break;
-            case (AMP):
-            case (LT):
-              if (isWhitespace)
-                isWhitespace=false;
-              result.append(']');
-              break CharData;
-            default:
-              if (isWhitespace)
-                isWhitespace=false;
-              seenRAB = 0;
-              result.append(']').append(ch);
-          }
+        case (AMP):
+        case (LT):
+          break CharData;
+        default:
+          if (isWhitespace && !CharacterClasses.isS(ch))
+            isWhitespace = false;
+          result.append(ch);
+        }
+        break;
+      case 1:
+        switch (ch) {
+        case (RAB):
+          seenRAB = 2;
           break;
-        case 2:
-          switch (ch) {
-            case RAB:
-              if (isWhitespace)
-                isWhitespace=false;
-              result.append(']');
-              break;
-            case GT:
-              throw new XmlPullParserException("Syntax error, the CDATA-sesction-close delimiter ']]>' must not occur in Character data",this,null);
-            case (AMP):
-            case (LT):
-              if (isWhitespace)
-                isWhitespace=false;
-              result.append(']').append(']');
-              break CharData;
-            default:
-              seenRAB = 0;
-              if (isWhitespace)
-                isWhitespace=false;
-              result.append(']').append(']').append(ch);
-          }
+        case (AMP):
+        case (LT):
+          if (isWhitespace)
+            isWhitespace = false;
+          result.append(']');
+          break CharData;
+        default:
+          if (isWhitespace)
+            isWhitespace = false;
+          seenRAB = 0;
+          result.append(']').append(ch);
+        }
+        break;
+      case 2:
+        switch (ch) {
+        case RAB:
+          if (isWhitespace)
+            isWhitespace = false;
+          result.append(']');
           break;
+        case GT:
+          throw new XmlPullParserException(
+              "Syntax error, the CDATA-sesction-close delimiter ']]>' must not occur in Character data",
+              this, null);
+        case (AMP):
+        case (LT):
+          if (isWhitespace)
+            isWhitespace = false;
+          result.append(']').append(']');
+          break CharData;
+        default:
+          seenRAB = 0;
+          if (isWhitespace)
+            isWhitespace = false;
+          result.append(']').append(']').append(ch);
+        }
+        break;
       }
       nextChar();
     } while (true);
@@ -1106,68 +1247,75 @@ CharData:
     //[23]    XMLDecl       ::=  '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
     //assumes we already read the initial '<'
     switch (ch) {
-      case QUES:
-        eventType = PROCESSING_INSTRUCTION;
+    case QUES:
+      eventType = PROCESSING_INSTRUCTION;
+      nextChar();
+      name = nextName();
+      if (name.equalsIgnoreCase("xml"))
+        throw new XmlPullParserException("The target '" + name +
+            "' is not allowed for a processing instruction");
+      text = name + nextPIContent();
+      break;
+    case EXCL:
+      nextChar();
+      switch (ch) {
+      case DASH:
+        eventType = COMMENT;
         nextChar();
-        name = nextName();
-        if (name.equalsIgnoreCase("xml"))
-          throw new XmlPullParserException("The target '" + name + "' is not allowed for a processing instruction");
-        text = name + nextPIContent();
+        requireChar(DASH, "Syntax error, comments must begin with '<!--'");
+        text = nextCommentContent();
         break;
-      case EXCL:
+      case LAB:
+        eventType = CDSECT;
         nextChar();
-        switch (ch) {
-          case DASH:
-            eventType = COMMENT;
-            nextChar();
-            requireChar(DASH,"Syntax error, comments must begin with '<!--'");
-            text=nextCommentContent();
-            break;
-          case LAB:
-            eventType = CDSECT;
-            nextChar();
-            requireString("CDATA[","Syntax error, only CDATA marked sections are supported in XML");
-            text = nextCDataContent();
-            break;
-          case 'D':
-            eventType = DOCDECL;
-            nextChar();
-            requireString("OCTYPE","Syntax error, invalid characters after '<!'");
-            if (readDocdecl)
-              throw new XmlPullParserException("There can be only one doctype declaration in a document");
-            skipDoctypeContent();
-            //throw new XmlPullParserException("This implementation doesn't support DOCTYPE declarations");
-            break;
-          default:
-            throw new XmlPullParserException("Syntax error, invalid characters after '<!'");
-        }
+        requireString("CDATA[",
+            "Syntax error, only CDATA marked sections are supported in XML");
+        text = nextCDataContent();
         break;
-      case SLASH:
-        eventType = END_TAG;
+      case 'D':
+        eventType = DOCDECL;
         nextChar();
-        name = nextName();
-        skipS();
-        requireChar(GT,"Syntax error, end-tag must end with '>'");
+        requireString("OCTYPE", "Syntax error, invalid characters after '<!'");
+        if (readDocdecl)
+          throw new XmlPullParserException(
+              "There can be only one doctype declaration in a document");
+        skipDoctypeContent();
+        //throw new XmlPullParserException("This implementation doesn't support DOCTYPE declarations");
         break;
-      default://Actually case:NAME_START_CHAR
-        eventType = START_TAG;
-        name = nextName();
-        nextStartTagContent();
+      default:
+        throw new XmlPullParserException(
+            "Syntax error, invalid characters after '<!'");
+      }
+      break;
+    case SLASH:
+      eventType = END_TAG;
+      nextChar();
+      name = nextName();
+      skipS();
+      requireChar(GT, "Syntax error, end-tag must end with '>'");
+      break;
+    default://Actually case:NAME_START_CHAR
+      eventType = START_TAG;
+      name = nextName();
+      nextStartTagContent();
     }
   }
 
   private void skipDoctypeContent() throws IOException {
-    int bracketLevel=0;
+    int bracketLevel = 0;
     do {
       nextChar();
-      if(ch == '[') ++bracketLevel;
-      if(ch == ']') --bracketLevel;
-      if(ch == '>' && bracketLevel == 0) break;
-      if(ch==EOF)
+      if (ch == '[')
+        ++bracketLevel;
+      if (ch == ']')
+        --bracketLevel;
+      if (ch == '>' && bracketLevel == 0)
+        break;
+      if (ch == EOF)
         throw new EOFException();
     } while (true);
     nextChar();
-    readDocdecl=true;
+    readDocdecl = true;
   }
 
   private void nextStartTagContent() throws XmlPullParserException, IOException {
@@ -1181,53 +1329,61 @@ CharData:
     isEmptyElemTag = false;
     attributeList.clear();
     attributeMap.clear();
-AttList:
-    do {
+    AttList: do {
       switch (state) {
-        case 0:
-          if (CharacterClasses.isS(ch)) {
-            skipS();
-            state = 1;
-            continue AttList;
-          }
-          switch (ch) {
-            case SLASH:
-              isEmptyElemTag = true;
-              nextChar();
-            case GT:
-              break AttList;
-            default:
-              throw new XmlPullParserException("Syntax error, unexpected character '" + ch + "' while parsing attribute list");
-          }
-        case 1:
-          switch (ch) {
-            case SLASH:
-              isEmptyElemTag = true;
-              nextChar();
-            case GT:
-              break AttList;
-            default:
-              nextAttribute();
-              state = 0;
-              break;
-          }
+      case 0:
+        if (CharacterClasses.isS(ch)) {
+          skipS();
+          state = 1;
+          continue AttList;
+        }
+        switch (ch) {
+        case SLASH:
+          isEmptyElemTag = true;
+          nextChar();
+        case GT:
+          break AttList;
+        default:
+          throw new XmlPullParserException(
+              "Syntax error, unexpected character '" + ch +
+                  "' while parsing attribute list");
+        }
+      case 1:
+        switch (ch) {
+        case SLASH:
+          isEmptyElemTag = true;
+          nextChar();
+        case GT:
+          break AttList;
+        default:
+          nextAttribute();
+          state = 0;
+          break;
+        }
       }
     } while (true);
-    requireChar(GT,"Syntax error while parsing " + (isEmptyElemTag ? "EmptyElemTag" : "STag") + ": unexpected terminal character, must be '>'");
+    requireChar(GT, "Syntax error while parsing " +
+        (isEmptyElemTag ? "EmptyElemTag" : "STag") +
+        ": unexpected terminal character, must be '>'");
     eventType = START_TAG;
     depth++;
   }
+
   private String nextNcoding() throws IOException, XmlPullParserException {
     // 'ncoding' Eq ('"' EncName '"' | "'" EncName "'" )
     nextChar();
-    requireString("ncoding","Syntax error while parsing XML declaration, 'encoding' expected");
+    requireString("ncoding",
+        "Syntax error while parsing XML declaration, 'encoding' expected");
     nextEq();
-    if (ch!=QUOT && ch!=APOS)
-      throw new XmlPullParserException("Syntax error, encoding name must be encolsed in quotes or apostrophes",this,null);
-    char delim=ch;
+    if (ch != QUOT && ch != APOS)
+      throw new XmlPullParserException(
+          "Syntax error, encoding name must be encolsed in quotes or apostrophes",
+          this, null);
+    char delim = ch;
     nextChar();
     if (!CharacterClasses.isEncNameFirst(ch))
-      throw new XmlPullParserException("Syntax error, encoding name must begin with [A-Za-z]");
+      throw new XmlPullParserException(
+          "Syntax error, encoding name must begin with [A-Za-z]");
     StringBuffer result = new StringBuffer();
     result.append(ch);
     do { //[81]     EncName    ::=    [A-Za-z] ([A-Za-z0-9._] | '-')*
@@ -1238,45 +1394,55 @@ AttList:
       } else if (CharacterClasses.isEncName(ch)) {
         result.append(ch);
       } else {
-        throw new XmlPullParserException("Syntax error, encoding name must contain only with [A-Za-z0-9._] or the character '-'");
+        throw new XmlPullParserException(
+            "Syntax error, encoding name must contain only with [A-Za-z0-9._] or the character '-'");
       }
     } while (true);
 
   }
-  
-  private boolean nextTandalone() throws IOException, XmlPullParserException{
+
+  private boolean nextTandalone() throws IOException, XmlPullParserException {
     // 'tandalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"'))
     nextChar();
-    requireString("tandalone","Syntax error while parsing XML declaration, 'standalone' expected");
+    requireString("tandalone",
+        "Syntax error while parsing XML declaration, 'standalone' expected");
     nextEq();
-    if (ch!=QUOT && ch!=APOS)
-      throw new XmlPullParserException("Syntax error, standalone value must be encolsed in quotes or apostrophes",this,null);
-    char delim=ch;
+    if (ch != QUOT && ch != APOS)
+      throw new XmlPullParserException(
+          "Syntax error, standalone value must be encolsed in quotes or apostrophes",
+          this, null);
+    char delim = ch;
     nextChar();
     boolean result;
     switch (ch) {
-      case 'y':
-        nextChar();
-        requireString("es","Syntax error, standalone value must be either 'yes' or 'no'");
-        result=true;
-        break;
-      case 'n':
-        nextChar();
-        requireChar('o',"Syntax error, standalone value must be either 'yes' or 'no'");
-        result=false;
-        break;
-      default:
-        throw new XmlPullParserException("Syntax error, standalone value must be either 'yes' or 'no'",this,null);
+    case 'y':
+      nextChar();
+      requireString("es",
+          "Syntax error, standalone value must be either 'yes' or 'no'");
+      result = true;
+      break;
+    case 'n':
+      nextChar();
+      requireChar('o',
+          "Syntax error, standalone value must be either 'yes' or 'no'");
+      result = false;
+      break;
+    default:
+      throw new XmlPullParserException(
+          "Syntax error, standalone value must be either 'yes' or 'no'", this,
+          null);
     }
-    requireChar(delim,"Syntax error, encoding name must be encolsed in quotes or apostrophes");
+    requireChar(delim,
+        "Syntax error, encoding name must be encolsed in quotes or apostrophes");
     return result;
 
   }
+
   private boolean tryXmlDecl() throws IOException, XmlPullParserException {
     //[23]    XMLDecl    ::=    '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
     markInput(6);
     try {
-      requireString("<?xml","No Xml declaration present");
+      requireString("<?xml", "No Xml declaration present");
     } catch (XmlPullParserException e) {
       resetInput();
       return false;
@@ -1287,11 +1453,12 @@ AttList:
     }
     unmarkInput();
     nextS();
-    requireString("version","Syntax error in XML declaration, 'version' expected");
+    requireString("version",
+        "Syntax error in XML declaration, 'version' expected");
     nextEq();
     if (!nextAttValue().equals("1.0"))
       throw new XmlPullParserException("XML version MUST be '1.0'");
-    
+
     /* now for the tricky part
        EncodingDecl? SDDecl? S? '?>'
        which translates to
@@ -1304,107 +1471,116 @@ AttList:
        3 ::= 's' Tandalone 4 | '?'
        4 ::= S '?' | '?'
     */
-    
-    int state=0;
-XMLDeclContent:    
-    do {
+
+    int state = 0;
+    XMLDeclContent: do {
       switch (state) {
-        case 0:
-          if (CharacterClasses.isS(ch)) {
-            skipS();
-            state=1;
-          } else if (ch==QUES) {
-            nextChar();
-            break XMLDeclContent;
-          } else {
-            throw new XmlPullParserException("Syntax error parsing XML declaration, expecting whitespace or '?>' after version");
-          }
+      case 0:
+        if (CharacterClasses.isS(ch)) {
+          skipS();
+          state = 1;
+        } else if (ch == QUES) {
+          nextChar();
+          break XMLDeclContent;
+        } else {
+          throw new XmlPullParserException(
+              "Syntax error parsing XML declaration, expecting whitespace or '?>' after version");
+        }
+        break;
+      case 1:
+        switch (ch) {
+        case 'e':
+          encodingDeclared = nextNcoding();
+          state = 2;
           break;
-        case 1:
-          switch (ch) {
-            case 'e':
-              encodingDeclared=nextNcoding();
-              state=2;
-              break;
-            case 's':
-              isStandalone=nextTandalone();
-              state=4;
-              break;
-            case '?':
-              nextChar();
-              break XMLDeclContent;
-            default:
-              throw new XmlPullParserException("Syntax error parsing XML declaration, expecting encoding, standalone or '?>'");
-          }
+        case 's':
+          isStandalone = nextTandalone();
+          state = 4;
           break;
-        case 2:
-          if (CharacterClasses.isS(ch)) {
-            skipS();
-            state=3;
-          } else if (ch==QUES) {
-            nextChar();
-            break XMLDeclContent;
-          } else {
-            throw new XmlPullParserException("Syntax error parsing XML declaration, expecting whitespace or '?>' after encoding");
-          }
-          break;
-        case 3:
-          switch (ch) {
-            case 's':
-              isStandalone=nextTandalone();
-              state=4;
-              break;
-            case '?':
-              nextChar();
-              break XMLDeclContent;
-            default:
-              throw new XmlPullParserException("Syntax error parsing XML declaration, expecting standalone or '?>'");
-          }
-          break;
-        case 4:
-          skipS();          
-          requireChar('?',"Syntax error, XML declaration must end with '?>'");
+        case '?':
+          nextChar();
           break XMLDeclContent;
         default:
+          throw new XmlPullParserException(
+              "Syntax error parsing XML declaration, expecting encoding, standalone or '?>'");
+        }
+        break;
+      case 2:
+        if (CharacterClasses.isS(ch)) {
+          skipS();
+          state = 3;
+        } else if (ch == QUES) {
+          nextChar();
+          break XMLDeclContent;
+        } else {
+          throw new XmlPullParserException(
+              "Syntax error parsing XML declaration, expecting whitespace or '?>' after encoding");
+        }
+        break;
+      case 3:
+        switch (ch) {
+        case 's':
+          isStandalone = nextTandalone();
+          state = 4;
           break;
+        case '?':
+          nextChar();
+          break XMLDeclContent;
+        default:
+          throw new XmlPullParserException(
+              "Syntax error parsing XML declaration, expecting standalone or '?>'");
+        }
+        break;
+      case 4:
+        skipS();
+        requireChar('?', "Syntax error, XML declaration must end with '?>'");
+        break XMLDeclContent;
+      default:
+        break;
       }
-    } while(true);
-    requireChar('>',"Syntax error, XML declaration must end with '?>'");
-    xmlDeclParsed=true;
+    } while (true);
+    requireChar('>', "Syntax error, XML declaration must end with '?>'");
+    xmlDeclParsed = true;
     return true;
   }
-  
+
   public class LexerTest extends TestCase {
     public LexerTest(String s) {
       super(s);
     }
+
     public void testNextReference() throws IOException, XmlPullParserException {
       setInput(new StringReader("&fooBar;&#64;&lt;&amp;"));
       nextChar();
-      assertEquals(nextReference(),null);
-      assertEquals(nextReference(),new String(Character.toChars(64)));
-      assertEquals(nextReference(),"<");
-      assertEquals(nextReference(),"&");
+      assertEquals(nextReference(), null);
+      assertEquals(nextReference(), new String(Character.toChars(64)));
+      assertEquals(nextReference(), "<");
+      assertEquals(nextReference(), "&");
     }
+
     private void assertAttribute(int i, String name, String value) {
-      assertEquals(getAttributeName(i),name);
-      assertEquals(getAttributeValue(i),value);
+      assertEquals(getAttributeName(i), name);
+      assertEquals(getAttributeValue(i), value);
     }
+
     public void testNextAttribute() throws IOException, XmlPullParserException {
-      setInput(new StringReader("ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'"));
+      setInput(new StringReader(
+          "ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'"));
       nextChar();
       eventType = START_TAG;
       nextAttribute();
       nextAttribute();
-      assertEquals(getAttributeCount(),2);
-      assertAttribute(0,"ap:kf","foo   &'xxx");
-      assertAttribute(1,"foofoo","wtf");
+      assertEquals(getAttributeCount(), 2);
+      assertAttribute(0, "ap:kf", "foo   &'xxx");
+      assertAttribute(1, "foofoo", "wtf");
     }
+
     public void testPIContent() throws IOException, XmlPullParserException {
-      setInput(new StringReader("?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
+      setInput(new StringReader(
+          "?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
       nextChar();
-      assertEquals(nextPIContent(),"");
-      assertEquals(nextPIContent()," bla??? >>>>??? ? > ?hblah");
+      assertEquals(nextPIContent(), "");
+      assertEquals(nextPIContent(), " bla??? >>>>??? ? > ?hblah");
       try {
         nextPIContent();
         fail("Expected XmlPullParserException");
@@ -1412,19 +1588,21 @@ XMLDeclContent:
         assertTrue(true);
       }
     }
+
     public void testCommentContent() throws IOException, XmlPullParserException {
-      setInput(new StringReader("ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
+      setInput(new StringReader(
+          "ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
       nextChar();
-      assertEquals(nextCommentContent(),"ffrrfraaafhr");
-      assertEquals(nextCommentContent(),"");
-      assertEquals(nextCommentContent(),"-aasdfasdf-asdfsad-asdfa->-asfd");
+      assertEquals(nextCommentContent(), "ffrrfraaafhr");
+      assertEquals(nextCommentContent(), "");
+      assertEquals(nextCommentContent(), "-aasdfasdf-asdfsad-asdfa->-asfd");
       try {
         nextCommentContent();
         fail("Expected XmlPullParserException");
       } catch (XmlPullParserException e) {
         assertTrue(true);
       }
-      assertEquals(nextCommentContent(),"asdf");
+      assertEquals(nextCommentContent(), "asdf");
       try {
         System.out.println(nextCommentContent());
         fail("Expected XmlPullParserException");
@@ -1432,39 +1610,45 @@ XMLDeclContent:
         assertTrue(true);
       }
     }
+
     public void testCDataContent() throws IOException, XmlPullParserException {
-      setInput(new StringReader("]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
+      setInput(new StringReader(
+          "]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
       nextChar();
-      assertEquals(nextCDataContent(),"]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
+      assertEquals(nextCDataContent(),
+          "]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
     }
+
     public void testCharData() throws IOException, XmlPullParserException {
-      setInput(new StringReader("asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
-      assertEquals(nextChar(),'a');
-      assertEquals(nextCharData(),"asdfasdfjh");
-      assertEquals(getChar(),'<');
+      setInput(new StringReader(
+          "asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
+      assertEquals(nextChar(), 'a');
+      assertEquals(nextCharData(), "asdfasdfjh");
+      assertEquals(getChar(), '<');
 
-      assertEquals(nextChar(),'s');
-      assertEquals(nextCharData(),"skdjfhaskdjfh");
-      assertEquals(getChar(),'&');
+      assertEquals(nextChar(), 's');
+      assertEquals(nextCharData(), "skdjfhaskdjfh");
+      assertEquals(getChar(), '&');
 
-      assertEquals(nextChar(),'a');
-      assertEquals(nextCharData(),"askjfh");
-      assertEquals(getChar(),'<');
+      assertEquals(nextChar(), 'a');
+      assertEquals(nextCharData(), "askjfh");
+      assertEquals(getChar(), '<');
 
-      assertEquals(nextChar(),']');
-      assertEquals(nextCharData(),"]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
-      assertEquals(getChar(),'<');
+      assertEquals(nextChar(), ']');
+      assertEquals(nextCharData(),
+          "]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
+      assertEquals(getChar(), '<');
 
-      assertEquals(nextChar(),']');
+      assertEquals(nextChar(), ']');
       try {
         nextCharData();
         fail("Expected XmlPullParserException");
       } catch (XmlPullParserException e) {
         assertTrue(true);
       }
-      assertEquals(getChar(),'>');
+      assertEquals(getChar(), '>');
 
-      assertEquals(nextChar(),'a');
+      assertEquals(nextChar(), 'a');
       try {
         nextCharData();
         fail("Expected XmlPullParserException");
@@ -1472,119 +1656,134 @@ XMLDeclContent:
         assertTrue(true);
       }
     }
-    public void testStartTagContent() throws IOException, XmlPullParserException {
-      setInput(new StringReader(" foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
-      assertEquals(nextChar(),' ');
+
+    public void testStartTagContent() throws IOException,
+        XmlPullParserException {
+      setInput(new StringReader(
+          " foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
+      assertEquals(nextChar(), ' ');
       nextStartTagContent();
-      assertEquals(getAttributeCount(),2);
-      assertEquals(isEmptyElementTag(),false);
-      assertAttribute(0,"foo","bar");
-      assertAttribute(1,"bar","foo");
+      assertEquals(getAttributeCount(), 2);
+      assertEquals(isEmptyElementTag(), false);
+      assertAttribute(0, "foo", "bar");
+      assertAttribute(1, "bar", "foo");
       try {
         getAttributeName(2);
         fail("Expcected IndexOutOfBoundsException");
       } catch (IndexOutOfBoundsException e) {
         assertTrue(true);
       }
-      assertEquals(getChar(),' ');
+      assertEquals(getChar(), ' ');
 
       nextStartTagContent();
-      assertEquals(getAttributeCount(),2);
-      assertEquals(isEmptyElementTag(),false);
-      assertAttribute(0,"a","b");
-      assertAttribute(1,"c","d");
+      assertEquals(getAttributeCount(), 2);
+      assertEquals(isEmptyElementTag(), false);
+      assertAttribute(0, "a", "b");
+      assertAttribute(1, "c", "d");
       try {
         getAttributeValue(2);
         fail("Expcected IndexOutOfBoundsException");
       } catch (IndexOutOfBoundsException e) {
         assertTrue(true);
       }
-      assertEquals(getChar(),' ');
+      assertEquals(getChar(), ' ');
 
       nextStartTagContent();
-      assertEquals(getAttributeCount(),2);
-      assertEquals(isEmptyElementTag(),true);
-      assertAttribute(0,"u","1");
-      assertAttribute(1,"v","2");
+      assertEquals(getAttributeCount(), 2);
+      assertEquals(isEmptyElementTag(), true);
+      assertAttribute(0, "u", "1");
+      assertAttribute(1, "v", "2");
       try {
         getAttributeValue(2);
         fail("Expcected IndexOutOfBoundsException");
       } catch (IndexOutOfBoundsException e) {
         assertTrue(true);
       }
-      assertEquals(getChar(),EOF);
+      assertEquals(getChar(), EOF);
 
     }
-    public void testMarkupContentComment() throws IOException, XmlPullParserException {
+
+    public void testMarkupContentComment() throws IOException,
+        XmlPullParserException {
       setInput(new StringReader("!--foobar-->"));
-      assertEquals(START_DOCUMENT,getEventType());
-      assertEquals('!',nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
+      assertEquals('!', nextChar());
       nextMarkupContent();
-      assertEquals(COMMENT,eventType);
-      assertEquals("foobar",getText());      
-      assertEquals(EOF,getChar());
+      assertEquals(COMMENT, eventType);
+      assertEquals("foobar", getText());
+      assertEquals(EOF, getChar());
     }
-    public void testMarkupContentCommentEmpty() throws IOException, XmlPullParserException {
+
+    public void testMarkupContentCommentEmpty() throws IOException,
+        XmlPullParserException {
       setInput(new StringReader("!---->"));
-      assertEquals(START_DOCUMENT,getEventType());
-      assertEquals('!',nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
+      assertEquals('!', nextChar());
       nextMarkupContent();
-      assertEquals(COMMENT,eventType);
-      assertEquals("",getText());      
-      assertEquals(EOF,getChar());      
+      assertEquals(COMMENT, eventType);
+      assertEquals("", getText());
+      assertEquals(EOF, getChar());
     }
-    public void testMarkupContentCommentError() throws IOException, XmlPullParserException {
+
+    public void testMarkupContentCommentError() throws IOException,
+        XmlPullParserException {
       setInput(new StringReader("!-foo-->"));
-      assertEquals(START_DOCUMENT,getEventType());
-      assertEquals('!',nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
+      assertEquals('!', nextChar());
       try {
         nextMarkupContent();
         fail("Expected XmlPullParserException");
       } catch (XmlPullParserException e) {
         assertTrue(true);
-      }      
+      }
     }
+
     public void testMarkupContentPI() throws Exception {
       setInput(new StringReader("?php echo('j00 fail')?>"));
-      assertEquals('?',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('?', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       nextMarkupContent();
-      assertEquals(PROCESSING_INSTRUCTION,getEventType());
-      assertEquals("php echo('j00 fail')",getText());
-      assertEquals(EOF,getChar());
+      assertEquals(PROCESSING_INSTRUCTION, getEventType());
+      assertEquals("php echo('j00 fail')", getText());
+      assertEquals(EOF, getChar());
     }
+
     public void testMarkupContentPIXmlDecl() throws Exception {
       setInput(new StringReader("?xml version='1.0'?>"));
-      assertEquals('?',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('?', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       try {
         nextMarkupContent();
         fail("Expected XmlPullParserException");
-      } catch(XmlPullParserException e) {
-        
+      } catch (XmlPullParserException e) {
+
       }
-        
+
     }
+
     public void testMarkupContentCDSect() throws Exception {
-      setInput(new StringReader("![CDATA[<this> will be &ignored;]]<><!---->]]>"));
-      assertEquals('!',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      setInput(new StringReader(
+          "![CDATA[<this> will be &ignored;]]<><!---->]]>"));
+      assertEquals('!', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       nextMarkupContent();
-      assertEquals(CDSECT,getEventType());
-      assertEquals("<this> will be &ignored;]]<><!---->",getText());
-      assertEquals(EOF,getChar());
+      assertEquals(CDSECT, getEventType());
+      assertEquals("<this> will be &ignored;]]<><!---->", getText());
+      assertEquals(EOF, getChar());
     }
+
     public void testMarkupContentDoctype() throws Exception {
       setInput(new StringReader("!DOCTYPE [<!ELEMENT ]>"));
-      assertEquals('!',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('!', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       nextMarkupContent();
-      assertEquals(DOCDECL,getEventType());
+      assertEquals(DOCDECL, getEventType());
     }
+
     public void testMarkupContentMarkedSectionError() throws Exception {
       setInput(new StringReader("![RCDSECT[some RCDATA]]>"));
-      assertEquals('!',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('!', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       try {
         nextMarkupContent();
         fail("Expected XmlPullParserException");
@@ -1592,10 +1791,11 @@ XMLDeclContent:
         assertTrue(true);
       }
     }
+
     public void testMarkupContentInvalidCharAfterExcl() throws Exception {
       setInput(new StringReader("!]something"));
-      assertEquals('!',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('!', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       try {
         nextMarkupContent();
         fail("Expected XmlPullParserException");
@@ -1603,164 +1803,177 @@ XMLDeclContent:
         assertTrue(true);
       }
     }
+
     public void testMarkupContentEndTag() throws Exception {
       setInput(new StringReader("/endtag>"));
-      assertEquals('/',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('/', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       nextMarkupContent();
-      assertEquals(END_TAG,getEventType());
-      assertEquals(null,getText());
-      assertEquals("endtag",XmlParser.this.getName());
-      assertEquals(EOF,getChar());      
+      assertEquals(END_TAG, getEventType());
+      assertEquals(null, getText());
+      assertEquals("endtag", XmlParser.this.getName());
+      assertEquals(EOF, getChar());
     }
+
     public void testMarkupContentEndTagWithSpaces() throws Exception {
       setInput(new StringReader("/endtag   >"));
-      assertEquals('/',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('/', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       nextMarkupContent();
-      assertEquals(END_TAG,getEventType());
-      assertEquals(null,getText());
-      assertEquals("endtag",XmlParser.this.getName());
-      assertEquals(EOF,getChar());      
+      assertEquals(END_TAG, getEventType());
+      assertEquals(null, getText());
+      assertEquals("endtag", XmlParser.this.getName());
+      assertEquals(EOF, getChar());
     }
+
     public void testMarkupContentEndTagMalformed() throws Exception {
       setInput(new StringReader("/ endtag   >"));
-      assertEquals('/',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('/', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       try {
         nextMarkupContent();
         fail("Expected XmlPullParserException");
       } catch (XmlPullParserException e) {
         assertTrue(true);
       }
-      
+
       setInput(new StringReader("/endtag s>"));
-      assertEquals('/',nextChar());
-      assertEquals(START_DOCUMENT,getEventType());
+      assertEquals('/', nextChar());
+      assertEquals(START_DOCUMENT, getEventType());
       try {
         nextMarkupContent();
         fail("Expected XmlPullParserException");
       } catch (XmlPullParserException e) {
         assertTrue(true);
       }
-      
+
     }
+
     public void testXmlDeclVersion() throws Exception {
-      setInput(new StringReader("<?xml version='1.0' encoding='windows-1250' standalone='yes'?>"));
-      assertEquals('<',nextChar());
+      setInput(new StringReader(
+          "<?xml version='1.0' encoding='windows-1250' standalone='yes'?>"));
+      assertEquals('<', nextChar());
       tryXmlDecl();
-      assertTrue("xmlDeclParsed",xmlDeclParsed);
-      assertTrue("isStandalone",isStandalone);
-      assertEquals("windows-1250",encodingDeclared);
+      assertTrue("xmlDeclParsed", xmlDeclParsed);
+      assertTrue("isStandalone", isStandalone);
+      assertEquals("windows-1250", encodingDeclared);
     }
+
     public void testNextToken() throws Exception {
-      setInput(new StringReader("<foo>some mixed content<bar>foo&amp;bar</bar></foo>"));
-      assertEquals(START_DOCUMENT,getEventType());
-      assertEquals("depth",0,getDepth());
-      assertEquals("internal state",internalState,InternalState.DOCUMENT_START);
-           
-      assertEquals("start tag nt",START_TAG,nextToken());
-      assertEquals("start tag et",START_TAG,getEventType());
-      assertEquals("depth 1",1,getDepth());
-      assertEquals("foo",XmlParser.this.getName());
-      assertEquals("internal state",internalState,InternalState.CONTENT);
-      
-      assertEquals("text nt",TEXT,nextToken());
-      assertEquals("text et",TEXT,getEventType());
-      assertEquals("depth 1",1,getDepth());
-      assertEquals("some mixed content",getText());
-      assertEquals("internal state",internalState,InternalState.CONTENT);
+      setInput(new StringReader(
+          "<foo>some mixed content<bar>foo&amp;bar</bar></foo>"));
+      assertEquals(START_DOCUMENT, getEventType());
+      assertEquals("depth", 0, getDepth());
+      assertEquals("internal state", internalState,
+          InternalState.DOCUMENT_START);
 
-      assertEquals("start tag nt",START_TAG,nextToken());
-      assertEquals("start tag et",START_TAG,getEventType());
-      assertEquals("depth 2",2,getDepth());
-      assertEquals("bar",XmlParser.this.getName());
-      assertEquals("internal state",internalState,InternalState.CONTENT);
+      assertEquals("start tag nt", START_TAG, nextToken());
+      assertEquals("start tag et", START_TAG, getEventType());
+      assertEquals("depth 1", 1, getDepth());
+      assertEquals("foo", XmlParser.this.getName());
+      assertEquals("internal state", internalState, InternalState.CONTENT);
 
-      assertEquals("text nt",TEXT,nextToken());
-      assertEquals("text et",TEXT,getEventType());
-      assertEquals("depth 2",2,getDepth());
-      assertEquals("foo",getText());
-      assertEquals("internal state",internalState,InternalState.CONTENT);
-      
-      assertEquals("entity nt",ENTITY_REF,nextToken());
-      assertEquals("entity et",ENTITY_REF,getEventType());
-      assertEquals("depth 2",2,getDepth());
-      assertEquals("&",getText());
-      assertEquals("internal state",internalState,InternalState.CONTENT);
+      assertEquals("text nt", TEXT, nextToken());
+      assertEquals("text et", TEXT, getEventType());
+      assertEquals("depth 1", 1, getDepth());
+      assertEquals("some mixed content", getText());
+      assertEquals("internal state", internalState, InternalState.CONTENT);
 
-      assertEquals("text nt",TEXT,nextToken());
-      assertEquals("text et",TEXT,getEventType());
-      assertEquals("depth 2",2,getDepth());
-      assertEquals("bar",getText());
-      assertEquals("internal state",internalState,InternalState.CONTENT);
-      
-      assertEquals("end tag nt",END_TAG,nextToken());
-      assertEquals("end tag et",END_TAG,getEventType());
-      assertEquals("depth 2",2,getDepth());
-      assertEquals("bar",XmlParser.this.getName());
-      assertEquals("internal state",internalState,InternalState.CONTENT);
+      assertEquals("start tag nt", START_TAG, nextToken());
+      assertEquals("start tag et", START_TAG, getEventType());
+      assertEquals("depth 2", 2, getDepth());
+      assertEquals("bar", XmlParser.this.getName());
+      assertEquals("internal state", internalState, InternalState.CONTENT);
 
-      assertEquals("end tag nt",END_TAG,nextToken());
-      assertEquals("end tag et",END_TAG,getEventType());
-      assertEquals("depth 1",1,getDepth());
-      assertEquals("foo",XmlParser.this.getName());
-      assertEquals("internal state",internalState,InternalState.EPILOG);
+      assertEquals("text nt", TEXT, nextToken());
+      assertEquals("text et", TEXT, getEventType());
+      assertEquals("depth 2", 2, getDepth());
+      assertEquals("foo", getText());
+      assertEquals("internal state", internalState, InternalState.CONTENT);
 
-      assertEquals("end tag nt",END_DOCUMENT,nextToken());
-      assertEquals("end tag et",END_DOCUMENT,getEventType());
-      assertEquals("depth 0",0,getDepth());
-      assertEquals("internal state",internalState,InternalState.DOCUMENT_END);
+      assertEquals("entity nt", ENTITY_REF, nextToken());
+      assertEquals("entity et", ENTITY_REF, getEventType());
+      assertEquals("depth 2", 2, getDepth());
+      assertEquals("&", getText());
+      assertEquals("internal state", internalState, InternalState.CONTENT);
 
-      assertEquals("end tag nt",END_DOCUMENT,nextToken());
-      assertEquals("end tag et",END_DOCUMENT,getEventType());
-      assertEquals("depth 0",0,getDepth());
-      assertEquals("internal state",internalState,InternalState.DOCUMENT_END);
-      
-    }  
+      assertEquals("text nt", TEXT, nextToken());
+      assertEquals("text et", TEXT, getEventType());
+      assertEquals("depth 2", 2, getDepth());
+      assertEquals("bar", getText());
+      assertEquals("internal state", internalState, InternalState.CONTENT);
+
+      assertEquals("end tag nt", END_TAG, nextToken());
+      assertEquals("end tag et", END_TAG, getEventType());
+      assertEquals("depth 2", 2, getDepth());
+      assertEquals("bar", XmlParser.this.getName());
+      assertEquals("internal state", internalState, InternalState.CONTENT);
+
+      assertEquals("end tag nt", END_TAG, nextToken());
+      assertEquals("end tag et", END_TAG, getEventType());
+      assertEquals("depth 1", 1, getDepth());
+      assertEquals("foo", XmlParser.this.getName());
+      assertEquals("internal state", internalState, InternalState.EPILOG);
+
+      assertEquals("end tag nt", END_DOCUMENT, nextToken());
+      assertEquals("end tag et", END_DOCUMENT, getEventType());
+      assertEquals("depth 0", 0, getDepth());
+      assertEquals("internal state", internalState, InternalState.DOCUMENT_END);
+
+      assertEquals("end tag nt", END_DOCUMENT, nextToken());
+      assertEquals("end tag et", END_DOCUMENT, getEventType());
+      assertEquals("depth 0", 0, getDepth());
+      assertEquals("internal state", internalState, InternalState.DOCUMENT_END);
+
+    }
+
     public void testChardataWhitespace() throws Exception {
       setInput(new StringReader("    <   s  <   ><"));
-      eventType=TEXT;
+      eventType = TEXT;
 
       nextChar();
       nextCharData();
-      assertTrue(isWhitespace());      
+      assertTrue(isWhitespace());
 
       nextChar();
       nextCharData();
-      assertFalse(isWhitespace());      
+      assertFalse(isWhitespace());
 
       nextChar();
       nextCharData();
-      assertFalse(isWhitespace());      
+      assertFalse(isWhitespace());
     }
+
     public void testCDataWhitespace() throws Exception {
       setInput(new StringReader("    ]]>   ] ]]>   ]] ]]>"));
-      eventType=CDSECT;
+      eventType = CDSECT;
 
       nextChar();
       nextCDataContent();
-      assertTrue(isWhitespace());      
+      assertTrue(isWhitespace());
 
       nextChar();
       nextCDataContent();
-      assertFalse(isWhitespace());      
+      assertFalse(isWhitespace());
 
       nextChar();
       nextCDataContent();
-      assertFalse(isWhitespace());      
+      assertFalse(isWhitespace());
     }
-  } 
+  }
+
   private Test getTest(String name) {
     return new LexerTest(name);
   }
+
   public static Test suite() {
     XmlParser pp = new XmlParser();
     TestSuite t = new TestSuite();
     t.setName("XmlParser.LexerTest");
     Method[] methods = LexerTest.class.getMethods();
     for (int i = 0; i < methods.length; i++) {
-      if (methods[i].getName().startsWith("test") && Modifier.isPublic(methods[i].getModifiers())) {
+      if (methods[i].getName().startsWith("test") &&
+          Modifier.isPublic(methods[i].getModifiers())) {
         t.addTest(pp.getTest(methods[i].getName()));
       }
     }

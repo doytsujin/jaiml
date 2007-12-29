@@ -14,23 +14,29 @@
 
 package aiml.classifier.node;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-import aiml.classifier.*;
+import aiml.classifier.MatchState;
 
 /**
- * <p>This very simple implementation of a Pattern node is backed by a map where
+ * <p>
+ * This very simple implementation of a Pattern node is backed by a map where
  * all the patterns are stored. It does not perform any path compression or
- * wildcard matching (apart from being case-insensitive).</p>
- * <p>It consumes the whole rest of the pattern, and so
- * has to be used in conjunction with a "terminal" node like EndOfStringNode.</p>
+ * wildcard matching (apart from being case-insensitive).
+ * </p>
+ * <p>
+ * It consumes the whole rest of the pattern, and so has to be used in
+ * conjunction with a "terminal" node like EndOfStringNode.
+ * </p>
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class HashMapNode
-    extends PatternNode {
-  private HashMap<String,PatternNode> map = new HashMap<String,PatternNode>();
+public class HashMapNode extends PatternNode {
+  private HashMap<String, PatternNode> map = new HashMap<String, PatternNode>();
 
   /**
    * Creates a new hash map pattern node
@@ -40,8 +46,11 @@ public class HashMapNode
 
   /**
    * Adds the rest of the pattern to a hashmap.
-   * @param depth int
-   * @param pattern String
+   * 
+   * @param depth
+   *                int
+   * @param pattern
+   *                String
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
@@ -62,10 +71,14 @@ public class HashMapNode
   }
 
   /**
-   * Matches the current context value starting at the depth specified in the match state.
-   * This method preforms a simple map lookup to determine a match, no wildcards are processed.
-   * @param match the match state
-   * @return  <code>true</code> if the match was successful; <code>false</code> if not
+   * Matches the current context value starting at the depth specified in the
+   * match state. This method preforms a simple map lookup to determine a match,
+   * no wildcards are processed.
+   * 
+   * @param match
+   *                the match state
+   * @return <code>true</code> if the match was successful; <code>false</code>
+   *         if not
    */
   public boolean match(MatchState match) {
     //Match
@@ -76,14 +89,12 @@ public class HashMapNode
       match.depth += s.length();
       if (node.match(match)) {
         return true;
-      }
-      else {
+      } else {
         //restore the previous match state
         match.depth -= s.length();
         return false;
       }
-    }
-    else {
+    } else {
       return false;
     }
   }

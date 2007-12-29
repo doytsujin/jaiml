@@ -12,10 +12,13 @@ import aiml.parser.AimlSyntaxException;
 public class GetElement extends SimpleScriptElement {
   private String nameAttr;
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
-    nameAttr=parser.getAttributeValue(null,"name");
-    if (nameAttr==null)
-      throw new AimlSyntaxException("Syntax error: mandatory attribute 'name' missing from element '" + parser.getName() + "' "+ parser.getPositionDescription());
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
+    nameAttr = parser.getAttributeValue(null, "name");
+    if (nameAttr == null)
+      throw new AimlSyntaxException(
+          "Syntax error: mandatory attribute 'name' missing from element '" +
+              parser.getName() + "' " + parser.getPositionDescription());
     return super.parse(parser);
   }
 
@@ -23,22 +26,28 @@ public class GetElement extends SimpleScriptElement {
     if (content instanceof EmptyScript)
       return "$" + nameAttr;
     else
-      return "(isset($" + nameAttr +") ? $" + nameAttr +" : "+content.evaluate(m)+")";
+      return "(isset($" + nameAttr + ") ? $" + nameAttr + " : " +
+          content.evaluate(m) + ")";
   }
 
   public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "if (isset($" + nameAttr +"))\n "+
-           Formatter.tab(depth) + "\tprint($" + nameAttr +");\n" + 
-           ((content instanceof EmptyScript) ? "":
-           Formatter.tab(depth) + "else {\n"+
-           content.execute(m, depth+1))+"\n"+
-           Formatter.tab(depth) + "}";
+    return Formatter.tab(depth) +
+        "if (isset($" +
+        nameAttr +
+        "))\n " +
+        Formatter.tab(depth) +
+        "\tprint($" +
+        nameAttr +
+        ");\n" +
+        ((content instanceof EmptyScript) ? "" : Formatter.tab(depth) +
+            "else {\n" + content.execute(m, depth + 1)) + "\n" +
+        Formatter.tab(depth) + "}";
   }
-  
+
   public String toString() {
     if (content instanceof EmptyScript)
       return "$" + nameAttr;
     else
-      return "(isset($" + nameAttr +") ? $" + nameAttr +" : "+content+")";
+      return "(isset($" + nameAttr + ") ? $" + nameAttr + " : " + content + ")";
   }
 }

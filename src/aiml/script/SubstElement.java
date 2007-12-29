@@ -12,27 +12,30 @@ import aiml.parser.AimlSyntaxException;
 public class SubstElement extends NonEmptyElement {
   private String type;
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
     type = parser.getName();
     if (type.equals("subst")) {
-      type = parser.getAttributeValue(null,"name");
+      type = parser.getAttributeValue(null, "name");
       if (type == null) {
-        throw new AimlSyntaxException("Syntax error: mandatory attribute 'name' for 'subst' element missing");
+        throw new AimlSyntaxException(
+            "Syntax error: mandatory attribute 'name' for 'subst' element missing");
       }
     }
     return super.parse(parser);
   }
 
   public String evaluate(MatchState m) {
-    return "subst("+type+","+content.evaluate(m)+")";
+    return "subst(" + type + "," + content.evaluate(m) + ")";
   }
 
   public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(subst("+type+","+content.evaluate(m)+"));";
+    return Formatter.tab(depth) + "print(subst(" + type + "," +
+        content.evaluate(m) + "));";
   }
 
   public String toString() {
-    return "subst("+type+","+content+")";
+    return "subst(" + type + "," + content + ")";
   }
 
 }

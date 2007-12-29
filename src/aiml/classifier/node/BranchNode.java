@@ -14,20 +14,21 @@
 
 package aiml.classifier.node;
 
-import aiml.classifier.*;
+import aiml.classifier.MatchState;
+import aiml.classifier.Pattern;
 
 /**
- * A branch in the pattern matching tree. This pure branching node implements the
- * "pattern order" principle of AIML - first it triest to match an underscore,
- * then it tires to find an exact match and finally it tries to get a match on
- * the star wildcard. As with all pattern nodes, the branch node applies only
- * to the current depth.
+ * A branch in the pattern matching tree. This pure branching node implements
+ * the "pattern order" principle of AIML - first it triest to match an
+ * underscore, then it tires to find an exact match and finally it tries to get
+ * a match on the star wildcard. As with all pattern nodes, the branch node
+ * applies only to the current depth.
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class BranchNode
-    extends PatternNode {
+public class BranchNode extends PatternNode {
   /**
    * The star (*) wildcard subtree
    */
@@ -52,22 +53,24 @@ public class BranchNode
   /**
    * Creates a new branch node, with one subtree (wildcard or string). The type
    * of the subtree (star, string, underscore) is determined at run-time.
-   * @param node the first subtree
+   * 
+   * @param node
+   *                the first subtree
    */
   public BranchNode(PatternNode node) {
     switch (node.getType()) {
-      case PatternNode.UNDERSCORE:
-        underscore = node;
-        break;
-      case PatternNode.STAR:
-        star = node;
-        break;
-      case PatternNode.STRING:
-        string = node;
-        break;
-      default:
-        throw new UnsupportedOperationException(
-            "Can't add unknown node types to a branch");
+    case PatternNode.UNDERSCORE:
+      underscore = node;
+      break;
+    case PatternNode.STAR:
+      star = node;
+      break;
+    case PatternNode.STRING:
+      string = node;
+      break;
+    default:
+      throw new UnsupportedOperationException(
+          "Can't add unknown node types to a branch");
     }
   }
 

@@ -10,9 +10,12 @@ import aiml.parser.AimlSyntaxException;
 
 public abstract class EmptyElement implements Script {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException, IOException, AimlParserException {
+  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+      IOException, AimlParserException {
     if (!parser.isEmptyElementTag())
-      throw new AimlSyntaxException("Syntax error while parsing " + parser.getName() + " element in template: element must be empty "+parser.getPositionDescription());
+      throw new AimlSyntaxException("Syntax error while parsing " +
+          parser.getName() + " element in template: element must be empty " +
+          parser.getPositionDescription());
     parser.nextTag();
     parser.next();
     return this;

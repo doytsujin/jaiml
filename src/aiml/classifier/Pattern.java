@@ -14,15 +14,18 @@
 
 package aiml.classifier;
 
-import aiml.classifier.node.*;
+import aiml.classifier.node.PatternNode;
 
 /**
  * Utility methods for analyzing patterns.
- * <p><i>Note to self:</i> I don't know why, but this somehow feels wrong,
+ * <p>
+ * <i>Note to self:</i> I don't know why, but this somehow feels wrong,
  * shouldn't I be passing an instance of a secial pattern class (that
- * encapsulates the depth and the pattern string, and provides lexical analysis),
- * instead of a string and depth? How does this class relate to the Path.Pattern
- * inner class? And who killed the gardner?</p>
+ * encapsulates the depth and the pattern string, and provides lexical
+ * analysis), instead of a string and depth? How does this class relate to the
+ * Path.Pattern inner class? And who killed the gardner?
+ * </p>
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
@@ -32,8 +35,11 @@ public class Pattern {
   /**
    * Returns the type of the pattern at the current depth. This can be either
    * PatternNode.STAR PatternNode.STRING or PatternNode.UNDERSCORE.
-   * @param depth the depth
-   * @param pattern the pattern
+   * 
+   * @param depth
+   *                the depth
+   * @param pattern
+   *                the pattern
    * @return the type of pattern
    */
   public static int getType(int depth, String pattern) {
@@ -41,20 +47,24 @@ public class Pattern {
       return PatternNode.STRING;
     }
     switch (pattern.charAt(depth)) {
-      case '*':
-        return PatternNode.STAR;
-      case '_':
-        return PatternNode.UNDERSCORE;
-      default:
-        return PatternNode.STRING;
+    case '*':
+      return PatternNode.STAR;
+    case '_':
+      return PatternNode.UNDERSCORE;
+    default:
+      return PatternNode.STRING;
     }
   }
 
   /**
    * Determines if the current character in the pattern is a wildcard
-   * @param depth the depth
-   * @param pattern the pattern
-   * @return <code>true</code> if the current character in the pattern is a wildcard <code>false</code> otherwise
+   * 
+   * @param depth
+   *                the depth
+   * @param pattern
+   *                the pattern
+   * @return <code>true</code> if the current character in the pattern is a
+   *         wildcard <code>false</code> otherwise
    */
   public static boolean isWildcard(int depth, String pattern) {
     if (depth == pattern.length()) {
@@ -66,9 +76,13 @@ public class Pattern {
 
   /**
    * Determines if the current character in the pattern is a * wildcard
-   * @param depth the depth
-   * @param pattern the pattern
-   * @return <code>true</code> if the current character in the pattern is a * wildcard <code>false</code> otherwise
+   * 
+   * @param depth
+   *                the depth
+   * @param pattern
+   *                the pattern
+   * @return <code>true</code> if the current character in the pattern is a *
+   *         wildcard <code>false</code> otherwise
    */
   public static boolean isStar(int depth, String pattern) {
     if (depth == pattern.length()) {
@@ -80,9 +94,13 @@ public class Pattern {
 
   /**
    * Determines if the current character in the pattern is a _ wildcard
-   * @param depth the depth
-   * @param pattern the pattern
-   * @return <code>true</code> if the current character in the pattern is a _ wildcard <code>false</code> otherwise
+   * 
+   * @param depth
+   *                the depth
+   * @param pattern
+   *                the pattern
+   * @return <code>true</code> if the current character in the pattern is a _
+   *         wildcard <code>false</code> otherwise
    */
 
   public static boolean isUnderscore(int depth, String pattern) {
@@ -95,8 +113,11 @@ public class Pattern {
 
   /**
    * Retrieves the position of the next * wildcard
-   * @param depth the depth
-   * @param pattern the pattern
+   * 
+   * @param depth
+   *                the depth
+   * @param pattern
+   *                the pattern
    * @return the position of the next * wildcard; -1 if it is not present
    */
   public static int nextStar(int depth, String pattern) {
@@ -105,8 +126,11 @@ public class Pattern {
 
   /**
    * Retrieves the position of the next _ wildcard
-   * @param depth the depth
-   * @param pattern the pattern
+   * 
+   * @param depth
+   *                the depth
+   * @param pattern
+   *                the pattern
    * @return the position of the next _ wildcard; -1 if it is not present
    */
   public static int nextUnderscore(int depth, String pattern) {
@@ -115,8 +139,11 @@ public class Pattern {
 
   /**
    * Retrieves the position of the next wildcard
-   * @param depth the depth
-   * @param pattern the pattern
+   * 
+   * @param depth
+   *                the depth
+   * @param pattern
+   *                the pattern
    * @return the position of the next wildcard; -1 if it is not present
    */
 
@@ -135,8 +162,11 @@ public class Pattern {
 
   /**
    * Returns the length of the common prefix of the two strings a and b.
-   * @param a a string
-   * @param b a string
+   * 
+   * @param a
+   *                a string
+   * @param b
+   *                a string
    * @return the length of the longest common prefix of strings a and b
    */
   public static int prefixLength(String a, String b) {

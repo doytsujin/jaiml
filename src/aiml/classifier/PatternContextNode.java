@@ -14,21 +14,25 @@
 
 package aiml.classifier;
 
-import java.util.*;
+import java.util.ListIterator;
 
-import aiml.classifier.node.*;
+import aiml.classifier.node.PatternNode;
+import aiml.classifier.node.PatternNodeFactory;
 
 /**
- * <p>This class represents a node in the tree of contexts. Each context imposes
- * another constraint on the state of the matching system. </p>
- * <p>Currently, the only
- * types of contexts in AIML are pattern type contexts, and even though the
- * design of the context tree tries to be as general as possible, there are
- * some places that will need redesigning once more types of contexts are to
- * be supported (this applies mainly to the add() method and the way paths are
- * currently handled - jumping back and forth with using a ListIterator doesn't
- * seem too elegant)</p>
- *
+ * <p>
+ * This class represents a node in the tree of contexts. Each context imposes
+ * another constraint on the state of the matching system.
+ * </p>
+ * <p>
+ * Currently, the only types of contexts in AIML are pattern type contexts, and
+ * even though the design of the context tree tries to be as general as
+ * possible, there are some places that will need redesigning once more types of
+ * contexts are to be supported (this applies mainly to the add() method and the
+ * way paths are currently handled - jumping back and forth with using a
+ * ListIterator doesn't seem too elegant)
+ * </p>
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
@@ -39,7 +43,9 @@ public class PatternContextNode extends ContextNode {
 
   /**
    * Create a new context tree with no subcontexts.
-   * @param context the context ID
+   * 
+   * @param context
+   *                the context ID
    */
   public PatternContextNode(int context) {
     this.context = context;
@@ -47,10 +53,13 @@ public class PatternContextNode extends ContextNode {
 
   /**
    * Create a new context tree from the current pattern in the path. Adds all
-   * it's substructures (subcontexts and pattern trees), together
-   * with the final object.
-   * @param path the path
-   * @param o Object
+   * it's substructures (subcontexts and pattern trees), together with the final
+   * object.
+   * 
+   * @param path
+   *                the path
+   * @param o
+   *                Object
    */
   public PatternContextNode(ListIterator path, Object o) {
     if (!path.hasNext()) {
@@ -62,16 +71,20 @@ public class PatternContextNode extends ContextNode {
     path.previous();
     try {
       add(path, o);
+    } catch (DuplicatePathException e) {
     }
-    catch (DuplicatePathException e) {}
     //since we just created a new subtree, there's no way this exception can occur
   }
 
   /**
-   * <p>Create a new context tree with a subcontext</p>
-   *
-   * @param context the context ID
-   * @param subcontext the subcontext tree
+   * <p>
+   * Create a new context tree with a subcontext
+   * </p>
+   * 
+   * @param context
+   *                the context ID
+   * @param subcontext
+   *                the subcontext tree
    */
   public PatternContextNode(int context, ContextNode subcontext) {
     this.context = context;
@@ -80,10 +93,13 @@ public class PatternContextNode extends ContextNode {
 
   /**
    * Adds a pattern to this context.
-   *
+   * 
    * <i>Note:</i> This method will be reworked once generalized context types
-   * are implemented (i.e. it will be replaced by an addGeneralContextType() method.
-   * @param pattern Pattern
+   * are implemented (i.e. it will be replaced by an addGeneralContextType()
+   * method.
+   * 
+   * @param pattern
+   *                Pattern
    */
   public PatternNode addPattern(Path.Pattern pattern) {
     //add the pattern into the current tree.
@@ -102,7 +118,7 @@ public class PatternContextNode extends ContextNode {
       I might remove the loop later*/
     if (result.newDepth != s.length()) {
       throw new RuntimeException("Failure when adding pattern \"" + s +
-                                 "\" to context " + context);
+          "\" to context " + context);
     }
     tree = result.root; //update the pattern subtree
     //result.leaf.addContext(path, o);
@@ -112,8 +128,11 @@ public class PatternContextNode extends ContextNode {
 
   /**
    * Try to match the current match state.
-   * @param match MatchState
-   * @return <code>true</code> if a match was found; <code>false</code> if the match failed
+   * 
+   * @param match
+   *                MatchState
+   * @return <code>true</code> if a match was found; <code>false</code> if
+   *         the match failed
    */
   public boolean match(MatchState match) {
     match.addContext(context);
@@ -122,22 +141,19 @@ public class PatternContextNode extends ContextNode {
       match.dropContext();
       if (next != null) {
         return next.match(match);
-      }
-      else {
+      } else {
         return false;
       }
-    }
-    else {
+    } else {
       return true;
     }
 
   }
 
-  /**Returns a string representation of this context node*/
+  /** Returns a string representation of this context node */
   public String toString() {
-    return
-        "<" + context + ">" + tree + "\n" +
-        "[" + context + ".NEXT]: " + next;
+    return "<" + context + ">" + tree + "\n" + "[" + context + ".NEXT]: " +
+        next;
   }
 
 }

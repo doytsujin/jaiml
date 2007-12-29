@@ -14,33 +14,39 @@
 
 package aiml.classifier;
 
-import java.util.*;
+import java.util.ListIterator;
 
-import aiml.classifier.node.*;
+import aiml.classifier.node.PatternNode;
+
 /**
  * This context encapsulates the data associated with each path.
- *
- * Todo: Rename to LeafContextNode or TemplateContextNode, create superclass ContextNode
+ * 
+ * Todo: Rename to LeafContextNode or TemplateContextNode, create superclass
+ * ContextNode
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class LeafContextNode
-    extends ContextNode {
+public class LeafContextNode extends ContextNode {
   private Object result;
 
   /**
    * Create a new leaf context, and associate an object with it.
-   * @param o the stored object
+   * 
+   * @param o
+   *                the stored object
    */
   public LeafContextNode(Object o) {
-    context=Integer.MAX_VALUE;
+    context = Integer.MAX_VALUE;
     result = o;
   }
 
   /**
    * Set's the result in the matchstate, and returns true.
-   * @param match the match state, used to store the resulting object
+   * 
+   * @param match
+   *                the match state, used to store the resulting object
    * @return <code>true</code>
    */
   public boolean match(MatchState match) {
@@ -50,25 +56,33 @@ public class LeafContextNode
 
   /**
    * Adds a pattern to this context.
-   *
+   * 
    * <i>Note:</i> This method will be reworked once generalized context types
-   * are implemented (i.e. it will be replaced by an addGeneralContextType() method.
-   * @param pattern Pattern
+   * are implemented (i.e. it will be replaced by an addGeneralContextType()
+   * method.
+   * 
+   * @param pattern
+   *                Pattern
    */
   public PatternNode addPattern(Path.Pattern pattern) {
-    throw new UnsupportedOperationException("Can't add a pattern to a leaf context");
+    throw new UnsupportedOperationException(
+        "Can't add a pattern to a leaf context");
   }
 
   /**
    * Add the path to itself. If there are no patterns in this path to add, throw
    * a DuplicatePathException.
-   * @param path the path
-   * @param o the object
+   * 
+   * @param path
+   *                the path
+   * @param o
+   *                the object
    * @throws DuplicatePathException
-   * @return the resulting context tree, with all modifications applied and the correct ordering
+   * @return the resulting context tree, with all modifications applied and the
+   *         correct ordering
    */
-  public ContextNode add(ListIterator path, Object o) throws
-      DuplicatePathException {
+  public ContextNode add(ListIterator path, Object o)
+      throws DuplicatePathException {
     if (!path.hasNext()) {
       throw new DuplicatePathException();
     }

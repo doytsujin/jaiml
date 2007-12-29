@@ -15,13 +15,14 @@
 package aiml.context;
 
 /**
- * This Exception gets thrown when information about an unknown context is requested.
+ * This Exception gets thrown when information about an unknown context is
+ * requested.
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class UnknownContextException
-    extends RuntimeException {
+public class UnknownContextException extends RuntimeException {
 
   public UnknownContextException() {
   }
