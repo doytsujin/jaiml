@@ -10,7 +10,7 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 package aiml.classifier;
 
@@ -18,13 +18,14 @@ import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
 import aiml.classifier.node.WildcardNode;
-import aiml.context.ContextInfo;
-import aiml.context.InputContext;
+import aiml.environment.Environment;
 
 /**
- * <p>This class encapsulates all AIML pattern matching functionality.</p>
- *
- *
+ * <p>
+ * This class encapsulates all AIML pattern matching functionality.
+ * </p>
+ * 
+ * 
  * @author Kim Sullivan
  * @version 1.0
  */
@@ -46,56 +47,46 @@ public class Classifier {
 
   /**
    * Match the current context state to the paths in the tree.
+   * 
    * @return a complete match state if succesfull; <code>null</code> otherwise
    */
-  public static MatchState match() {
-    MatchState m = new MatchState();
+  public static MatchState match(Environment e) {
+    MatchState m = new MatchState(e);
 
     if (tree != null && tree.match(m)) {
       return m;
-    }
-    else {
+    } else {
       return null;
     }
   }
 
   /**
-   * Set the current input context to the parameter, and match it.
-   * @param input
-   * @return a complete match state if succesfull; <code>null</code> otherwise
-   */
-  public static MatchState match(String input) {
-    InputContext c = (InputContext)ContextInfo.getContext("input");
-    c.push(input);
-    MatchState m = match();
-    c.pop();
-    return m;
-  }
-  
-  /**
    * Add a path to the matching tree.
-   * @param path the path to be added
-   * @param o the object to be stored
+   * 
+   * @param path
+   *                the path to be added
+   * @param o
+   *                the object to be stored
    * @throws DuplicatePathException
    */
   public static void add(Path path, Object o) throws DuplicatePathException {
-    assert (PatternNodeFactory.getCount()>0) : "You have to register node types";
+    assert (PatternNodeFactory.getCount() > 0) : "You have to register node types";
     if (tree == null) {
       if (path.getLength() != 0) {
         tree = new PatternContextNode(path.iterator(), o);
-      }
-      else {
+      } else {
         tree = new LeafContextNode(o);
       }
-    }
-    else {
+    } else {
       tree = tree.add(path.iterator(), o);
     }
-    count++; //this is OK, because if the path isn't added, an exception gets thrown before we reach this
+    count++; // this is OK, because if the path isn't added, an exception gets
+    // thrown before we reach this
   }
 
   /**
    * Returns the number of loaded patterns.
+   * 
    * @return the number of loaded patterns.
    */
   public static int getCount() {
@@ -103,26 +94,34 @@ public class Classifier {
   }
 
   /**
-   * <p>Resets the whole matching tree. This is usefull when the order of contexts
-   * needs to be changed, because this invalidates the whole data structure.</p>
-   * <p>This must follow after resetting the ContextInfo structure, but can be used
-   * as a stand-alone method to remove all patterns from the matching tree.</p>
+   * <p>
+   * Resets the whole matching tree. This is usefull when the order of contexts
+   * needs to be changed, because this invalidates the whole data structure.
+   * </p>
+   * <p>
+   * This must follow after resetting the ContextInfo structure, but can be used
+   * as a stand-alone method to remove all patterns from the matching tree.
+   * </p>
+   * 
    * @see aiml.context.ContextInfo#reset()
    */
   public static void reset() {
     tree = null;
     count = 0;
   }
-  
+
   /**
-   * <p>This is a convenience method to register the default (or hopefully most
-   * optimal) node handler classes. When using this method, you don't have to think
-   * about all the different aiml.classifier.node.* implementations.</p>
+   * <p>
+   * This is a convenience method to register the default (or hopefully most
+   * optimal) node handler classes. When using this method, you don't have to
+   * think about all the different aiml.classifier.node.* implementations.
+   * </p>
+   * 
    * @see aiml.classifier.node
    */
   public static void registerDefaultNodeHandlers() {
     StringNode.register();
     EndOfStringNode.register();
-    WildcardNode.register();    
+    WildcardNode.register();
   }
 }

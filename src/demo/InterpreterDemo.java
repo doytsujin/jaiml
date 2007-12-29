@@ -13,16 +13,16 @@ import aiml.bot.Bot;
 import aiml.bot.BotSyntaxException;
 import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
-import aiml.context.ContextInfo;
-import aiml.context.InputContext;
+import aiml.environment.Environment;
 import aiml.parser.AimlParserException;
 
 public class InterpreterDemo {
-  public static void main(String[] args) throws XmlPullParserException, IOException, BotSyntaxException, AimlParserException {  
+  public static void main(String[] args) throws XmlPullParserException,
+      IOException, BotSyntaxException, AimlParserException {
     Logger.getLogger("aiml").setLevel(Level.WARNING);
     System.out.println("Demonstration program for the java aiml interpreter library");
     System.out.println("(C) Kim Sullivan, 2006");
-    if (args.length==0) {
+    if (args.length == 0) {
       System.err.println("Error: you must specify a command line argument with the bot to load!");
       return;
     } else {
@@ -35,18 +35,21 @@ public class InterpreterDemo {
     Classifier.registerDefaultNodeHandlers();
     Bot b = new Bot();
     System.out.println("Loading bot...");
-    //b.setProperty("name","Really Complicated");
+    // b.setProperty("name","Really Complicated");
     b.load("bot.xml");
-    System.out.println("done, loaded "+Classifier.getCount() + " categories.");
+    System.out.println("done, loaded " + Classifier.getCount() + " categories.");
     System.out.println("Enter text to match, or /exit to quit");
-       
+
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     System.out.print("> ");
     String line = in.readLine();
+    Environment e = new Environment();
     while (!line.equals("/exit")) {
-      MatchState m = Classifier.match(line);
-      if (m!=null) {
-        System.out.println(((aiml.script.Script)m.getResult()).execute(m, 0));        
+      e.pushInput(line);
+      MatchState m = Classifier.match(e);
+      e.popInput();
+      if (m != null) {
+        System.out.println(((aiml.script.Script) m.getResult()).execute(m, 0));
       } else
         System.out.println("no match found");
       System.out.print("> ");

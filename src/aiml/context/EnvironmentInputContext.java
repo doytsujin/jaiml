@@ -10,35 +10,29 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 package aiml.context;
 
 import java.util.EmptyStackException;
-import java.util.Stack;
 
-public class StringInputContext extends InputContext {
-  
-  private Stack<String> values = new Stack<String>(); 
-  
-  public StringInputContext(String name) {
+import aiml.environment.Environment;
+
+public class EnvironmentInputContext extends InputContext {
+
+  public EnvironmentInputContext(String name) {
     super(name);
   }
 
-  public void push(String input) {
-    values.push(input);
+  public void push(String input, Environment e) {
+    e.pushInput(input);
   }
 
-  public void pop() throws EmptyStackException {
-    values.pop();
+  public void pop(Environment e) throws EmptyStackException {
+    e.popInput();
   }
 
-  public String getValue() {
-    if (values.empty()) {
-      return "";
-    } else {
-      return values.peek();
-    }
+  public String getValue(Environment e) {
+    return e.getInput();
   }
-
 }

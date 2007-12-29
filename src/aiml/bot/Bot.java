@@ -13,7 +13,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.context.ContextInfo;
 import aiml.context.StringContext;
-import aiml.context.StringInputContext;
+import aiml.context.EnvironmentInputContext;
 import aiml.parser.AIMLParser;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -139,7 +139,7 @@ public class Bot {
       doContexts();
     } else {
       // TODO provide actual implementations of topics...
-      ContextInfo.registerContext(new StringInputContext("input"));
+      ContextInfo.registerContext(new EnvironmentInputContext("input"));
       ContextInfo.registerContext(new StringContext("that", "dummy that"));
       ContextInfo.registerContext(new StringContext("topic","dummy topic"));
     }
