@@ -117,24 +117,6 @@ public class IfThenElse implements Script {
     return result.toString();
   }
 
-  public String execute(MatchState m, int depth) {
-    StringBuffer result = new StringBuffer();
-    for (Entry condition : conditions) {
-      //(($name=="value") ? content : ($name=="value") ? content : ... : default);
-      result.append(Formatter.tab(depth)).append("if ($").append(condition.name).append(
-          "==\"").append(condition.value).append("\") {\n");
-      result.append(condition.content.execute(m, depth + 1)).append('\n');
-      result.append(Formatter.tab(depth)).append("} else ");
-    }
-    if (defaultBlock != null)
-      result.append("{\n").append(defaultBlock.execute(m, depth + 1)).append(
-          "\n}\n");
-    else
-      result.append("{}\n");
-
-    return result.toString();
-  }
-
   public String toString() {
     return "ifElse(" + conditions.toString() +
         ((defaultBlock != null) ? defaultBlock : "") + ")";

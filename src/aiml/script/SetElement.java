@@ -26,11 +26,6 @@ public class SetElement extends SimpleScriptElement {
     return "($" + nameAttr + "=" + content.evaluate(m) + ")";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print($" + nameAttr + "=" +
-        content.evaluate(m) + ");";
-  }
-
   public String toString() {
     return "$" + nameAttr + "=" + content;
   }

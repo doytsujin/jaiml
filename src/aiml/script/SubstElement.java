@@ -29,11 +29,6 @@ public class SubstElement extends NonEmptyElement {
     return "subst(" + type + "," + content.evaluate(m) + ")";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(subst(" + type + "," +
-        content.evaluate(m) + "));";
-  }
-
   public String toString() {
     return "subst(" + type + "," + content + ")";
   }

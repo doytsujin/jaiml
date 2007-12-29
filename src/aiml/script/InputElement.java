@@ -8,10 +8,6 @@ public class InputElement extends MultiIndexedElement {
     return "$_input[" + i1 + "," + i2 + "]";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print($_input[" + i1 + "," + i2 + "]);";
-  }
-
   public String toString() {
     return "$_input[" + i1 + "," + i2 + "]";
   }

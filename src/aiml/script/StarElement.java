@@ -62,11 +62,6 @@ public class StarElement extends EmptyElement {
         "]";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(star[" +
-        ContextInfo.getContext(context).getName() + "," + index + "]);";
-  }
-
   public String toString() {
     return "star[" + ContextInfo.getContext(context).getName() + "," + index +
         "]";

@@ -28,10 +28,6 @@ public class ThinkElement extends NonEmptyElement {
     return "think(" + content.evaluate(m) + ")";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "think(" + content.evaluate(m) + ");";
-  }
-
   public String toString() {
     return "think(" + content + ")";
   }

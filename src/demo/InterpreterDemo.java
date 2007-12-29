@@ -49,7 +49,7 @@ public class InterpreterDemo {
       MatchState m = Classifier.match(e);
       e.popInput();
       if (m != null) {
-        System.out.println(((aiml.script.Script) m.getResult()).execute(m, 0));
+        System.out.println(((aiml.script.Script) m.getResult()).evaluate(m));
       } else
         System.out.println("no match found");
       System.out.print("> ");

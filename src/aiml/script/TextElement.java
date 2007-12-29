@@ -27,11 +27,7 @@ public class TextElement implements Script {
   }
 
   public String evaluate(MatchState m) {
-    return "\"" + printable(text) + "\"";
-  }
-
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(\"" + printable(text) + "\");";
+    return text;
   }
 
   protected String printable(char ch) {

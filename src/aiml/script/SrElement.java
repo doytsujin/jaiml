@@ -8,10 +8,6 @@ public class SrElement extends EmptyElement {
     return "srai(star[input,1])";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(srai(star[input,1]))";
-  }
-
   public String toString() {
     return "srai(star[input,1])";
   }

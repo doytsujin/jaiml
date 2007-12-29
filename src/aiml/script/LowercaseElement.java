@@ -8,11 +8,6 @@ public class LowercaseElement extends NonEmptyElement {
     return "lowercase(" + content.evaluate(m) + ")";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(lowercase(" + content.evaluate(m) +
-        "))";
-  }
-
   public String toString() {
     return "lowercase(" + content + ")";
   }

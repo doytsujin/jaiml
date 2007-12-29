@@ -8,10 +8,6 @@ public class IDElement extends EmptyElement {
     return "userID()";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(userID());";
-  }
-
   public String toString() {
     return "userID()";
   }

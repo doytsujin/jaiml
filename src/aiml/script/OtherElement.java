@@ -45,8 +45,4 @@ public class OtherElement extends SimpleScriptElement {
     throw new UnsupportedOperationException("evaluate()");
   }
 
-  public String execute(MatchState m, int depth) {
-    throw new UnsupportedOperationException("execute()");
-  }
-
 }

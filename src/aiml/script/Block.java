@@ -43,22 +43,11 @@ public class Block implements Script {
     StringBuffer result = new StringBuffer();
     for (Iterator<Script> i = items.iterator(); i.hasNext();) {
       result.append(i.next().evaluate(m));
-      if (i.hasNext())
-        result.append(" + ");
     }
     return result.toString();
   }
 
   public String toString() {
     return items.toString();
-  }
-
-  public String execute(MatchState m, int depth) {
-    StringBuffer result = new StringBuffer();
-    for (Script item : items) {
-      result.append(item.execute(m, depth)).append('\n');
-    }
-    result.deleteCharAt(result.length() - 1);
-    return result.toString();
   }
 }

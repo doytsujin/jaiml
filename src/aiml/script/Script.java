@@ -14,8 +14,6 @@ public interface Script {
       IOException, AimlParserException;
 
   public String evaluate(MatchState m);
-
-  public String execute(MatchState m, int depth);
 }
 
 class Formatter {

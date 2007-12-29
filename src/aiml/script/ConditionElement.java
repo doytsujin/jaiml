@@ -5,11 +5,10 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
-public class ConditionElement implements Script {
+public abstract class ConditionElement implements Script {
 
   public Script parse(XmlPullParser parser) throws XmlPullParserException,
       IOException, AimlParserException {
@@ -27,13 +26,4 @@ public class ConditionElement implements Script {
           "Syntax error: illegal name/value combination for condition " +
               parser.getPositionDescription());
   }
-
-  public String evaluate(MatchState m) {
-    throw new UnsupportedOperationException("evaluate()");
-  }
-
-  public String execute(MatchState m, int depth) {
-    throw new UnsupportedOperationException("execute()");
-  }
-
 }

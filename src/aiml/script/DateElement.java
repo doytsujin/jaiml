@@ -8,10 +8,6 @@ public class DateElement extends EmptyElement {
     return "date()";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print(date());";
-  }
-
   public String toString() {
     return "date()";
   }

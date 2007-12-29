@@ -30,20 +30,6 @@ public class GetElement extends SimpleScriptElement {
           content.evaluate(m) + ")";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) +
-        "if (isset($" +
-        nameAttr +
-        "))\n " +
-        Formatter.tab(depth) +
-        "\tprint($" +
-        nameAttr +
-        ");\n" +
-        ((content instanceof EmptyScript) ? "" : Formatter.tab(depth) +
-            "else {\n" + content.execute(m, depth + 1)) + "\n" +
-        Formatter.tab(depth) + "}";
-  }
-
   public String toString() {
     if (content instanceof EmptyScript)
       return "$" + nameAttr;

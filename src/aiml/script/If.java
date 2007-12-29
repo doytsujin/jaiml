@@ -23,11 +23,6 @@ public class If extends SimpleScriptElement {
         ": \"\")";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "if ($" + name + "==" + value + ") {\n" +
-        content.execute(m, depth + 1) + Formatter.tab(depth) + "\n}\n";
-  }
-
   public String toString() {
     return "(($" + name + "==\"" + value + "\") ? " + content + ": \"\")";
 

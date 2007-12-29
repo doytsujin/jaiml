@@ -8,10 +8,6 @@ public class ThatElement extends MultiIndexedElement {
     return "$_that[" + i1 + "," + i2 + "]";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print($_that[" + i1 + "," + i2 + "]);";
-  }
-
   public String toString() {
     return "$_that[" + i1 + "," + i2 + "]";
   }

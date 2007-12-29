@@ -26,10 +26,6 @@ public class BotElement extends EmptyElement {
     return "$_bot['" + name + "']";
   }
 
-  public String execute(MatchState m, int depth) {
-    return Formatter.tab(depth) + "print($_bot['" + name + "']);";
-  }
-
   public String toString() {
     return "$_bot['" + name + "']";
   }
