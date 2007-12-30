@@ -16,7 +16,7 @@ public class EmptyScript implements Script {
   }
 
   public String evaluate(MatchState m) {
-    return "\"\"";
+    return "";
   }
 
   public String toString() {

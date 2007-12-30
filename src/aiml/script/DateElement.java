@@ -5,7 +5,7 @@ import aiml.classifier.MatchState;
 public class DateElement extends EmptyElement {
 
   public String evaluate(MatchState m) {
-    return "date()";
+    return m.getEnvironment().getDate();
   }
 
   public String toString() {
