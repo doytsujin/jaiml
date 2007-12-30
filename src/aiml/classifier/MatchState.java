@@ -349,4 +349,8 @@ public class MatchState {
     return sb.toString();
   }
 
+  public Environment getEnvironment() {
+    return e;
+  }
+
 }
