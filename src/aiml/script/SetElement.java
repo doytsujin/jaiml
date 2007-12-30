@@ -23,7 +23,9 @@ public class SetElement extends SimpleScriptElement {
   }
 
   public String evaluate(MatchState m) {
-    return "($" + nameAttr + "=" + content.evaluate(m) + ")";
+    String result = content.evaluate(m);
+    m.getEnvironment().setVar(nameAttr, result);
+    return result;
   }
 
   public String toString() {
