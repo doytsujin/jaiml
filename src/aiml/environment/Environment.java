@@ -14,9 +14,13 @@
 
 package aiml.environment;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
+import aiml.bot.Bot;
 
 /**
  * <p>
@@ -41,8 +45,15 @@ import java.util.Map;
  * 
  */
 public class Environment {
+  private static final String USER_ID = "GlobalUser";
+  private Bot bot;
   private Map<String, String> variables = new HashMap<String, String>();
   private LinkedList<String> input = new LinkedList<String>();
+
+  public Environment(Bot bot) {
+    super();
+    this.bot = bot;
+  }
 
   public String getVar(String name) {
     String result = variables.get(name);
@@ -66,6 +77,18 @@ public class Environment {
 
   public String popInput() {
     return input.removeFirst();
+  }
+
+  public String getUserID() {
+    return USER_ID;
+  }
+
+  public String getDate() {
+    return DateFormat.getDateInstance().format(new Date());
+  }
+
+  public Bot getBot() {
+    return bot;
   }
 
 }
