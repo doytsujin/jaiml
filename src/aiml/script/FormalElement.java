@@ -5,7 +5,7 @@ import aiml.classifier.MatchState;
 public class FormalElement extends NonEmptyElement {
 
   public String evaluate(MatchState m) {
-    return "formal(" + content.evaluate(m) + ")";
+    return Formatter.formal(content.evaluate(m));
   }
 
   public String toString() {
