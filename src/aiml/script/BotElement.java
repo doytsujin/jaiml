@@ -1,10 +1,13 @@
 package aiml.script;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.bot.Bot;
+import aiml.bot.InvalidPropertyException;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -23,7 +26,13 @@ public class BotElement extends EmptyElement {
   }
 
   public String evaluate(MatchState m) {
-    return "$_bot['" + name + "']";
+    try {
+      return m.getEnvironment().getBot().getProperty(name);
+    } catch (InvalidPropertyException e) {
+      Logger.getLogger(BotElement.class.getName()).warning(
+          "bot element referencing unknown property " + name);
+      return Bot.UNKNOWN_PROPERTY;
+    }
   }
 
   public String toString() {
