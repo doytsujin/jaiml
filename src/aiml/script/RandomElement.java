@@ -2,6 +2,7 @@ package aiml.script;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -14,6 +15,7 @@ import aiml.parser.AimlSyntaxException;
 public class RandomElement implements Script {
 
   private ArrayList<Script> items = new ArrayList<Script>();
+  private final Random random = new Random();
 
   private void parseItem(XmlPullParser parser) throws XmlPullParserException,
       IOException, AimlParserException {
@@ -52,14 +54,7 @@ public class RandomElement implements Script {
   }
 
   public String evaluate(MatchState m) {
-    StringBuffer result = new StringBuffer("random(");
-    result.append(items.size());
-    for (Script i : items) {
-      result.append(',').append(i.evaluate(m));
-    }
-    result.append(')');
-    return result.toString();
-
+    return items.get(random.nextInt(items.size())).evaluate(m);
   }
 
   public String toString() {
