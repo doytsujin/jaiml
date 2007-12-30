@@ -2,7 +2,6 @@ package aiml.script;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -41,8 +40,8 @@ public class Block implements Script {
 
   public String evaluate(MatchState m) {
     StringBuffer result = new StringBuffer();
-    for (Iterator<Script> i = items.iterator(); i.hasNext();) {
-      result.append(i.next().evaluate(m));
+    for (Script s : items) {
+      result.append(s.evaluate(m));
     }
     return result.toString();
   }
