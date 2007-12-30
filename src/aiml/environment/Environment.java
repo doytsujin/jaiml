@@ -67,6 +67,10 @@ public class Environment {
     variables.put(name, value);
   }
 
+  public boolean isSetVar(String name) {
+    return variables.containsKey(name);
+  }
+
   public String getInput() {
     return input.getFirst();
   }

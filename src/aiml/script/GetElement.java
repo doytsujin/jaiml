@@ -23,11 +23,15 @@ public class GetElement extends SimpleScriptElement {
   }
 
   public String evaluate(MatchState m) {
-    if (content instanceof EmptyScript)
-      return "$" + nameAttr;
-    else
-      return "(isset($" + nameAttr + ") ? $" + nameAttr + " : " +
-          content.evaluate(m) + ")";
+    if (content instanceof EmptyScript) {
+      return m.getEnvironment().getVar(nameAttr);
+    } else {
+      if (m.getEnvironment().isSetVar(nameAttr)) {
+        return m.getEnvironment().getVar(nameAttr);
+      } else {
+        return content.evaluate(m);
+      }
+    }
   }
 
   public String toString() {
