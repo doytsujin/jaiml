@@ -49,6 +49,7 @@ public class Environment {
   private Bot bot;
   private Map<String, String> variables = new HashMap<String, String>();
   private LinkedList<String> input = new LinkedList<String>();
+  public static final String UNDEFINED_VARIABLE = "";
 
   public Environment(Bot bot) {
     super();

@@ -6,6 +6,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.classifier.MatchState;
+import aiml.environment.Environment;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
@@ -23,15 +24,11 @@ public class GetElement extends SimpleScriptElement {
   }
 
   public String evaluate(MatchState m) {
-    if (content instanceof EmptyScript) {
-      return m.getEnvironment().getVar(nameAttr);
-    } else {
-      if (m.getEnvironment().isSetVar(nameAttr)) {
-        return m.getEnvironment().getVar(nameAttr);
-      } else {
-        return content.evaluate(m);
-      }
+    String result = m.getEnvironment().getVar(nameAttr);
+    if (Environment.UNDEFINED_VARIABLE.equals(result)) {
+      return content.evaluate(m);
     }
+    return result;
   }
 
   public String toString() {
