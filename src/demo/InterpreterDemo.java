@@ -36,14 +36,14 @@ public class InterpreterDemo {
     Bot b = new Bot();
     System.out.println("Loading bot...");
     // b.setProperty("name","Really Complicated");
-    b.load("bot.xml");
+    b.load(args[0]);
     System.out.println("done, loaded " + Classifier.getCount() + " categories.");
     System.out.println("Enter text to match, or /exit to quit");
 
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     System.out.print("> ");
     String line = in.readLine();
-    Environment e = new Environment();
+    Environment e = b.createEnvironment();
     while (!line.equals("/exit")) {
       e.pushInput(line);
       MatchState m = Classifier.match(e);

@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import aiml.context.ContextInfo;
 import aiml.context.EnvironmentInputContext;
 import aiml.context.StringContext;
+import aiml.environment.Environment;
 import aiml.parser.AIMLParser;
 import aiml.parser.AimlParserException;
 
@@ -25,6 +26,7 @@ public class Bot {
   private Logger logger = Logger.getLogger(this.getClass().getName());
 
   private XmlPullParser parser;
+  public static final String UNKNOWN_PROPERTY = "";
 
   public Bot() throws XmlPullParserException {
     super();
@@ -242,6 +244,15 @@ public class Bot {
     parser.nextTag();
     parser.nextTag();
 
+  }
+
+  /**
+   * Creates a new single user environment for this bot.
+   * 
+   * @return A new Environment
+   */
+  public Environment createEnvironment() {
+    return new Environment(this);
   }
 
 }
