@@ -5,7 +5,7 @@ import aiml.classifier.MatchState;
 public class SentenceElement extends NonEmptyElement {
 
   public String evaluate(MatchState m) {
-    return "sentence(" + content.evaluate(m) + ")";
+    return Formatter.sentence(content.evaluate(m));
   }
 
   public String toString() {

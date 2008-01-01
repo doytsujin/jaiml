@@ -37,4 +37,49 @@ class Formatter {
     m.appendTail(result);
     return result.toString();
   }
+
+  public static String sentence(String text) {
+    Pattern p = Pattern.compile("(?:^|\\p{javaWhitespace}+)(\\p{L}).*?\\.(?=^|\\p{javaWhitespace}+)");
+    Matcher m = p.matcher(text);
+    StringBuffer result = new StringBuffer();
+
+    while (m.find()) {
+      m.appendReplacement(result, m.group());
+      upCaseCodePoint(result, m.start(1));
+    }
+
+    int start = result.length();
+    m.appendTail(result);
+    CharSequence tail = result.subSequence(start, result.length());
+    Matcher m2 = Pattern.compile("(?:^|\\p{javaWhitespace}*)(\\p{L})").matcher(
+        tail);
+
+    if (m2.find()) {
+      upCaseCodePoint(result, m2.start(1) + start);
+    }
+    return result.toString();
+  }
+
+  /**
+   * <p>
+   * Changes the unicode character on position <code>pos</code> inside the
+   * StringBuffer buffer to upper case.
+   * </p>
+   * 
+   * @param buffer
+   *                A modifiable string
+   * @param pos
+   *                The position of the character to turn to upper case.
+   */
+  private static void upCaseCodePoint(StringBuffer buffer, int pos) {
+    int codePoint = buffer.codePointAt(pos);
+    codePoint = Character.toUpperCase(codePoint);
+
+    String replacementChar = new String(Character.toChars(codePoint));
+    buffer.replace(pos, buffer.offsetByCodePoints(pos, 1), replacementChar);
+  }
+
+  public static void main(String[] args) {
+    System.out.println(sentence("she stopped. she said, \"Hello there,\" and then went (very slowly) on. asalkjdfa.alkjsd was really bad asdf.123 asd313.itu."));
+  }
 }
