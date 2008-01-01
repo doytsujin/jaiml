@@ -15,7 +15,6 @@
 package aiml.classifier.node;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * A factory class for pattern nodes. A call to <code>getInstance()</code>
@@ -69,14 +68,19 @@ public class PatternNodeFactory {
    * @return an appropriate instance of PatternNode
    */
   public static PatternNode getInstance(int depth, String pattern) {
-    Iterator i = nodeTypes.iterator();
-    while (i.hasNext()) {
-      Creatable nodeType = (Creatable) i.next();
+    for (Creatable nodeType : nodeTypes) {
       if (nodeType.canCreate(depth, pattern)) {
         return nodeType.getInstance();
       }
     }
     return null;
+  }
+
+  /**
+   * Clears all information about node type handlers.
+   */
+  public static void reset() {
+    nodeTypes.clear();
   }
 
 }
