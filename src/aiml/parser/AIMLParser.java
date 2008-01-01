@@ -34,6 +34,7 @@ import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
 import aiml.context.ContextInfo;
+import aiml.context.EnvironmentInputContext;
 import aiml.context.StringContext;
 import aiml.script.Block;
 import aiml.script.ElementParserFactory;
@@ -426,7 +427,7 @@ public class AIMLParser {
     b.setProperty("name", "foobar");
     b.setProperty("baz", "bar");
 
-    ContextInfo.registerContext(new StringContext("input"));
+    ContextInfo.registerContext(new EnvironmentInputContext("input"));
     ContextInfo.registerContext(new StringContext("that"));
     ContextInfo.registerContext(new StringContext("topic"));
 
