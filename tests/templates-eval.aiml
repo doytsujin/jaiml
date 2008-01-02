@@ -1,0 +1,330 @@
+<aiml version="1.0">
+<!--
+  This file is only here to test the parser, not to check valid processing
+-->
+<category>
+<pattern>bot constant known</pattern>
+<template>
+  foo
+  <bot name="name"/>
+  bar
+</template>
+</category>
+
+<category>
+<pattern>bot constant unknown</pattern>
+<template>
+  foo
+  <bot name="foobar"/>
+  bar
+</template>
+</category>
+
+
+<category>
+<pattern>test get set</pattern>
+<template>
+Variable (no default): <get name="variable"/>
+Variable (default): <get name="variable">default</get>
+Set variable: <set name="variable">value</set>
+Variable (no default): <get name="variable"/>
+Variable (default): <get name="variable">default</get>
+Reset variable: <set name="variable"/>
+Variable (no default): <get name="variable"/>
+Variable (default): <get name="variable">default</get>
+</template>
+</category> 
+
+<category>
+<pattern>test if</pattern>
+<template>
+<set name="ifvar1">A</set><set name="ifvar2"/><set name="ifvar3"/>
+(ifvar1==""):<condition name="ifvar1" value="">FAIL</condition>
+(ifvar2==""):<condition name="ifvar2" value="">OK</condition>
+(ifvar3==""):<condition name="ifvar3" value="">OK</condition>
+(ifvar1=="A"):<condition name="ifvar1" value="A">OK</condition>
+(ifvar2=="") <condition name="ifvar2" value=""><set name="ifvar1"><set name="ifvar3">OK</set></set></condition>
+(ifvar3=="OK"):<condition name="ifvar3" value="OK"><get name="ifvar1">FAIL</get></condition>
+</template>
+</category>
+
+<category>
+<pattern>test if else</pattern>
+<template>
+<set name="ifvar1">A</set><set name="ifvar2">B</set><set name="ifvar3">C</set>
+<condition>
+  <li name="ifvar1" value="c">FAIL</li>
+  <li name="ifvar2" value="c">FAIL</li>
+  <li name="ifvar3" value="c">OK</li>
+  <li>FAIL</li>
+</condition>
+<condition>
+  <li name="ifvar1" value="A">OK</li>
+</condition>
+<condition>
+  <li>OK</li>
+</condition>
+<condition>
+  <li name="ifvar1" value="">FAIL</li>
+  <li>OK</li>
+</condition>
+</template>
+</category>
+
+
+<category>
+<pattern>test case</pattern>
+<template>
+<set name="ifvar1">A</set>
+<condition name="ifvar1">
+  <li value="a">OK</li>
+  <li value="b">FAIL</li>
+  <li value="c">FAIL</li>
+  <li>FAIL</li>
+</condition>
+<condition name="ifvar1">
+  <li value="b">FAIL</li>
+  <li value="c">FAIL</li>
+  <li value="A">OK</li>
+  <li>FAIL</li>
+</condition>
+<condition name="ifvar1">
+  <li value="A">OK</li>
+</condition>
+<condition name="ifvar1">
+  <li>OK</li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>set element</pattern>
+<template>
+one:<set name="empty"/>
+two:<set name="empty2"></set>
+three:<set name="string">somestring</set>
+four:<set name="botconst"><bot name="name"/></set>
+five:<set name="botconsmixed1">aaa<bot name="name"/></set>
+six:<set name="botconstmixed2">aaa<bot name="name"/>bbb</set>
+seven:<set name="botconstmixed3"><bot name="name"/>bbb</set>
+eight:<set name="botconstmixed4">aaa<bot name="name"/>aaa<bot name="name"/></set>
+nine:<set name="botconstmixed5"><bot name="name"/><bot name="name"/><bot name="name"/></set>
+ten:<set name="botconstnested">aa<bot name="name"/>bb<set name="nested">ddd<set name="nested2">ggg</set>sss</set>fff</set>
+</template>
+</category>
+
+<category>
+<pattern>get element</pattern>
+<template>
+one:<get name="empty"/>
+two:<get name="empty2"></get>
+three:<get name="string">somestring</get>
+four:<get name="botconst"><bot name="name"/></get>
+five:<get name="botconsmixed1">aaa<bot name="name"/></get>
+six:<get name="botconstmixed2">aaa<bot name="name"/>bbb</get>
+seven:<get name="botconstmixed3"><bot name="name"/>bbb</get>
+eight:<get name="botconstmixed4">aaa<bot name="name"/>aaa<bot name="name"/></get>
+nine:<get name="botconstmixed5"><bot name="name"/><bot name="name"/><bot name="name"/></get>
+ten:<get name="botconstnested">aa<bot name="name"/>bb<get name="nested">ddd<get name="nested2">ggg</get>sss</get>fff</get>
+</template>
+</category>
+
+<category>
+<pattern>random element</pattern>
+<template>
+one:
+<random>
+	<li>one</li>
+	<li>aaa<bot name="name"/></li>
+	<li><get name="empty"/></li>
+	<li><random>
+			<li>one</li>
+			<li>two</li>
+		</random></li>
+	<li>ran<random>
+			<li>one</li>
+			<li>two</li>
+		</random>dom</li>
+</random>
+<random>
+	<li>not really random</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>if</pattern>
+<template>
+<condition name="foo" value="bar">some text</condition>
+<condition name="foo" value="bar"></condition>
+<condition name="foo" value="bar"/>
+</template>
+</category>
+
+<category>
+<pattern>switch</pattern>
+<template>
+one:
+<condition name="foo">
+	<li value="foo">some text</li>
+	<li value="bar"></li>
+	<li value="baz"/>
+	<li/>
+</condition>
+two:
+<condition name="foo">
+	<li value="foo">some text</li>
+</condition>
+three:
+<condition name="foo">
+	<li>default</li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>ifelse</pattern>
+<template>
+one:
+<condition>
+	<li name="a" value="foo">some text</li>
+	<li name="b" value="bar"></li>
+	<li name="c" value="baz"/>
+	<li>default</li>
+</condition>
+two:
+<condition>
+	<li name="a" value="foo">some text</li>
+</condition>
+three:
+<condition>
+	<li>default</li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>wildcard reference</pattern>
+<template>
+simple: <star/>
+with index: <star index = "2"/>
+with standart context <star context = "topic"/>
+with standart context and index <star context = "topic" index = "5"/>
+<!-- 
+with user defined context <star context = "foo"/>
+with user defined context and index <star context = "foo" index = "3"/>
+-->
+shorthand <thatstar/><topicstar/>
+shorthand with index: <thatstar index="2"/><thatstar index="5"/>
+</template>
+</category>
+
+<category>
+<pattern>srai</pattern>
+<template>
+empty: <srai/> 
+empty: <srai></srai>
+text: <srai>some text</srai>
+textscript: <srai><get name="foo">default</get></srai>
+</template>
+</category>
+
+<category>
+<pattern>think</pattern>
+<template>
+empty: <think/>
+empty: <think></think>
+text->empty: <think>some text</think>
+script: <think><get name="foo">default</get></think>
+script with text: <think>text1<get name="foo">default</get>text2</think>
+</template>
+</category>
+
+<category>
+<pattern>formal</pattern>
+<template>
+empty: <formal/>
+empty: <formal></formal>
+text->empty: <formal>some text</formal>
+script: <formal><get name="foo">default</get></formal>
+script with text: <formal>text1<get name="foo">default</get>text2</formal>
+</template>
+</category>
+
+<category>
+<pattern>uppercase</pattern>
+<template>
+empty: <uppercase/>
+empty: <uppercase></uppercase>
+text->empty: <uppercase>some text</uppercase>
+script: <uppercase><get name="foo">default</get></uppercase>
+script with text: <uppercase>text1<get name="foo">default</get>text2</uppercase>
+</template>
+</category>
+
+<category>
+<pattern>lowercase</pattern>
+<template>
+empty: <lowercase/>
+empty: <lowercase></lowercase>
+text->empty: <lowercase>some text</lowercase>
+script: <lowercase><get name="foo">default</get></lowercase>
+script with text: <lowercase>text1<get name="foo">default</get>text2</lowercase>
+</template>
+</category>
+
+<category>
+<pattern>sentence</pattern>
+<template>
+empty: <sentence/>
+empty: <sentence></sentence>
+text->empty: <sentence>some text</sentence>
+script: <sentence><get name="foo">default</get></sentence>
+script with text: <sentence>text1<get name="foo">default</get>text2</sentence>
+</template>
+</category>
+
+<category>
+<pattern>that and input</pattern>
+<template>
+empty: <that/><input/>
+default index: <that index="1"/><input index="1"/>
+nondefault index: <that index="2"/><input index="3"/>
+default multi index: <that index="1,1"/><input index="1,1"/>
+nondefault multi index: <that index="2,1"/><input index="3,1"/>
+nondefault multi index 2: <that index="1,2"/><input index="1,3"/>
+nondefault multi index 3: <that index="4,2"/><input index="5,3"/>
+</template>
+</category>
+
+<category>
+<pattern>misc</pattern>
+<template>
+date: <date/>
+id: <id/>
+size: <size/>
+version: <version/>
+</template>
+</category>
+
+<category>
+<pattern>sr</pattern>
+<template>
+sr: <sr/>
+</template>
+</category>
+
+<category>
+<pattern>subst</pattern>
+<template>
+empty:	<person/><person2/><gender/><subst name="person"/>
+empty:	<person></person><person2></person2><gender></gender><subst name="person"></subst>
+other:	<person>foo</person>
+	<person2>bar</person2>
+	<gender>baz</gender>
+	<subst name="custom">foo</subst>
+</template>
+</category>
+
+
+</aiml>

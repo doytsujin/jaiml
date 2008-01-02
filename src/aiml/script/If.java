@@ -2,6 +2,16 @@ package aiml.script;
 
 import aiml.classifier.MatchState;
 
+/**
+ * This class handles a simple AIML condition:
+ * 
+ * <pre>
+ *   &lt;condition name=&quot;variable&quot;&gt;evaluate this if true&lt;/condition&gt;
+ * </pre>
+ * 
+ * @author Kim Sullivan
+ * 
+ */
 public class If extends SimpleScriptElement {
 
   private String name;
@@ -19,8 +29,11 @@ public class If extends SimpleScriptElement {
   }
 
   public String evaluate(MatchState m) {
-    return "(($" + name + "==\"" + value + "\") ? " + content.evaluate(m) +
-        ": \"\")";
+    if (m.getEnvironment().getVar(name).equalsIgnoreCase(value)) {
+      return content.evaluate(m);
+    } else {
+      return "";
+    }
   }
 
   public String toString() {

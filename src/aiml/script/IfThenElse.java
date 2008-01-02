@@ -11,6 +11,44 @@ import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
+/**
+ * <p>
+ * This class handles an if-then-else type condition:
+ * </p>
+ * 
+ * <pre>
+ *   &lt;condition&gt;
+ *      &lt;li name=&quot;varA&quot; value=&quot;A&quot;&gt;true if (varA==&quot;A&quot;)&lt;/li&gt;&lt;!--else--&gt;
+ *      &lt;li name=&quot;varB&quot; value=&quot;B&quot;&gt;true if (varB==&quot;B&quot;)&lt;/li&gt;&lt;!--else--&gt;
+ *      &lt;li name=&quot;varC&quot; value=&quot;C&quot;&gt;true if (varC==&quot;C&quot;)&lt;/li&gt;
+ *   &lt;/condition&gt;   
+ * </pre>
+ * 
+ * <p>
+ * An if-then-else block can contain a default case:
+ * </p>
+ * 
+ * <pre>
+ *   &lt;condition&gt;
+ *      &lt;li name=&quot;varA&quot; value=&quot;&quot;&gt;Variable A is not set&lt;/li&gt;      
+ *      &lt;li&gt;Variable A is set&lt;/li&gt;
+ *   &lt;/condition&gt;   
+ * </pre>
+ * 
+ * <p>
+ * If the block contains only one case, an {@link If} is returned. If the block
+ * contains only the default case, only the block with the default case is
+ * returned.
+ * </p>
+ * 
+ * <p>
+ * As the name suggests, the conditions are evaluated sequentially, unlike
+ * {@link Switch} which does a direct lookup.
+ * </p>
+ * 
+ * @author Kim Sullivan
+ * 
+ */
 public class IfThenElse implements Script {
 
   private class Entry {
@@ -24,10 +62,12 @@ public class IfThenElse implements Script {
       this.content = content;
     }
 
-    public boolean isTrue() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException(
-          "Actual evaluation of condition not supported yet.");
+    public boolean isTrue(MatchState m) {
+      return m.getEnvironment().getVar(name).equalsIgnoreCase(value);
+    }
+
+    public String evaluate(MatchState m) {
+      return content.evaluate(m);
     }
 
     public String toString() {
@@ -66,7 +106,7 @@ public class IfThenElse implements Script {
     if (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
         "li")))
       throw new AimlSyntaxException(
-          "Syntax error: expecting end tag 'li' while parsing switch type condition cases " +
+          "Syntax error: expecting end tag 'li' while parsing if-else conditions " +
               parser.getPositionDescription());
     parser.nextTag();
   }
@@ -101,20 +141,14 @@ public class IfThenElse implements Script {
   }
 
   public String evaluate(MatchState m) {
-    StringBuffer result = new StringBuffer();
-    result.append('(');
     for (Entry condition : conditions) {
-      //(($name=="value") ? content : ($name=="value") ? content : ... : default);
-      result.append('(').append(condition.name).append("==").append(
-          condition.value).append(") ? ");
-      result.append(condition.content.evaluate(m)).append(" : ");
+      if (condition.isTrue(m))
+        return condition.evaluate(m);
     }
-    if (defaultBlock != null)
-      result.append(defaultBlock.evaluate(m));
-    else
-      result.append("\"\"");
-    result.append(')');
-    return result.toString();
+    if (defaultBlock != null) {
+      return defaultBlock.evaluate(m);
+    }
+    return "";
   }
 
   public String toString() {
