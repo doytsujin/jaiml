@@ -47,11 +47,12 @@ public class InterpreterDemo {
     while (!line.equals("/exit")) {
       e.pushInput(line);
       MatchState m = Classifier.match(e);
-      e.popInput();
       if (m != null) {
         System.out.println(((aiml.script.Script) m.getResult()).evaluate(m));
-      } else
+      } else {
         System.out.println("no match found");
+      }
+      e.popInput();
       System.out.print("> ");
       line = in.readLine();
     }

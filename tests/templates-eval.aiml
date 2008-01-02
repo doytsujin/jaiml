@@ -203,25 +203,71 @@ script with text: <think>text1<get name="foo">default</get>text2</think>
 </category>
 
 <category>
-<pattern>that and input</pattern>
+<pattern>test input</pattern>
 <template>
-empty: <that/><input/>
-default index: <that index="1"/><input index="1"/>
-nondefault index: <that index="2"/><input index="3"/>
-default multi index: <that index="1,1"/><input index="1,1"/>
-nondefault multi index: <that index="2,1"/><input index="3,1"/>
-nondefault multi index 2: <that index="1,2"/><input index="1,3"/>
-nondefault multi index 3: <that index="4,2"/><input index="5,3"/>
+<input/>
+<input index="1"/>
+<input index="1,1"/>
+<input index="1,2"/>
+<input index="1,3"/>
+<input index="2"/>
+<input index="2,1"/>
+<input index="2,2"/>
+<input index="2,3"/>
+<input index="3"/>
+<input index="3,1"/>
+<input index="3,2"/>
+<input index="3,3"/>
 </template>
 </category>
 
 <category>
-<pattern>misc</pattern>
+<pattern>test that</pattern>
 <template>
-date: <date/>
-id: <id/>
-size: <size/>
-version: <version/>
+<that/>
+<that index="1"/>
+<that index="1,1"/>
+<that index="1,2"/>
+<that index="1,3"/>
+<that index="2"/>
+<that index="2,1"/>
+<that index="2,2"/>
+<that index="2,3"/>
+<that index="3"/>
+<that index="3,1"/>
+<that index="3,2"/>
+<that index="3,3"/>
+</template>
+</category>
+
+<category>
+<pattern>test date</pattern>
+<template><date/></template>
+</category>
+
+<category>
+<pattern>test id</pattern>
+<template><id/></template>
+</category>
+
+<category>
+<pattern>test size</pattern>
+<template><size/></template>
+</category>
+
+<category>
+<pattern>test version</pattern>
+<template><version/></template>
+</category>
+
+
+<category>
+<pattern>test misc</pattern>
+<template>
+<srai>test date</srai>
+<srai>test id</srai>
+<srai>test size</srai>
+<srai>test version</srai>
 </template>
 </category>
 

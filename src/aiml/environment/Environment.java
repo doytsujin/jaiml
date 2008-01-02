@@ -72,6 +72,13 @@ public class Environment {
     return variables.containsKey(name);
   }
 
+  public String getInput(int i, int j) {
+    if (i == 1 && j == 1) {
+      return getInput();
+    }
+    return "";
+  }
+
   public String getInput() {
     return input.getFirst();
   }
@@ -94,6 +101,10 @@ public class Environment {
 
   public Bot getBot() {
     return bot;
+  }
+
+  public String getThat(int i1, int i2) {
+    return "";
   }
 
 }
