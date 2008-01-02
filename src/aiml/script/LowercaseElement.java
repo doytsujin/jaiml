@@ -5,7 +5,7 @@ import aiml.classifier.MatchState;
 public class LowercaseElement extends NonEmptyElement {
 
   public String evaluate(MatchState m) {
-    return "lowercase(" + content.evaluate(m) + ")";
+    return Formatter.lowerCase(content.evaluate(m));
   }
 
   public String toString() {
