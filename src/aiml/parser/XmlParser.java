@@ -12,17 +12,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -90,7 +82,7 @@ public class XmlParser implements XmlPullParser {
   private String encodingDeclared;
   private boolean xmlDeclParsed;
 
-  private enum InternalState {
+  enum InternalState {
     DOCUMENT_START, PROLOG, CONTENT, EPILOG, DOCUMENT_END;
   }
 
@@ -1544,443 +1536,89 @@ public class XmlParser implements XmlPullParser {
     return true;
   }
 
-  public class LexerTest extends TestCase {
-    public LexerTest(String s) {
-      super(s);
+  /**
+   * <p>
+   * This class is just a helper class to make private methods accessible for
+   * testing (due to the limitations of the JUnit framework). This class should
+   * never be used directly.
+   * </p>
+   * 
+   * @author Kim Sullivan
+   * 
+   */
+  public class XmlParserPrivateAcessor {
+
+    public boolean tryXmlDecl() throws IOException, XmlPullParserException {
+      return XmlParser.this.tryXmlDecl();
+
     }
 
-    public void testNextReference() throws IOException, XmlPullParserException {
-      setInput(new StringReader("&fooBar;&#64;&lt;&amp;"));
-      nextChar();
-      assertEquals(nextReference(), null);
-      assertEquals(nextReference(), new String(Character.toChars(64)));
-      assertEquals(nextReference(), "<");
-      assertEquals(nextReference(), "&");
+    public void nextMarkupContent() throws XmlPullParserException, IOException {
+      XmlParser.this.nextMarkupContent();
     }
 
-    private void assertAttribute(int i, String name, String value) {
-      assertEquals(getAttributeName(i), name);
-      assertEquals(getAttributeValue(i), value);
+    public void nextStartTagContent() throws XmlPullParserException,
+        IOException {
+      XmlParser.this.nextStartTagContent();
     }
 
-    public void testNextAttribute() throws IOException, XmlPullParserException {
-      setInput(new StringReader(
-          "ap:kf  =   \n \r\n \"foo\r\n\n\r&amp;'xxx\"foofoo='wtf'"));
-      nextChar();
-      eventType = START_TAG;
-      nextAttribute();
-      nextAttribute();
-      assertEquals(getAttributeCount(), 2);
-      assertAttribute(0, "ap:kf", "foo   &'xxx");
-      assertAttribute(1, "foofoo", "wtf");
+    public char getChar() {
+      return XmlParser.this.getChar();
     }
 
-    public void testPIContent() throws IOException, XmlPullParserException {
-      setInput(new StringReader(
-          "?> bla??? >>>>??? ? > ?hblah?>ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
-      nextChar();
-      assertEquals(nextPIContent(), "");
-      assertEquals(nextPIContent(), " bla??? >>>>??? ? > ?hblah");
-      try {
-        nextPIContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
+    public String nextCharData() throws IOException, XmlPullParserException {
+      return XmlParser.this.nextCharData();
     }
 
-    public void testCommentContent() throws IOException, XmlPullParserException {
-      setInput(new StringReader(
-          "ffrrfraaafhr-->-->-aasdfasdf-asdfsad-asdfa->-asfd-->adasdf--asdf-->asdfasdf--->"));
-      nextChar();
-      assertEquals(nextCommentContent(), "ffrrfraaafhr");
-      assertEquals(nextCommentContent(), "");
-      assertEquals(nextCommentContent(), "-aasdfasdf-asdfsad-asdfa->-asfd");
-      try {
-        nextCommentContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
-      assertEquals(nextCommentContent(), "asdf");
-      try {
-        System.out.println(nextCommentContent());
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
+    public String nextCDataContent() throws IOException, XmlPullParserException {
+      return XmlParser.this.nextCDataContent();
     }
 
-    public void testCDataContent() throws IOException, XmlPullParserException {
-      setInput(new StringReader(
-          "]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>"));
-      nextChar();
-      assertEquals(nextCDataContent(),
-          "]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
-    }
-
-    public void testCharData() throws IOException, XmlPullParserException {
-      setInput(new StringReader(
-          "asdfasdfjh<skdjfhaskdjfh&askjfh<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b<]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b]]>asdf]]>asdf"));
-      assertEquals(nextChar(), 'a');
-      assertEquals(nextCharData(), "asdfasdfjh");
-      assertEquals(getChar(), '<');
-
-      assertEquals(nextChar(), 's');
-      assertEquals(nextCharData(), "skdjfhaskdjfh");
-      assertEquals(getChar(), '&');
-
-      assertEquals(nextChar(), 'a');
-      assertEquals(nextCharData(), "askjfh");
-      assertEquals(getChar(), '<');
-
-      assertEquals(nextChar(), ']');
-      assertEquals(nextCharData(),
-          "]]12]3]4]]]]5]]6]]7]]] >]]]8]>9012>>>>>]>]>]>]]b");
-      assertEquals(getChar(), '<');
-
-      assertEquals(nextChar(), ']');
-      try {
-        nextCharData();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
-      assertEquals(getChar(), '>');
-
-      assertEquals(nextChar(), 'a');
-      try {
-        nextCharData();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
-    }
-
-    public void testStartTagContent() throws IOException,
+    public String nextCommentContent() throws IOException,
         XmlPullParserException {
-      setInput(new StringReader(
-          " foo='bar' bar='foo'> a='b' c='d'   > u='1' v='2'/>"));
-      assertEquals(nextChar(), ' ');
-      nextStartTagContent();
-      assertEquals(getAttributeCount(), 2);
-      assertEquals(isEmptyElementTag(), false);
-      assertAttribute(0, "foo", "bar");
-      assertAttribute(1, "bar", "foo");
-      try {
-        getAttributeName(2);
-        fail("Expcected IndexOutOfBoundsException");
-      } catch (IndexOutOfBoundsException e) {
-        assertTrue(true);
-      }
-      assertEquals(getChar(), ' ');
-
-      nextStartTagContent();
-      assertEquals(getAttributeCount(), 2);
-      assertEquals(isEmptyElementTag(), false);
-      assertAttribute(0, "a", "b");
-      assertAttribute(1, "c", "d");
-      try {
-        getAttributeValue(2);
-        fail("Expcected IndexOutOfBoundsException");
-      } catch (IndexOutOfBoundsException e) {
-        assertTrue(true);
-      }
-      assertEquals(getChar(), ' ');
-
-      nextStartTagContent();
-      assertEquals(getAttributeCount(), 2);
-      assertEquals(isEmptyElementTag(), true);
-      assertAttribute(0, "u", "1");
-      assertAttribute(1, "v", "2");
-      try {
-        getAttributeValue(2);
-        fail("Expcected IndexOutOfBoundsException");
-      } catch (IndexOutOfBoundsException e) {
-        assertTrue(true);
-      }
-      assertEquals(getChar(), EOF);
-
+      return XmlParser.this.nextCommentContent();
     }
 
-    public void testMarkupContentComment() throws IOException,
-        XmlPullParserException {
-      setInput(new StringReader("!--foobar-->"));
-      assertEquals(START_DOCUMENT, getEventType());
-      assertEquals('!', nextChar());
-      nextMarkupContent();
-      assertEquals(COMMENT, eventType);
-      assertEquals("foobar", getText());
-      assertEquals(EOF, getChar());
+    public String nextPIContent() throws XmlPullParserException, IOException {
+      return XmlParser.this.nextPIContent();
     }
 
-    public void testMarkupContentCommentEmpty() throws IOException,
-        XmlPullParserException {
-      setInput(new StringReader("!---->"));
-      assertEquals(START_DOCUMENT, getEventType());
-      assertEquals('!', nextChar());
-      nextMarkupContent();
-      assertEquals(COMMENT, eventType);
-      assertEquals("", getText());
-      assertEquals(EOF, getChar());
+    public void nextAttribute() throws XmlPullParserException, IOException {
+      XmlParser.this.nextAttribute();
     }
 
-    public void testMarkupContentCommentError() throws IOException,
-        XmlPullParserException {
-      setInput(new StringReader("!-foo-->"));
-      assertEquals(START_DOCUMENT, getEventType());
-      assertEquals('!', nextChar());
-      try {
-        nextMarkupContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
+    public String nextReference() throws XmlPullParserException, IOException {
+      return XmlParser.this.nextReference();
     }
 
-    public void testMarkupContentPI() throws Exception {
-      setInput(new StringReader("?php echo('j00 fail')?>"));
-      assertEquals('?', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      nextMarkupContent();
-      assertEquals(PROCESSING_INSTRUCTION, getEventType());
-      assertEquals("php echo('j00 fail')", getText());
-      assertEquals(EOF, getChar());
+    public char nextChar() throws IOException {
+      return XmlParser.this.nextChar();
     }
 
-    public void testMarkupContentPIXmlDecl() throws Exception {
-      setInput(new StringReader("?xml version='1.0'?>"));
-      assertEquals('?', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      try {
-        nextMarkupContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-
-      }
-
+    public void setEventType(int eventType) {
+      XmlParser.this.eventType = eventType;
     }
 
-    public void testMarkupContentCDSect() throws Exception {
-      setInput(new StringReader(
-          "![CDATA[<this> will be &ignored;]]<><!---->]]>"));
-      assertEquals('!', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      nextMarkupContent();
-      assertEquals(CDSECT, getEventType());
-      assertEquals("<this> will be &ignored;]]<><!---->", getText());
-      assertEquals(EOF, getChar());
+    public boolean isXmlDeclParsed() {
+      return XmlParser.this.xmlDeclParsed;
     }
 
-    public void testMarkupContentDoctype() throws Exception {
-      setInput(new StringReader("!DOCTYPE [<!ELEMENT ]>"));
-      assertEquals('!', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      nextMarkupContent();
-      assertEquals(DOCDECL, getEventType());
+    public boolean isStandalone() {
+      return XmlParser.this.isStandalone;
     }
 
-    public void testMarkupContentMarkedSectionError() throws Exception {
-      setInput(new StringReader("![RCDSECT[some RCDATA]]>"));
-      assertEquals('!', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      try {
-        nextMarkupContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
+    public String getEncodingDeclared() {
+      return XmlParser.this.encodingDeclared;
     }
 
-    public void testMarkupContentInvalidCharAfterExcl() throws Exception {
-      setInput(new StringReader("!]something"));
-      assertEquals('!', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      try {
-        nextMarkupContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
+    public InternalState getInternalState() {
+      return internalState;
     }
 
-    public void testMarkupContentEndTag() throws Exception {
-      setInput(new StringReader("/endtag>"));
-      assertEquals('/', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      nextMarkupContent();
-      assertEquals(END_TAG, getEventType());
-      assertEquals(null, getText());
-      assertEquals("endtag", XmlParser.this.getName());
-      assertEquals(EOF, getChar());
-    }
-
-    public void testMarkupContentEndTagWithSpaces() throws Exception {
-      setInput(new StringReader("/endtag   >"));
-      assertEquals('/', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      nextMarkupContent();
-      assertEquals(END_TAG, getEventType());
-      assertEquals(null, getText());
-      assertEquals("endtag", XmlParser.this.getName());
-      assertEquals(EOF, getChar());
-    }
-
-    public void testMarkupContentEndTagMalformed() throws Exception {
-      setInput(new StringReader("/ endtag   >"));
-      assertEquals('/', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      try {
-        nextMarkupContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
-
-      setInput(new StringReader("/endtag s>"));
-      assertEquals('/', nextChar());
-      assertEquals(START_DOCUMENT, getEventType());
-      try {
-        nextMarkupContent();
-        fail("Expected XmlPullParserException");
-      } catch (XmlPullParserException e) {
-        assertTrue(true);
-      }
-
-    }
-
-    public void testXmlDeclVersion() throws Exception {
-      setInput(new StringReader(
-          "<?xml version='1.0' encoding='windows-1250' standalone='yes'?>"));
-      assertEquals('<', nextChar());
-      tryXmlDecl();
-      assertTrue("xmlDeclParsed", xmlDeclParsed);
-      assertTrue("isStandalone", isStandalone);
-      assertEquals("windows-1250", encodingDeclared);
-    }
-
-    public void testNextToken() throws Exception {
-      setInput(new StringReader(
-          "<foo>some mixed content<bar>foo&amp;bar</bar></foo>"));
-      assertEquals(START_DOCUMENT, getEventType());
-      assertEquals("depth", 0, getDepth());
-      assertEquals("internal state", internalState,
-          InternalState.DOCUMENT_START);
-
-      assertEquals("start tag nt", START_TAG, nextToken());
-      assertEquals("start tag et", START_TAG, getEventType());
-      assertEquals("depth 1", 1, getDepth());
-      assertEquals("foo", XmlParser.this.getName());
-      assertEquals("internal state", internalState, InternalState.CONTENT);
-
-      assertEquals("text nt", TEXT, nextToken());
-      assertEquals("text et", TEXT, getEventType());
-      assertEquals("depth 1", 1, getDepth());
-      assertEquals("some mixed content", getText());
-      assertEquals("internal state", internalState, InternalState.CONTENT);
-
-      assertEquals("start tag nt", START_TAG, nextToken());
-      assertEquals("start tag et", START_TAG, getEventType());
-      assertEquals("depth 2", 2, getDepth());
-      assertEquals("bar", XmlParser.this.getName());
-      assertEquals("internal state", internalState, InternalState.CONTENT);
-
-      assertEquals("text nt", TEXT, nextToken());
-      assertEquals("text et", TEXT, getEventType());
-      assertEquals("depth 2", 2, getDepth());
-      assertEquals("foo", getText());
-      assertEquals("internal state", internalState, InternalState.CONTENT);
-
-      assertEquals("entity nt", ENTITY_REF, nextToken());
-      assertEquals("entity et", ENTITY_REF, getEventType());
-      assertEquals("depth 2", 2, getDepth());
-      assertEquals("&", getText());
-      assertEquals("internal state", internalState, InternalState.CONTENT);
-
-      assertEquals("text nt", TEXT, nextToken());
-      assertEquals("text et", TEXT, getEventType());
-      assertEquals("depth 2", 2, getDepth());
-      assertEquals("bar", getText());
-      assertEquals("internal state", internalState, InternalState.CONTENT);
-
-      assertEquals("end tag nt", END_TAG, nextToken());
-      assertEquals("end tag et", END_TAG, getEventType());
-      assertEquals("depth 2", 2, getDepth());
-      assertEquals("bar", XmlParser.this.getName());
-      assertEquals("internal state", internalState, InternalState.CONTENT);
-
-      assertEquals("end tag nt", END_TAG, nextToken());
-      assertEquals("end tag et", END_TAG, getEventType());
-      assertEquals("depth 1", 1, getDepth());
-      assertEquals("foo", XmlParser.this.getName());
-      assertEquals("internal state", internalState, InternalState.EPILOG);
-
-      assertEquals("end tag nt", END_DOCUMENT, nextToken());
-      assertEquals("end tag et", END_DOCUMENT, getEventType());
-      assertEquals("depth 0", 0, getDepth());
-      assertEquals("internal state", internalState, InternalState.DOCUMENT_END);
-
-      assertEquals("end tag nt", END_DOCUMENT, nextToken());
-      assertEquals("end tag et", END_DOCUMENT, getEventType());
-      assertEquals("depth 0", 0, getDepth());
-      assertEquals("internal state", internalState, InternalState.DOCUMENT_END);
-
-    }
-
-    public void testChardataWhitespace() throws Exception {
-      setInput(new StringReader("    <   s  <   ><"));
-      eventType = TEXT;
-
-      nextChar();
-      nextCharData();
-      assertTrue(isWhitespace());
-
-      nextChar();
-      nextCharData();
-      assertFalse(isWhitespace());
-
-      nextChar();
-      nextCharData();
-      assertFalse(isWhitespace());
-    }
-
-    public void testCDataWhitespace() throws Exception {
-      setInput(new StringReader("    ]]>   ] ]]>   ]] ]]>"));
-      eventType = CDSECT;
-
-      nextChar();
-      nextCDataContent();
-      assertTrue(isWhitespace());
-
-      nextChar();
-      nextCDataContent();
-      assertFalse(isWhitespace());
-
-      nextChar();
-      nextCDataContent();
-      assertFalse(isWhitespace());
-    }
   }
 
-  private Test getTest(String name) {
-    return new LexerTest(name);
+  XmlParserPrivateAcessor getPrivateAccessor() {
+    return new XmlParserPrivateAcessor();
   }
 
-  public static Test suite() {
-    XmlParser pp = new XmlParser();
-    TestSuite t = new TestSuite();
-    t.setName("XmlParser.LexerTest");
-    Method[] methods = LexerTest.class.getMethods();
-    for (int i = 0; i < methods.length; i++) {
-      if (methods[i].getName().startsWith("test") &&
-          Modifier.isPublic(methods[i].getModifiers())) {
-        t.addTest(pp.getTest(methods[i].getName()));
-      }
-    }
-    return t;
-  }
-
-  public static void main(String[] args) throws Exception {
-    TestRunner.run(XmlParser.suite());
-  }
 }
