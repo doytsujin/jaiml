@@ -98,6 +98,18 @@ Variable (default): <get name="variable">default</get>
 </category>
 
 <category>
+<pattern>test transformations</pattern>
+<template>
+<uppercase>žluťoučký kůň příšerně úpěl ďábelské ódy</uppercase>
+<lowercase>ŽLUŤOUČKÝ KŮŇ PŘÍŠERNĚ ÚPĚL ĎÁBELSKÉ ÓDY</lowercase>
+<formal>žluťoučký k-ůň příšer.ně (úpěl) ďábelské ódy</formal>
+<sentence>first sentence. Second sentence. this is a sentence too</sentence>
+<sentence>different punctiation symbols. this should probably be a sentence too! and this? but the spec doesn't require it</sentence>
+</template>
+</category>
+
+
+<category>
 <pattern>set element</pattern>
 <template>
 one:<set name="empty"/>
@@ -153,57 +165,6 @@ one:
 </category>
 
 <category>
-<pattern>if</pattern>
-<template>
-<condition name="foo" value="bar">some text</condition>
-<condition name="foo" value="bar"></condition>
-<condition name="foo" value="bar"/>
-</template>
-</category>
-
-<category>
-<pattern>switch</pattern>
-<template>
-one:
-<condition name="foo">
-	<li value="foo">some text</li>
-	<li value="bar"></li>
-	<li value="baz"/>
-	<li/>
-</condition>
-two:
-<condition name="foo">
-	<li value="foo">some text</li>
-</condition>
-three:
-<condition name="foo">
-	<li>default</li>
-</condition>
-</template>
-</category>
-
-<category>
-<pattern>ifelse</pattern>
-<template>
-one:
-<condition>
-	<li name="a" value="foo">some text</li>
-	<li name="b" value="bar"></li>
-	<li name="c" value="baz"/>
-	<li>default</li>
-</condition>
-two:
-<condition>
-	<li name="a" value="foo">some text</li>
-</condition>
-three:
-<condition>
-	<li>default</li>
-</condition>
-</template>
-</category>
-
-<category>
 <pattern>wildcard reference</pattern>
 <template>
 simple: <star/>
@@ -237,50 +198,6 @@ empty: <think></think>
 text->empty: <think>some text</think>
 script: <think><get name="foo">default</get></think>
 script with text: <think>text1<get name="foo">default</get>text2</think>
-</template>
-</category>
-
-<category>
-<pattern>formal</pattern>
-<template>
-empty: <formal/>
-empty: <formal></formal>
-text->empty: <formal>some text</formal>
-script: <formal><get name="foo">default</get></formal>
-script with text: <formal>text1<get name="foo">default</get>text2</formal>
-</template>
-</category>
-
-<category>
-<pattern>uppercase</pattern>
-<template>
-empty: <uppercase/>
-empty: <uppercase></uppercase>
-text->empty: <uppercase>some text</uppercase>
-script: <uppercase><get name="foo">default</get></uppercase>
-script with text: <uppercase>text1<get name="foo">default</get>text2</uppercase>
-</template>
-</category>
-
-<category>
-<pattern>lowercase</pattern>
-<template>
-empty: <lowercase/>
-empty: <lowercase></lowercase>
-text->empty: <lowercase>some text</lowercase>
-script: <lowercase><get name="foo">default</get></lowercase>
-script with text: <lowercase>text1<get name="foo">default</get>text2</lowercase>
-</template>
-</category>
-
-<category>
-<pattern>sentence</pattern>
-<template>
-empty: <sentence/>
-empty: <sentence></sentence>
-text->empty: <sentence>some text</sentence>
-script: <sentence><get name="foo">default</get></sentence>
-script with text: <sentence>text1<get name="foo">default</get>text2</sentence>
 </template>
 </category>
 
