@@ -105,6 +105,7 @@ Variable (default): <get name="variable">default</get>
 <formal>žluťoučký k-ůň příšer.ně (úpěl) ďábelské ódy</formal>
 <sentence>first sentence. Second sentence. this is a sentence too</sentence>
 <sentence>different punctiation symbols. this should probably be a sentence too! and this? but the spec doesn't require it</sentence>
+<sentence>different punctiation symbols. and this? this should probably be a sentence too! but the spec doesn't require it</sentence>
 </template>
 </category>
 
