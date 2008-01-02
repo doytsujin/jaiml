@@ -25,6 +25,48 @@ class Formatter {
     return b.toString();
   }
 
+  /**
+   * <p>
+   * Returns a string with all characters converted to lowercase
+   * </p>
+   * <p>
+   * Equivalent to {@link String.toLowerCase()}
+   * </p>
+   * 
+   * @param text -
+   *                the original text
+   * @return The {@code text}, converted to lowercase
+   */
+  public static String lowerCase(String text) {
+    return text.toLowerCase();
+  }
+
+  /**
+   * <p>
+   * Returns a string with all characters converted to uppercase
+   * </p>
+   * <p>
+   * Equivalent to {@link String.toUpperCase()}
+   * </p>
+   * 
+   * @param text
+   * 
+   * @return The {@code text}, converted to uppercase
+   */
+  public static String upperCase(String text) {
+    return text.toUpperCase();
+  }
+
+  /**
+   * <p>
+   * Returns a string in so called "formal case", so that the first letter of
+   * each word is in uppercase.
+   * </p>
+   * 
+   * @param text -
+   *                the original string
+   * @return A string where each word starts with upper case.
+   */
   public static String formal(String text) {
     Pattern p = Pattern.compile("(?:^|\\p{javaWhitespace})(\\p{javaLowerCase})");
     Matcher m = p.matcher(text);
@@ -37,6 +79,27 @@ class Formatter {
     return result.toString();
   }
 
+  /**
+   * <p>
+   * Transforms a string to "sentence case" - the first letter of each sentence
+   * is in uppercase. Unfortunately, the problem of sentence boundary
+   * disambiguation in natural languages is nontrivial, so only a very simple
+   * algorithm is employed:
+   * </p>
+   * <ul>
+   * <li>Sentences are interpreted as strings whose last character is the
+   * period or full-stop character ".", followed by whitespace (or the end of
+   * the string)
+   * <li>If the string does not contain a ".", then the entire string is
+   * treated as a sentence and the first letter is capitalized.
+   * <li>If the string contains several sentences but the last sentence is not
+   * at the end, the rest of the string is capitalized as if it was a full
+   * sentence.
+   * </ul>
+   * 
+   * @param text
+   * @return
+   */
   public static String sentence(String text) {
     Pattern p = Pattern.compile("(?:^|\\p{javaWhitespace}+)(\\p{L}).*?\\.(?=^|\\p{javaWhitespace}+)");
     Matcher m = p.matcher(text);
