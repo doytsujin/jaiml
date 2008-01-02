@@ -13,15 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.StringReader;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.logging.Logger;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -33,11 +25,7 @@ import aiml.classifier.Classifier;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
-import aiml.context.ContextInfo;
-import aiml.context.EnvironmentInputContext;
-import aiml.context.StringContext;
 import aiml.script.Block;
-import aiml.script.ElementParserFactory;
 import aiml.script.Script;
 
 public class AIMLParser {
@@ -324,143 +312,6 @@ public class AIMLParser {
     parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",
         file);
     doAiml();
-  }
-
-  public class AIMLParserTest extends TestCase {
-    public AIMLParserTest(String s) {
-      super(s);
-    }
-
-    private void loadFail(Reader in, Class<? extends Exception> exception)
-        throws Exception {
-      try {
-        load(in);
-        fail("Expected AimlSyntaxException");
-      } catch (Exception e) {
-        if (exception.isAssignableFrom(e.getClass()))
-          return;
-        else
-          throw e;
-      }
-      fail("Expected exception " + exception);
-    }
-
-    private void loadFail(InputStream in, String encoding,
-        Class<? extends Exception> exception) throws Exception {
-      try {
-        load(in, encoding);
-        fail("Expected AimlSyntaxException");
-      } catch (Exception e) {
-        if (exception.isAssignableFrom(e.getClass()))
-          return;
-        else
-          throw e;
-      }
-      fail("Expected exception " + exception);
-    }
-
-    public void testAimlRoot() throws Exception {
-      load(new StringReader("<aiml version='1.0'/>"));
-      loadFail(new StringReader("<aiml></aiml>"), AimlSyntaxException.class);
-      loadFail(new StringReader("<AIML></AIML>"), AimlSyntaxException.class);
-      loadFail(new StringReader("<aiml version='1.0p'></aiml>"),
-          InvalidAimlVersionException.class);
-      loadFail(new StringReader("<aiml version='1.0'></aiml><foo></foo>"),
-          XmlPullParserException.class);
-
-    }
-
-    public void testCategoryList() throws Exception {
-      load(new FileInputStream("tests/categoryList-ok.aiml"), "UTF-8");
-    }
-
-    public void testCategoryListBadStart() throws Exception {
-      loadFail(new FileInputStream("tests/categoryList-badstart.aiml"),
-          "UTF-8", AimlSyntaxException.class);
-    }
-
-    public void testCategoryListBadStart2() throws Exception {
-      loadFail(new FileInputStream("tests/categoryList-badstart2.aiml"),
-          "UTF-8", AimlSyntaxException.class);
-    }
-
-    public void testCategoryListBadEnd() throws Exception {
-      loadFail(new FileInputStream("tests/categoryList-badend.aiml"), "UTF-8",
-          AimlSyntaxException.class);
-    }
-
-    public void testLoadPatterns() throws Exception {
-      load(new FileInputStream("tests/patterns.aiml"), "UTF-8");
-    }
-
-    public void testLoadPatternsBad1() throws Exception {
-      loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-          AimlSyntaxException.class);
-    }
-
-    public void testLoadPatternsBad2() throws Exception {
-      loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-          AimlSyntaxException.class);
-    }
-
-    public void testLoadPatternsBad3() throws Exception {
-      loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-          AimlSyntaxException.class);
-    }
-
-    public void testLoadPatternsBad4() throws Exception {
-      loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-          AimlSyntaxException.class);
-    }
-
-    public void testLoadTemplate() throws Exception {
-      load(new FileInputStream("tests/templates.aiml"), "UTF-8");
-    }
-  }
-
-  private AIMLParserTest getTest(String name) {
-    return new AIMLParserTest(name);
-  }
-
-  public static Test suite() throws XmlPullParserException {
-    Bot b = new Bot("foobar");
-    b.setProperty("name", "foobar");
-    b.setProperty("baz", "bar");
-
-    ContextInfo.registerContext(new EnvironmentInputContext("input"));
-    ContextInfo.registerContext(new StringContext("that"));
-    ContextInfo.registerContext(new StringContext("topic"));
-
-    ContextInfo.registerContext(new StringContext("alpha"));
-    ContextInfo.registerContext(new StringContext("beta"));
-    ContextInfo.registerContext(new StringContext("gama"));
-    ContextInfo.registerContext(new StringContext("delta"));
-
-    ContextInfo.registerContext(new StringContext("foo"));
-    ContextInfo.registerContext(new StringContext("bar"));
-
-    ContextInfo.registerContext(new StringContext("ichi"));
-    ContextInfo.registerContext(new StringContext("ni"));
-    ContextInfo.registerContext(new StringContext("san"));
-
-    Classifier.registerDefaultNodeHandlers();
-    ElementParserFactory.addElementParser("block", Block.class);
-
-    AIMLParser ap = new AIMLParser(b);
-    TestSuite t = new TestSuite();
-    t.setName("AIMLParser.AIMLParserTest");
-    Method[] methods = AIMLParserTest.class.getMethods();
-    for (int i = 0; i < methods.length; i++) {
-      if (methods[i].getName().startsWith("test") &&
-          Modifier.isPublic(methods[i].getModifiers())) {
-        t.addTest(ap.getTest(methods[i].getName()));
-      }
-    }
-    return t;
-  }
-
-  public static void main(String[] args) throws XmlPullParserException {
-    TestRunner.run(AIMLParser.suite());
   }
 
 }
