@@ -169,15 +169,21 @@ one:
 <pattern>wildcard reference</pattern>
 <template>
 simple: <star/>
+index 1: <star index = "1"/>
 with index: <star index = "2"/>
-with standart context <star context = "topic"/>
-with standart context and index <star context = "topic" index = "5"/>
+with standart context "topic": <star context = "topic"/>
+with standart context "topic" and index: <star context = "topic" index = "5"/>
+with standart context "that": <star context = "that"/>
+with standart context "that" and index: <star context = "topic" index = "5"/>
+
 <!-- 
 with user defined context <star context = "foo"/>
 with user defined context and index <star context = "foo" index = "3"/>
 -->
-shorthand <thatstar/><topicstar/>
-shorthand with index: <thatstar index="2"/><thatstar index="5"/>
+shorthand "topic": <topicstar/>
+shorthand "topic" with index: <topicstar index="2"/>
+shorthand "that": <thatstar/>
+shorthand "that" with index: <thatstar index="5"/>
 </template>
 </category>
 

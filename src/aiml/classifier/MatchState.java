@@ -60,7 +60,7 @@ public class MatchState {
   /**
    * An array of lists, each list represents wildcards from a context
    */
-  List wildcards[] = new List[ContextInfo.getCount()];
+  List<Wildcard> wildcards[] = new List[ContextInfo.getCount()];
 
   /**
    * This contains the result of the matching.
@@ -80,7 +80,8 @@ public class MatchState {
    * To maintain consistency during template processing, a copy of the context
    * variable is stored in the MatchState, so that a wildcard request after a
    * set/get/srai (that can theoretically change the "live" context variable
-   * still produces the same results.
+   * still produces the same results). This essentially creates a "local scope"
+   * for the match.
    * </p>
    * 
    * @author Kim Sullivan
@@ -184,6 +185,19 @@ public class MatchState {
     if (ContextInfo.getCount() <= 0) {
       throw new NoContextPresentException();
     }
+    initializeContexts(e);
+  }
+
+  /**
+   * <p>
+   * Initialize the contexts making a snapshot of the current values (because
+   * these values might change during script evaluation, or even during
+   * matching). This essentially creates a "local scope" for the current match.
+   * </p>
+   * 
+   * @param e
+   */
+  private void initializeContexts(Environment e) {
     for (int i = 0; i < ContextInfo.getCount(); i++)
       contextValues[i] = ContextInfo.getContext(i).getValue(e);
   }
@@ -236,7 +250,6 @@ public class MatchState {
    *                the depth (the starting index of the wildcard)
    * @return Wildcard
    */
-  @SuppressWarnings("unchecked")
   public Wildcard addWildcard(int context, int depth) {
     Wildcard wc = new Wildcard(context, depth);
     if (wildcards[context] == null) {
@@ -247,46 +260,69 @@ public class MatchState {
   }
 
   /**
-   * Get the last wildcard. The matching algorithm processes only one wildcard
-   * at a time.
-   * 
-   * @return Wildcard
-   */
-  public Wildcard getWildcard() {
-    return getWildcard(context, wildcards[context].size() - 1);
-  }
-
-  /**
    * <p>
    * Return a wildcard. After matching has finished (and in some special
-   * contexts, even when it hasn't), it is natural to want acess to all the
-   * matched wildcards.
+   * contexts, even when it hasn't), this method provides a way to access all
+   * wildcards that have been (explicitly or implicitly) bound during matching.
    * </p>
    * 
    * <p>
-   * Currently, this method returns null for wildcards out of range. It should
-   * probably throw an exception for contexts out of range. It constructs a
-   * "full" wildcard for contexts that haven't been matched.
+   * This method throws an {@link InvalidWildcardReferenceException} if an
+   * invalid context or wildcard index has been specified.
    * </p>
    * 
    * @param context
    *                The context
    * @param index
-   *                The index of the wildcard
-   * @return The wildcard, or null if there is none
+   *                The index of the wildcard (1 based)
+   * @return The wildcard
+   * @throws InvalidWildcardReferenceException
    */
-  public Wildcard getWildcard(int context, int index) {
-    if (wildcards[context] == null) {
-      if (index != 1)
-        return null;
+  public Wildcard getWildcard(int context, int index)
+      throws InvalidWildcardReferenceException {
+    if (isValidWildcard(context, index)) {
+      return wildcards[context].get(index - 1);
+    }
+    if (wildcards[context] == null && isDontCareWildcard(context, index)) {
+      //lazily bind implicit wildcards (from don't care contexts)
       Wildcard wc = addWildcard(context, 0);
       wc.growRest();
       return wc;
     }
-    if (index > wildcards[context].size() || index < 0) {
-      return null;
-    }
-    return (Wildcard) wildcards[context].get(index);
+    throw new InvalidWildcardReferenceException(context, index);
+  }
+
+  /**
+   * <p>
+   * Returns {@code true} if the specific wildcard comes from a "don't care"
+   * context. This means, that a particular context wasn't explicitly specified
+   * for this category and therefore isn't included in the wildcards. In this
+   * case, using &lt;star&gt; returns the whole context.
+   * </p>
+   * 
+   * @param context -
+   *                the context ID
+   * @param index -
+   *                the wildcard index (0 based)
+   * @return <code>true</code> if the wildcard is bound to a "don't care"
+   *         context.
+   */
+  private boolean isDontCareWildcard(int context, int index) {
+    return !contextStack.contains(context) && index == 1;
+  }
+
+  /**
+   * Checks if the context id and the wildard index are valid.
+   * 
+   * @param context -
+   *                the context ID
+   * @param index -
+   *                the wildcard index (0 based)
+   * @return <code>true</code> if the index and context are valid
+   */
+  private boolean isValidWildcard(int context, int index) {
+    return wildcards[context] != null && index >= 1 &&
+        index <= wildcards[context].size();
   }
 
   /**

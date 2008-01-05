@@ -60,7 +60,15 @@ public class ContextInfo {
   }
 
   /**
+   * <p>
    * Get information about a context
+   * </p>
+   * 
+   * <p>
+   * If an invalid context ID has been specified, an
+   * {@link UnknownContextException} is thrown (this should never happen in a
+   * properly initialized matching environment)
+   * </p>
    * 
    * @param name
    *                the name of the context
@@ -78,7 +86,15 @@ public class ContextInfo {
   }
 
   /**
+   * <p>
    * Get information about a context
+   * </p>
+   * 
+   * <p>
+   * If an invalid context ID has been specified, an
+   * {@link UnknownContextException} is thrown (this should never happen in a
+   * properly initialized matching environment)
+   * </p>
    * 
    * @param context
    *                the order of the context

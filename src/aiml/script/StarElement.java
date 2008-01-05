@@ -1,10 +1,12 @@
 package aiml.script;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.InvalidWildcardReferenceException;
 import aiml.classifier.MatchState;
 import aiml.context.ContextInfo;
 import aiml.context.UnknownContextException;
@@ -58,8 +60,12 @@ public class StarElement extends EmptyElement {
   }
 
   public String evaluate(MatchState m) {
-    return "star[" + ContextInfo.getContext(context).getName() + "," + index +
-        "]";
+    try {
+      return m.getWildcard(context, index).getValue();
+    } catch (InvalidWildcardReferenceException e) {
+      Logger.getLogger(StarElement.class.getName()).severe(e.getMessage());
+      return "";
+    }
   }
 
   public String toString() {
