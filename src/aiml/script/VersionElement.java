@@ -5,7 +5,7 @@ import aiml.classifier.MatchState;
 public class VersionElement extends EmptyElement {
 
   public String evaluate(MatchState m) {
-    return "$_version";
+    return m.getEnvironment().getVersion();
   }
 
   public String toString() {
