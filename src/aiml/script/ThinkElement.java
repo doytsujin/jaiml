@@ -25,7 +25,8 @@ public class ThinkElement extends NonEmptyElement {
   }
 
   public String evaluate(MatchState m) {
-    return "think(" + content.evaluate(m) + ")";
+    content.evaluate(m);
+    return "";
   }
 
   public String toString() {
