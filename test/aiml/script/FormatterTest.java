@@ -29,4 +29,16 @@ public class FormatterTest extends TestCase {
         Formatter.sentence("first sentence. second sentence"));
   }
 
+  public void testCollapseWhitespace() {
+    assertEquals("abcdef", Formatter.collapseWhitespace("abcdef"));
+    assertEquals("abcdef", Formatter.collapseWhitespace("  abcdef"));
+    assertEquals("abcdef", Formatter.collapseWhitespace("abcdef  "));
+    assertEquals("abcdef",
+        Formatter.collapseWhitespace("    abcdef   \n\n\t   "));
+    assertEquals("abcdef g", Formatter.collapseWhitespace("  abcdef  g"));
+    assertEquals("g abcdef", Formatter.collapseWhitespace("g abcdef"));
+    assertEquals("ab cd e f",
+        Formatter.collapseWhitespace("    ab  cd    e f   "));
+  }
+
 }

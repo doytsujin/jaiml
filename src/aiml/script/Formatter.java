@@ -17,7 +17,7 @@ package aiml.script;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Formatter {
+public class Formatter {
   public static String tab(int length) {
     StringBuffer b = new StringBuffer();
     for (int i = 0; i < length; i++)
@@ -141,7 +141,43 @@ class Formatter {
     buffer.replace(pos, buffer.offsetByCodePoints(pos, 1), replacementChar);
   }
 
+  /**
+   * <p>
+   * Removes leading and trailing whitespace and collapses all whitespace in
+   * between to a single space
+   * </p>
+   * 
+   * @param s
+   *                A string
+   * @return A string with all whitespace collapsed.
+   */
+  public static String collapseWhitespace(String s) {
+    StringBuilder result = new StringBuilder();
+    int pos = 0;
+    //skip leading whitespace
+    while (pos < s.length() && Character.isWhitespace(s.charAt(pos))) {
+      pos++;
+    }
+
+    while (pos < s.length()) {
+      //output characters 
+      while (pos < s.length() && (!Character.isWhitespace(s.charAt(pos)))) {
+        result.append(s.charAt(pos++));
+      }
+      //skip whitespace
+      while (pos < s.length() && (Character.isWhitespace(s.charAt(pos)))) {
+        pos++;
+      }
+      //if there are still some characters left, write out a single space
+      if (pos < s.length()) {
+        result.append(' ');
+      }
+    }
+
+    return result.toString();
+  }
+
   public static void main(String[] args) {
-    System.out.println(sentence("she stopped. she said, \"Hello there,\" and then went (very slowly) on. asalkjdfa.alkjsd was really bad asdf.123 asd313.itu."));
+    System.out.println(collapseWhitespace("   abcdef   "));
   }
 }

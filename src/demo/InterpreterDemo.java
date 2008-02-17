@@ -15,6 +15,7 @@ import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.environment.Environment;
 import aiml.parser.AimlParserException;
+import aiml.script.Formatter;
 import aiml.script.Script;
 
 public class InterpreterDemo {
@@ -49,7 +50,8 @@ public class InterpreterDemo {
       e.pushInput(line);
       MatchState<Script> m = Classifier.match(e);
       if (m != null) {
-        System.out.println(m.getResult().evaluate(m));
+        System.out.println(Formatter.collapseWhitespace(m.getResult().evaluate(
+            m)));
       } else {
         System.out.println("no match found");
       }
