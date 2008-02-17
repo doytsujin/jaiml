@@ -14,8 +14,18 @@ import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
 public class StarElement extends EmptyElement {
-  int context;
-  int index;
+  private int context;
+  private int index;
+
+  public StarElement() {
+    super();
+  }
+
+  public StarElement(int context, int index) {
+    this();
+    this.context = context;
+    this.index = index;
+  }
 
   public Script parse(XmlPullParser parser) throws XmlPullParserException,
       IOException, AimlParserException {

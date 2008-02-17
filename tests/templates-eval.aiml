@@ -278,9 +278,9 @@ script with text: <think>text1<get name="foo">default</get>text2</think>
 </category>
 
 <category>
-<pattern>sr</pattern>
+<pattern>sr *</pattern>
 <template>
-sr: <sr/>
+sr:<sr/>
 </template>
 </category>
 
