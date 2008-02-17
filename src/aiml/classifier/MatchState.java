@@ -33,9 +33,11 @@ import aiml.environment.Environment;
  * 
  * @author Kim Sullivan
  * @version 1.0
+ * @param <T
+ *                extends Object> The result type
  */
 
-public class MatchState {
+public class MatchState<T extends Object> {
 
   private Environment e;
 
@@ -65,7 +67,7 @@ public class MatchState {
   /**
    * This contains the result of the matching.
    */
-  private Object result;
+  private T result;
 
   /**
    * <p>
@@ -347,7 +349,7 @@ public class MatchState {
    * @param o
    *                the result object
    */
-  public void setResult(Object o) {
+  public void setResult(T o) {
     result = o;
   }
 
@@ -356,7 +358,7 @@ public class MatchState {
    * 
    * @return the result object
    */
-  public Object getResult() {
+  public T getResult() {
     return result;
   }
 
