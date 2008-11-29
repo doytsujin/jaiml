@@ -72,8 +72,8 @@ public class PatternContextNode extends ContextNode {
     try {
       add(path, o);
     } catch (DuplicatePathException e) {
+    	assert false : "Duplicate path exception after adding a single path to a newly created empty tree - should never happen";
     }
-    //since we just created a new subtree, there's no way this exception can occur
   }
 
   /**
@@ -108,20 +108,8 @@ public class PatternContextNode extends ContextNode {
       tree = PatternNodeFactory.getInstance(0, s);
     }
     PatternNode.AddResult result = tree.add(0, s);
-    //sanity check:
-    while (result.newDepth < s.length()) {
-      //this should actually never happen, add() should recursively process the whole pattern
-      result = result.leaf.add(result.newDepth, s);
-      throw new RuntimeException("Damn...");
-    }
-    /*still continuing sanity check, due to the above loop, can never be true, but
-      I might remove the loop later*/
-    if (result.newDepth != s.length()) {
-      throw new RuntimeException("Failure when adding pattern \"" + s +
-          "\" to context " + context);
-    }
+    assert (result.newDepth == s.length()) : "A pattern node tree has failed to add a pattern completely";
     tree = result.root; //update the pattern subtree
-    //result.leaf.addContext(path, o);
     return result.leaf;
 
   }
