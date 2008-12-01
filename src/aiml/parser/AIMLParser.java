@@ -40,6 +40,7 @@ import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
 import aiml.script.Block;
+import aiml.script.Formatter;
 import aiml.script.Script;
 
 public class AIMLParser {
@@ -243,7 +244,13 @@ public class AIMLParser {
               parser.getPositionDescription());
         break;
       case XmlPullParser.END_TAG:
-        return result.toString();
+        String original = result.toString();
+        String trimmed = Formatter.collapseWhitespace(original);
+        if (!original.equals(trimmed)) {
+          log.warning("Trimmed extra whitespace in the pattern [" + trimmed + "] " +
+              parser.getPositionDescription());
+        }
+        return trimmed;
       case XmlPullParser.TEXT:
         result.append(parser.getText());
         parser.next();
