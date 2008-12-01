@@ -14,6 +14,8 @@
 
 package aiml.classifier;
 
+import graphviz.Graphviz;
+
 import java.util.ListIterator;
 
 import aiml.classifier.node.PatternNode;
@@ -143,5 +145,26 @@ public class PatternContextNode extends ContextNode {
     return "<" + context + ">" + tree + "\n" + "[" + context + ".NEXT]: " +
         next;
   }
+  
+  public StringBuilder gvGraph(StringBuilder sb) {
+    Graphviz.start(sb, "subgraph cluster_"+context+"_"+hashCode());
+    super.gvGraph(sb);
+    Graphviz.end(sb);
+    return sb;
+  }
 
+  
+  public StringBuilder gvNodes(StringBuilder sb) {
+    return Graphviz.node(sb, gvNodeID(), "label", "<"+context+">", "shape", "diamond");    
+  }
+  
+  public StringBuilder gvInternalGraph(StringBuilder sb) {
+    if (tree!=null) {
+      Graphviz.edge(sb, gvNodeID(), tree.gvNodeID());
+      tree.gvGraph(sb);
+    }
+    return sb;
+  }
+
+  
 }

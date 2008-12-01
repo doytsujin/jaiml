@@ -14,6 +14,7 @@
 
 package aiml.classifier.node;
 
+import graphviz.Graphviz;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -142,5 +143,38 @@ public class BranchNode extends PatternNode {
     }
     return false;
   }
-
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append('{');
+    if (underscore != null) {
+      sb.append("_[");
+      sb.append(underscore.toString());
+      sb.append("] ");
+    }
+    if (string != null) {
+      sb.append("s[");
+      sb.append(string.toString());
+      sb.append("] ");
+    }
+    if (star != null) {
+      sb.append("*[");
+      sb.append(star.toString());
+      sb.append("] ");
+    }
+    sb.append('}');
+    return sb.toString();
+  }
+  @Override
+  public String gvNodeLabel() { 
+    return "";
+  }
+  
+  public StringBuilder gvInternalGraph(StringBuilder sb) {
+    Graphviz.connectGraph(sb, this, underscore, Graphviz.EPSILON);
+    Graphviz.connectGraph(sb, this, string, Graphviz.EPSILON);
+    Graphviz.connectGraph(sb, this, star, Graphviz.EPSILON);
+    return sb;
+  }
+  
 }

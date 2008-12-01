@@ -14,6 +14,7 @@
 
 package aiml.classifier;
 
+import graphviz.Graphviz;
 import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
@@ -123,5 +124,15 @@ public class Classifier {
     StringNode.register();
     EndOfStringNode.register();
     WildcardNode.register();
+  }
+  
+  public static StringBuilder gvGraph(StringBuilder sb) {
+    Graphviz.start(sb, "digraph classifier");
+    Graphviz.graphAttributes(sb,"rankdir","LR");
+    if (tree!=null) {
+      tree.gvGraph(sb);
+    }
+    Graphviz.end(sb);
+    return sb;
   }
 }

@@ -14,6 +14,7 @@
 
 package aiml.classifier.node;
 
+import graphviz.Graphviz;
 import aiml.classifier.MatchState;
 
 /**
@@ -115,6 +116,16 @@ public class EndOfStringNode extends PatternNode {
       }
 
     });
+  }
+    
+  @Override
+  public StringBuilder gvNodes(StringBuilder sb) {
+    return Graphviz.node(sb, gvNodeID(), "label","");
+  }
+  
+  @Override
+  public StringBuilder gvExternalGraph(StringBuilder sb) {
+    return Graphviz.connectGraph(sb, this, subContext, Graphviz.EPSILON);
   }
 
 }

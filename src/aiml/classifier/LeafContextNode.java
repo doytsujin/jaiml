@@ -14,6 +14,8 @@
 
 package aiml.classifier;
 
+import graphviz.Graphviz;
+
 import java.util.ListIterator;
 
 import aiml.classifier.node.PatternNode;
@@ -91,5 +93,18 @@ public class LeafContextNode extends ContextNode {
 
   public String toString() {
     return "<LEAF>" + result;
+  }
+  
+  @Override
+  public String gvNodeID() {
+    return "Leaf"+hashCode();
+  }
+  
+  @Override
+  public StringBuilder gvGraph(StringBuilder sb) {
+    Graphviz.start(sb, "subgraph cluster_leaf_"+hashCode());
+    Graphviz.node(sb, gvNodeID(), "label","","shape","doublecircle");
+    Graphviz.end(sb);
+    return sb;
   }
 }

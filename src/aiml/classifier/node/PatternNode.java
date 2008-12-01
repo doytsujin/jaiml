@@ -14,6 +14,9 @@
 
 package aiml.classifier.node;
 
+import graphviz.Graphviz;
+import graphviz.GraphvizNode;
+
 import java.util.ListIterator;
 
 import aiml.classifier.ContextNode;
@@ -31,7 +34,7 @@ import aiml.classifier.PatternContextNode;
  * @version 1.0
  */
 
-public abstract class PatternNode {
+public abstract class PatternNode implements GraphvizNode {
 
   /**
    * All nodes that represent an exact match
@@ -66,6 +69,16 @@ public abstract class PatternNode {
    */
   protected ContextNode subContext;
 
+  /**
+   * A unique node identifier, used for node output 
+   */
+  private static int gvMaxId=0;
+  private int gvId;
+  
+  public PatternNode() {
+    gvId = gvMaxId++;
+  }
+  
   /**
    * <p>
    * This inner class is a wrapper for the
@@ -177,5 +190,51 @@ public abstract class PatternNode {
 
   public String toString() {
     return "" + subContext;
+  }
+  
+  /* (non-Javadoc)
+   * @see aiml.classifier.node.GraphvizProducer#gvName()
+   */
+  public String gvNodeID() {
+    return getClass().getSimpleName()+"_"+gvId;
+  }
+  
+  /* (non-Javadoc)
+   * @see aiml.classifier.node.GraphvizProducer#gvLabel()
+   */
+  public String gvNodeLabel() {
+     return getClass().getSimpleName();
+  }
+  
+  /* (non-Javadoc)
+   * @see aiml.classifier.node.GraphvizProducer#gvGraph(java.lang.StringBuilder)
+   */
+  public StringBuilder gvGraph(StringBuilder sb) {
+    gvNodes(sb);
+    gvInternalGraph(sb);
+    gvExternalGraph(sb);
+    return sb;
+  }
+
+  /* (non-Javadoc)
+   * @see aiml.classifier.node.GraphvizProducer#gvNodes(java.lang.StringBuilder)
+   */
+  public StringBuilder gvNodes(StringBuilder sb) {
+    Graphviz.node(sb, gvNodeID(), "label",gvNodeLabel());
+    return sb;
+  }
+
+  /* (non-Javadoc)
+   * @see aiml.classifier.node.GraphvizProducer#internalGraph(java.lang.StringBuilder)
+   */
+  public StringBuilder gvInternalGraph(StringBuilder sb) {
+    return sb;
+  }
+  
+  /* (non-Javadoc)
+   * @see aiml.classifier.node.GraphvizProducer#externalGraph(java.lang.StringBuilder)
+   */
+  public StringBuilder gvExternalGraph(StringBuilder sb) {
+    return Graphviz.connectGraph(sb, this, subContext, "");
   }
 }

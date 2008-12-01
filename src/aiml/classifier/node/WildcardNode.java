@@ -14,6 +14,7 @@
 
 package aiml.classifier.node;
 
+import graphviz.Graphviz;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -151,6 +152,36 @@ public class WildcardNode extends PatternNode {
 
     });
 
+  }
+  
+  @Override
+  public String toString() {
+    if (next!=null) {
+      return "WildCard" + next.toString() + super.toString();
+    }
+    return "WildCard" + super.toString();
+  }
+  
+  public String gvNodeLabel() {
+    switch (type) {
+    case PatternNode.STAR:
+      return "*";
+    case PatternNode.UNDERSCORE:
+      return "_";
+    default:
+      return "WC"+type;
+    }
+  }
+  @Override
+  public StringBuilder gvInternalGraph(StringBuilder sb) {
+    Graphviz.edge(sb, gvNodeID(), gvNodeID(), "label", Graphviz.ALPHABET);
+    Graphviz.connectGraph(sb, this, next, Graphviz.ALPHABET);
+    return sb;
+  }
+  
+  @Override
+  public StringBuilder gvExternalGraph(StringBuilder sb) {
+    return Graphviz.connectGraph(sb, this, subContext, Graphviz.ALPHABET);
   }
 
 }

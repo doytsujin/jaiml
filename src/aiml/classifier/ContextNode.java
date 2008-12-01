@@ -14,6 +14,9 @@
 
 package aiml.classifier;
 
+import graphviz.Graphviz;
+import graphviz.GraphvizNode;
+
 import java.util.ListIterator;
 
 import aiml.classifier.node.PatternNode;
@@ -36,7 +39,9 @@ import aiml.classifier.node.PatternNode;
  * @version 1.0
  */
 
-public abstract class ContextNode {
+public abstract class ContextNode implements GraphvizNode {
+
+
   /** The context this tree applies to */
   int context;
 
@@ -125,6 +130,37 @@ public abstract class ContextNode {
   /** Returns a string representation of this context node */
   public String toString() {
     return "<" + context + ">" + "\n" + "[" + context + ".NEXT]: " + next;
+  }
+  
+  public String gvNodeID() {
+    return "ContextNode_"+ context+"_"+hashCode();
+  }
+
+  public String gvNodeLabel() {
+    return "<"+context+">";
+  }
+  
+  public StringBuilder gvGraph(StringBuilder sb) {
+    gvNodes(sb);
+    gvInternalGraph(sb);
+    gvExternalGraph(sb);
+    return sb;
+  }
+  
+  public StringBuilder gvNodes(StringBuilder sb) {
+    return Graphviz.node(sb, gvNodeID(), "label",gvNodeLabel());
+  }
+  
+  public StringBuilder gvInternalGraph(StringBuilder sb) {
+    return sb;
+  }
+  
+  public StringBuilder gvExternalGraph(StringBuilder sb) {
+    if (next!=null) {
+      Graphviz.edge(sb, gvNodeID(), next.gvNodeID());
+      next.gvGraph(sb);
+    }
+    return sb;
   }
 
 }

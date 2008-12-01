@@ -14,7 +14,11 @@
 
 package aiml.classifier.node;
 
+import graphviz.Graphviz;
+
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
@@ -130,5 +134,22 @@ public class StringBranchNode extends PatternNode {
 
     });
   }
-
+  @Override
+  public String toString() {
+    
+    return map.toString()+super.toString();
+  }
+  
+  @Override
+  public StringBuilder gvNodes(StringBuilder sb) {
+    return Graphviz.node(sb, gvNodeID(), "label","");
+  }
+  
+  @Override
+  public StringBuilder gvInternalGraph(StringBuilder sb) {
+    for (Entry<Character, PatternNode> branch : map.entrySet()) {
+      Graphviz.connectGraph(sb, this, branch.getValue(), "'"+branch.getKey()+"'");
+    }
+    return sb;
+  }
 }

@@ -14,6 +14,7 @@
 
 package aiml.classifier.node;
 
+import graphviz.Graphviz;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -222,6 +223,30 @@ public class StringNode extends PatternNode {
       }
 
     });
+  }
+  
+  @Override
+  public String toString() {
+    if (next!=null) {
+      return "\"" + s + "\"" + next.toString() + super.toString();
+    } else {
+      return "\"" + s + "\"" + super.toString();
+    }
+	}
+  
+  @Override
+  public StringBuilder gvNodes(StringBuilder sb) {
+    return Graphviz.node(sb, gvNodeID(), "label","");
+  }
+  
+  @Override
+  public StringBuilder gvInternalGraph(StringBuilder sb) {
+    return Graphviz.connectGraph(sb, this, next, "'"+s+"'");
+  }
+
+  @Override
+  public StringBuilder gvExternalGraph(StringBuilder sb) {
+    return Graphviz.connectGraph(sb,this,subContext,"'"+s+"'");
   }
 
 }
