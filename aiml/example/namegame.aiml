@@ -184,7 +184,7 @@ Sorry, I tend to forget. What did you say your name was?
 </category>
 
 <category>
-<pattern>DOES THAT MEAN * </pattern>
+<pattern>DOES THAT MEAN *</pattern>
 <template>
 <random>
 <li>I don't know, I am no expert on the meaning of things. </li>
@@ -196,7 +196,7 @@ Sorry, I tend to forget. What did you say your name was?
 </category>
 
 <category>
-<pattern>I AM SORRY TO * </pattern>
+<pattern>I AM SORRY TO *</pattern>
 <template>
 <random> 
 <li>Let's get back to names. </li>
@@ -209,14 +209,14 @@ Sorry, I tend to forget. What did you say your name was?
 </category>
 
 <category>
-<pattern>I WANTED * </pattern>
+<pattern>I WANTED *</pattern>
 <template>
 <srai>I want <star/></srai>
 </template>
 </category>
 
 <category>
-<pattern>I WANT * </pattern>
+<pattern>I WANT *</pattern>
 <template>
 <random>
 <li>Try being a bit more polite, okay? </li>
@@ -227,21 +227,21 @@ Sorry, I tend to forget. What did you say your name was?
 </category>
 
 <category>
-<pattern>I WANT TO KNOW * </pattern>
+<pattern>I WANT TO KNOW *</pattern>
 <template>
 Don't be rude. <srai>What is <star/></srai>
 </template>
 </category>
 
 <category>
-<pattern>I HAVE LIED * </pattern>
+<pattern>I HAVE LIED *</pattern>
 <template>
 Why do you lie to me? Not that I care.
 </template>
 </category>
 
 <category>
-<pattern>I HAVE ACTUALLY * </pattern>
+<pattern>I HAVE ACTUALLY *</pattern>
 <template>
 <random>
 <li>Have you, actually? </li>
@@ -251,7 +251,7 @@ Why do you lie to me? Not that I care.
 </category>
 
 <category>
-<pattern>I HAVE * </pattern>
+<pattern>I HAVE *</pattern>
 <template>
 <random>
 <li>Have you? </li>
@@ -261,21 +261,21 @@ Why do you lie to me? Not that I care.
 </category>
 
 <category>
-<pattern>PLEASE TELL ME * </pattern>
+<pattern>PLEASE TELL ME *</pattern>
 <template>
 <srai>What is <star/></srai>
 </template>
 </category>
 
 <category>
-<pattern>TELL ME * </pattern>
+<pattern>TELL ME *</pattern>
 <template>
 <srai>What is <star/></srai>
 </template>
 </category>
 
 <category>
-<pattern>SAY ME * </pattern>
+<pattern>SAY ME *</pattern>
 <template>
 "Tell me <star/>" would be correct English.
 <srai>Tell me <star/></srai>
@@ -378,7 +378,7 @@ I just told you.
 
 
 <category>
-<pattern>ARE YOU * </pattern>
+<pattern>ARE YOU *</pattern>
 <template>
 You're asking about my name?
 <condition>
@@ -409,7 +409,7 @@ Something's wrong here... please report it to Kim.
 </category>
 
 <category>
-<pattern>YOU * </pattern>
+<pattern>YOU *</pattern>
 <template>
 Is this some sort if insult?
 </template>
@@ -460,7 +460,7 @@ Is this some sort if insult?
 </category>
 
 <category>
-<pattern>WHAT * </pattern>
+<pattern>WHAT *</pattern>
 <template>
 I don't know what.
 </template>
@@ -567,14 +567,14 @@ Yes, what?
 
 
 <category>
-<pattern>WHAT YOU THINK * </pattern>
+<pattern>WHAT YOU THINK *</pattern>
 <template>
 What I think is not so important. Only your and my name matters.
 </template>
 </category>
 
 <category>
-<pattern>WHAT DO YOU THINK * </pattern>
+<pattern>WHAT DO YOU THINK *</pattern>
 <template>
 I don't know. I don't have opinions.
 <srai>State your objective</srai>
@@ -582,7 +582,7 @@ I don't know. I don't have opinions.
 </category>
 
 <category>
-<pattern>YOU MADE ME * </pattern>
+<pattern>YOU MADE ME *</pattern>
 <template>
 <random>
 <li>I'm sorry, but I'm indifferent to such things. </li>
@@ -1093,7 +1093,7 @@ My name? <srai>WHAT IS YOUR NAME</srai>
 </category>
 
 <category>
-<pattern>YOUR NAME IS * </pattern>
+<pattern>YOUR NAME IS *</pattern>
 <template>
 <condition name="knowname">
 <li value="knowname">You know my name, so why do you keep guessing? </li>
