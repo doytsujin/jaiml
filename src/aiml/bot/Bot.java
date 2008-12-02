@@ -80,6 +80,15 @@ public class Bot {
     return name;
   }
 
+  public String applySubstitutions(String list, String text)
+      throws InvalidSubstitutionException {
+    if (substitutions.containsKey(list)) {
+      return substitutions.get(list).apply(text);
+    }
+    throw new InvalidSubstitutionException("Substitution list '" + list +
+        "' must be defined for bot '" + name + "'");
+  }
+
   public void load(String file) throws XmlPullParserException, IOException,
       BotSyntaxException, AimlParserException {
     parser.setInput(new FileInputStream(file), "UTF-8");

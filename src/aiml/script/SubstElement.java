@@ -15,10 +15,12 @@
 package aiml.script;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.bot.InvalidSubstitutionException;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -40,7 +42,16 @@ public class SubstElement extends NonEmptyElement {
   }
 
   public String evaluate(MatchState m) {
-    return "subst(" + type + "," + content.evaluate(m) + ")";
+    String text = content.evaluate(m);
+    try {
+
+      return m.getEnvironment().getBot().applySubstitutions(type, text);
+    } catch (InvalidSubstitutionException e) {
+      Logger.getLogger(SubstElement.class.getName()).warning(
+          "trying to apply unknown substitution list " + type);
+      return text;
+    }
+
   }
 
   public String toString() {
