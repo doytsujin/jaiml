@@ -17,7 +17,10 @@ package aiml.bot;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -30,10 +33,15 @@ import aiml.context.StringContext;
 import aiml.environment.Environment;
 import aiml.parser.AIMLParser;
 import aiml.parser.AimlParserException;
+import aiml.substitutions.DuplicateSubstitutionException;
+import aiml.substitutions.Substitutions;
 
 public class Bot {
+  private static final HashSet<String> PREDEFINED_SUBSTITUTIONS = new HashSet<String>(
+      Arrays.asList("input", "gender", "person", "person2"));
   private String name;
   private HashMap<String, String> properties = new HashMap<String, String>();
+  private HashMap<String, Substitutions> substitutions = new HashMap<String, Substitutions>();
   private boolean standalone = false;
   private boolean enabled = false;
 
@@ -221,9 +229,53 @@ public class Bot {
 
   }
 
-  private void doSubstitutions() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doSubstitutions()");
+  private void doSubstitutions() throws BotSyntaxException,
+      XmlPullParserException, IOException {
+    require(XmlPullParser.START_TAG, "substitutions");
+    parser.nextTag();
+    while (isEvent(XmlPullParser.START_TAG, null)) {
+      if (PREDEFINED_SUBSTITUTIONS.contains(parser.getName())) {
+        doSubstitutions(parser.getName(), parser.getName());
+      } else if ("custom".equals(parser.getName())) {
+        doSubstitutions(requireAttrib("name"), parser.getName());
+      } else {
+        throw new BotSyntaxException(
+            "Syntax error: unknown substitution list definition \"" +
+                parser.getName() + "\" " + parser.getPositionDescription());
+      }
+    }
+    require(XmlPullParser.END_TAG, "substitutions");
+    parser.nextTag();
+  }
+
+  private void doSubstitutions(String listName, String listTag)
+      throws BotSyntaxException, XmlPullParserException, IOException {
+    if (substitutions.containsKey(listName)) {
+      throw new BotSyntaxException("Syntax error: substitution list \"" +
+          listName + "\" already defined " + parser.getPositionDescription());
+    }
+    LinkedHashMap<String, String> substMap = new LinkedHashMap<String, String>();
+    parser.nextTag();
+    while (isEvent(XmlPullParser.START_TAG, "substitute")) {
+      substMap.put(requireAttrib("find"), requireAttrib("replace"));
+
+      parser.nextTag();
+      require(XmlPullParser.END_TAG, "substitute");
+      parser.nextTag();
+    }
+    require(XmlPullParser.END_TAG, listTag);
+    parser.nextTag();
+
+    if (substMap.size() == 0) {
+      logger.warning("substitution list \"" + listName + "\" is empty");
+    }
+
+    try {
+      substitutions.put(listName, new Substitutions(substMap));
+    } catch (DuplicateSubstitutionException e) {
+      throw new BotSyntaxException("Syntax error: substitution list \"" +
+          listName + "\" has duplicate entries");
+    }
 
   }
 
@@ -255,7 +307,7 @@ public class Bot {
     String propName = requireAttrib("name");
     String propValue = requireAttrib("value");
     setProperty(propName, propValue);
-    parser.nextTag();
+    parser.nextTag();//no need to check for correct end tag, because it is empty
     parser.nextTag();
 
   }
