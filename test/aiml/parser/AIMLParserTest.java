@@ -61,6 +61,7 @@ public class AIMLParserTest extends TestCase {
     super.tearDown();
     ContextInfo.reset();
     PatternNodeFactory.reset();
+    Classifier.reset();
   }
 
   private void loadFail(Reader in, Class<? extends Exception> exception)
