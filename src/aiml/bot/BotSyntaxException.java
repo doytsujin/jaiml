@@ -14,7 +14,9 @@
 
 package aiml.bot;
 
-public class BotSyntaxException extends Exception {
+import aiml.parser.AimlParserException;
+
+public class BotSyntaxException extends AimlParserException {
 
   public BotSyntaxException() {
     super();

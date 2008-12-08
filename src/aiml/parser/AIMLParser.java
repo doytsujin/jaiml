@@ -46,58 +46,23 @@ import aiml.script.Script;
 public class AIMLParser {
 
   Logger log = Logger.getLogger(AIMLParser.class.getName());
-  XmlPullParser parser;
+  CheckingParser parser;
   Bot bot;
   Path currentPath;
 
   public AIMLParser(Bot bot) throws XmlPullParserException {
-    parser = XmlPullParserFactory.newInstance().newPullParser();
+    parser = new CheckingParser(
+        XmlPullParserFactory.newInstance().newPullParser(),
+        AimlSyntaxException.class);
     this.bot = bot;
-  }
-
-  private boolean isEvent(int eventType, String name)
-      throws XmlPullParserException {
-    return (parser.getEventType() == eventType && (name == null || parser.getName().equals(
-        name)));
-  }
-
-  private void require(int eventType, String name, String failMessage)
-      throws AimlSyntaxException, XmlPullParserException {
-    if ((parser.getEventType() == eventType && (name == null || parser.getName().equals(
-        name))))
-      return;
-    else
-      throw new AimlSyntaxException("Syntax error: " + failMessage + " " +
-          parser.getPositionDescription());
-  }
-
-  private void require(int eventType, String name) throws AimlSyntaxException,
-      XmlPullParserException {
-    if (parser == null)
-      throw new IllegalArgumentException();
-    if ((parser.getEventType() == eventType && (name == null || parser.getName().equals(
-        name))))
-      return;
-    else
-      throw new AimlSyntaxException("Syntax error: expected " +
-          XmlPullParser.TYPES[eventType] + " '" + name + "' " +
-          parser.getPositionDescription());
-  }
-
-  private String requireAttrib(String name) throws AimlSyntaxException {
-    if (parser.getAttributeValue(null, name) == null)
-      throw new AimlSyntaxException("Syntax error: mandatory attribute '" +
-          name + "' missing from element '" + parser.getName() + "' " +
-          parser.getPositionDescription());
-    else
-      return parser.getAttributeValue(null, name);
   }
 
   private void doAiml() throws IOException, XmlPullParserException,
       AimlParserException {
     parser.nextTag();
-    require(XmlPullParser.START_TAG, "aiml", "root element must be 'aiml'");
-    String version = requireAttrib("version");
+    parser.require("root element must be 'aiml'", XmlPullParser.START_TAG,
+        "aiml");
+    String version = parser.requireAttrib("version");
     if (!version.equals("1.0") && !version.equals("1.0.1"))
       throw new InvalidAimlVersionException(
           "Unsupported AIML version, refusing forward compatible processing mode" +
@@ -106,9 +71,9 @@ public class AIMLParser {
     parser.nextTag();
     currentPath = new Path();
     doCategoryList();
-    require(XmlPullParser.END_TAG, "aiml");
+    parser.require(XmlPullParser.END_TAG, "aiml");
     parser.next();
-    assert (isEvent(XmlPullParser.END_DOCUMENT, null)) : "Syntax error, no markup allowed after the root element";
+    assert (parser.isEvent(XmlPullParser.END_DOCUMENT, null)) : "Syntax error, no markup allowed after the root element";
   }
 
   private void doCategoryList() throws IOException, XmlPullParserException,
@@ -150,53 +115,53 @@ public class AIMLParser {
 
   private void doTopic() throws IOException, XmlPullParserException,
       AimlParserException, MultipleContextsException {
-    require(XmlPullParser.START_TAG, "topic");
+    parser.require(XmlPullParser.START_TAG, "topic");
     currentPath.save();
-    String pattern = requireAttrib("name");
+    String pattern = parser.requireAttrib("name");
     currentPath.add("topic", pattern);
     parser.nextTag();
     doCategoryList();
-    require(XmlPullParser.END_TAG, "topic");
+    parser.require(XmlPullParser.END_TAG, "topic");
     parser.nextTag();
     currentPath.restore();
   }
 
   private void doContextGroup() throws IOException, XmlPullParserException,
       AimlParserException, MultipleContextsException {
-    require(XmlPullParser.START_TAG, "contextgroup");
+    parser.require(XmlPullParser.START_TAG, "contextgroup");
     parser.nextTag();
     currentPath.save();
     doContextList();
     doCategoryList();
-    require(XmlPullParser.END_TAG, "contextgroup");
+    parser.require(XmlPullParser.END_TAG, "contextgroup");
     parser.nextTag();
     currentPath.restore();
   }
 
-  private void doContextList() throws XmlPullParserException,
-      AimlSyntaxException, IOException, MultipleContextsException {
+  private void doContextList() throws XmlPullParserException, IOException,
+      MultipleContextsException, AimlParserException {
     do {
       doContextDef();
-    } while (isEvent(XmlPullParser.START_TAG, "context"));
+    } while (parser.isEvent(XmlPullParser.START_TAG, "context"));
   }
 
   private void doCategory() throws IOException, XmlPullParserException,
       MultipleContextsException, AimlParserException {
-    require(XmlPullParser.START_TAG, "category");
+    parser.require(XmlPullParser.START_TAG, "category");
     parser.nextTag();
     currentPath.save();
-    if (isEvent(XmlPullParser.START_TAG, "pattern")) {
+    if (parser.isEvent(XmlPullParser.START_TAG, "pattern")) {
       doPatternC();
     }
-    if (isEvent(XmlPullParser.START_TAG, "that")) {
+    if (parser.isEvent(XmlPullParser.START_TAG, "that")) {
       doThatC();
     }
-    if (isEvent(XmlPullParser.START_TAG, "context"))
+    if (parser.isEvent(XmlPullParser.START_TAG, "context"))
       doContextList();
-    require(XmlPullParser.START_TAG, "template",
-        "expected 'template' element in category");
+    parser.require("expected 'template' element in category",
+        XmlPullParser.START_TAG, "template");
     Script s = doTemplate();
-    require(XmlPullParser.END_TAG, "category");
+    parser.require(XmlPullParser.END_TAG, "category");
     try {
       Classifier.add(currentPath, s);
       log.info("added category " + currentPath + "{" + s + "}");
@@ -210,27 +175,27 @@ public class AIMLParser {
 
   private Script doTemplate() throws IOException, XmlPullParserException,
       AimlParserException {
-    require(XmlPullParser.START_TAG, "template");
+    parser.require(XmlPullParser.START_TAG, "template");
     Script s = new Block();
     s = s.parse(parser);
-    require(XmlPullParser.END_TAG, "template");
+    parser.require(XmlPullParser.END_TAG, "template");
     parser.nextTag();
     return s;
   }
 
   private void doContextDef() throws IOException, XmlPullParserException,
-      AimlSyntaxException, MultipleContextsException {
-    require(XmlPullParser.START_TAG, "context");
-    String name = requireAttrib("name");
+      MultipleContextsException, AimlParserException {
+    parser.require(XmlPullParser.START_TAG, "context");
+    String name = parser.requireAttrib("name");
     parser.next();
     String pattern = doPattern();
     currentPath.add(name, pattern);
-    require(XmlPullParser.END_TAG, "context");
+    parser.require(XmlPullParser.END_TAG, "context");
     parser.nextTag();
   }
 
   private String doPattern() throws IOException, XmlPullParserException,
-      AimlSyntaxException {
+      AimlParserException {
     StringBuffer result = new StringBuffer();
     do {
       switch (parser.getEventType()) {
@@ -247,8 +212,8 @@ public class AIMLParser {
         String original = result.toString();
         String trimmed = Formatter.collapseWhitespace(original);
         if (!original.equals(trimmed)) {
-          log.warning("Trimmed extra whitespace in the pattern [" + trimmed + "] " +
-              parser.getPositionDescription());
+          log.warning("Trimmed extra whitespace in the pattern [" + trimmed +
+              "] " + parser.getPositionDescription());
         }
         return trimmed;
       case XmlPullParser.TEXT:
@@ -268,13 +233,13 @@ public class AIMLParser {
   }
 
   private String doBotProperty() throws IOException, XmlPullParserException,
-      AimlSyntaxException {
-    require(XmlPullParser.START_TAG, "bot");
+      AimlParserException {
+    parser.require(XmlPullParser.START_TAG, "bot");
     if (!parser.isEmptyElementTag())
       throw new AimlSyntaxException(
           "Syntax error while parsing bot element in pattern: element must be empty " +
               parser.getPositionDescription());
-    String name = requireAttrib("name");
+    String name = parser.requireAttrib("name");
     String result;
     try {
       result = bot.getProperty(name);
@@ -288,22 +253,22 @@ public class AIMLParser {
   }
 
   private void doThatC() throws IOException, XmlPullParserException,
-      AimlSyntaxException, MultipleContextsException {
-    require(XmlPullParser.START_TAG, "that");
+      MultipleContextsException, AimlParserException {
+    parser.require(XmlPullParser.START_TAG, "that");
     parser.next();
     String pattern = doPattern();
     currentPath.add("that", pattern);
-    require(XmlPullParser.END_TAG, "that");
+    parser.require(XmlPullParser.END_TAG, "that");
     parser.nextTag();
   }
 
   private void doPatternC() throws IOException, XmlPullParserException,
-      AimlSyntaxException, MultipleContextsException {
-    require(XmlPullParser.START_TAG, "pattern");
+      MultipleContextsException, AimlParserException {
+    parser.require(XmlPullParser.START_TAG, "pattern");
     parser.next();
     String pattern = doPattern();
     currentPath.add("input", pattern);
-    require(XmlPullParser.END_TAG, "pattern");
+    parser.require(XmlPullParser.END_TAG, "pattern");
     parser.nextTag();
   }
 
