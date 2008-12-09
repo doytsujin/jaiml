@@ -41,4 +41,12 @@ public class FormatterTest extends TestCase {
         Formatter.collapseWhitespace("    ab  cd    e f   "));
   }
 
+  public void testTrimPunctuation() {
+    assertEquals("Hello Robert", Formatter.trimPunctiation("Hello Robert!"));
+    assertEquals("Hello Robert",
+        Formatter.trimPunctiation("!@$#!@#$Hello Robert!!@#$!!!"));
+    assertEquals("Hello !!! Robert",
+        Formatter.trimPunctiation("!@$#!@#$Hello !!! Robert!!@#$!!!"));
+  }
+
 }

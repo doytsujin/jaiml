@@ -33,8 +33,8 @@ public class Formatter {
    * Equivalent to {@link String.toLowerCase()}
    * </p>
    * 
-   * @param text -
-   *                the original text
+   * @param text
+   *          - the original text
    * @return The {@code text}, converted to lowercase
    */
   public static String lowerCase(String text) {
@@ -63,8 +63,8 @@ public class Formatter {
    * each word is in uppercase.
    * </p>
    * 
-   * @param text -
-   *                the original string
+   * @param text
+   *          - the original string
    * @return A string where each word starts with upper case.
    */
   public static String formal(String text) {
@@ -87,11 +87,11 @@ public class Formatter {
    * algorithm is employed:
    * </p>
    * <ul>
-   * <li>Sentences are interpreted as strings whose last character is the
-   * period or full-stop character ".", followed by whitespace (or the end of
-   * the string)
-   * <li>If the string does not contain a ".", then the entire string is
-   * treated as a sentence and the first letter is capitalized.
+   * <li>Sentences are interpreted as strings whose last character is the period
+   * or full-stop character ".", followed by whitespace (or the end of the
+   * string)
+   * <li>If the string does not contain a ".", then the entire string is treated
+   * as a sentence and the first letter is capitalized.
    * <li>If the string contains several sentences but the last sentence is not
    * at the end, the rest of the string is capitalized as if it was a full
    * sentence.
@@ -129,9 +129,9 @@ public class Formatter {
    * </p>
    * 
    * @param buffer
-   *                A modifiable string
+   *          A modifiable string
    * @param pos
-   *                The position of the character to turn to upper case.
+   *          The position of the character to turn to upper case.
    */
   private static void upCaseCodePoint(StringBuffer buffer, int pos) {
     int codePoint = buffer.codePointAt(pos);
@@ -148,7 +148,7 @@ public class Formatter {
    * </p>
    * 
    * @param s
-   *                A string
+   *          A string
    * @return A string with all whitespace collapsed.
    */
   public static String collapseWhitespace(String s) {
@@ -175,6 +175,21 @@ public class Formatter {
     }
 
     return result.toString();
+  }
+
+  public static String trimPunctiation(String s) {
+    int start = 0;
+    int end = s.length();
+
+    while (start < s.length() && !Character.isLetterOrDigit(s.charAt(start))) {
+      start++;
+    }
+
+    while (end > start && !Character.isLetterOrDigit(s.charAt(end - 1))) {
+      end--;
+    }
+
+    return s.substring(start, end);
   }
 
   public static void main(String[] args) {
