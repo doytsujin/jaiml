@@ -14,8 +14,10 @@
 
 package aiml.bot;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import aiml.parser.AimlParserException;
 import aiml.parser.CheckingParser;
 import aiml.substitutions.DuplicateSubstitutionException;
 import aiml.substitutions.Substitutions;
+import aiml.text.SentenceSplitter;
 
 public class Bot {
   private static final HashSet<String> PREDEFINED_SUBSTITUTIONS = new HashSet<String>(
@@ -49,6 +52,7 @@ public class Bot {
   private Logger logger = Logger.getLogger(this.getClass().getName());
 
   private CheckingParser parser;
+  private SentenceSplitter sentenceSplitter;
   public static final String UNKNOWN_PROPERTY = "";
 
   public Bot() throws XmlPullParserException {
@@ -164,6 +168,12 @@ public class Bot {
       ContextInfo.registerContext(new StringContext("that", "dummy that"));
       ContextInfo.registerContext(new StringContext("topic", "dummy topic"));
     }
+
+    if (sentenceSplitter == null) {
+      logger.info("No explicit sentence splitting rules defined, using default sentence splitter");
+      sentenceSplitter = new SentenceSplitter();
+    }
+
     doLearn();
 
     parser.require(XmlPullParser.END_TAG, "bot");
@@ -197,10 +207,64 @@ public class Bot {
 
   }
 
-  private void doSentenceSplitters() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("doSentenceSplitters()");
+  private void doSentenceSplitters() throws XmlPullParserException,
+      AimlParserException, IOException {
+    parser.require(XmlPullParser.START_TAG, "sentence-splitters");
+    parser.nextTag();
+    boolean splitter = false;
+    String rules = null;
+    while (parser.isEvent(XmlPullParser.START_TAG)) {
+      parser.require(XmlPullParser.START_TAG, new String[] { "rules",
+          "splitter" });
+      if ("rules".equals(parser.getName())) {
+        if (rules == null) {
+          String ruleFile = parser.getAttributeValue(null, "src");
+          if (ruleFile != null) {
+            try {
+              StringBuilder fileData = new StringBuilder(1000);
+              BufferedReader reader = new BufferedReader(new FileReader(
+                  ruleFile));
+              char[] buf = new char[1024];
+              int numRead = 0;
+              while ((numRead = reader.read(buf)) != -1) {
+                fileData.append(buf, 0, numRead);
+              }
+              reader.close();
+              rules = fileData.toString();
+            } catch (IOException e) {
+              throw new BotSyntaxException(
+                  "Error loading sentence splitting rules from file " +
+                      parser.getPositionDescription(), e);
+            }
+            parser.nextTag();
+          } else {
+            rules = parser.nextText();
+          }
+          parser.require(XmlPullParser.END_TAG, "rules");
+          parser.nextTag();
+        } else {
+          throw new BotSyntaxException(
+              "Syntax error: only one sentence splitting ruleset allowed " +
+                  parser.getPositionDescription());
+        }
 
+      } else if ("splitter".equals(parser.getName())) {
+        if (!splitter) {
+          logger.warning("String based sentence splitter not supported, please use sentence splitting rules " +
+              parser.getPositionDescription());
+          splitter = true;
+        }
+        parser.nextTag();
+        parser.require(XmlPullParser.END_TAG, "splitter");
+        parser.nextTag();
+      }
+    }
+
+    if (rules != null) {
+      sentenceSplitter = new SentenceSplitter(rules);
+    }
+    parser.require(XmlPullParser.END_TAG, "sentence-splitters");
+    parser.nextTag();
   }
 
   private void doSubstitutions() throws XmlPullParserException, IOException,
