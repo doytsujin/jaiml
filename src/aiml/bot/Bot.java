@@ -100,12 +100,12 @@ public class Bot {
           file);
     } catch (XmlPullParserException e) {
     }
-    parser.require(XmlPullParser.START_DOCUMENT, null);
+    parser.require(XmlPullParser.START_DOCUMENT);
     parser.next();
     standalone = true;
     doBot();
     try {
-      parser.require(XmlPullParser.END_DOCUMENT, null);
+      parser.require(XmlPullParser.END_DOCUMENT);
     } catch (BotSyntaxException e) {
       throw new BotSyntaxException(
           "Syntax error: no markup allowed after end of root element " +
@@ -207,7 +207,7 @@ public class Bot {
       AimlParserException {
     parser.require(XmlPullParser.START_TAG, "substitutions");
     parser.nextTag();
-    while (parser.isEvent(XmlPullParser.START_TAG, null)) {
+    while (parser.isEvent(XmlPullParser.START_TAG)) {
       if (PREDEFINED_SUBSTITUTIONS.contains(parser.getName())) {
         doSubstitutions(parser.getName(), parser.getName());
       } else if ("custom".equals(parser.getName())) {
