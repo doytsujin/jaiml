@@ -464,9 +464,16 @@ public class CheckingParser implements XmlPullParser {
     }
   }
 
-  public boolean isEvent(int eventType, String name)
+  public boolean isEvent(int eventType, String... names)
       throws XmlPullParserException {
-    return (getEventType() == eventType && (name == null || getName().equals(
-        name)));
+    if (getEventType() == eventType) {
+      if (names == null || names.length == 0)
+        return true;
+      for (String name : names) {
+        if (getName().equals(name))
+          return true;
+      }
+    }
+    return false;
   }
 }

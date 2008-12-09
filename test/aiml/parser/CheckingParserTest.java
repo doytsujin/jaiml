@@ -146,16 +146,29 @@ public class CheckingParserTest extends TestCase {
   }
 
   public void testIsEvent() throws XmlPullParserException, IOException {
-    parser.setInput(new StringReader("<root></root>"));
-    assertTrue(parser.isEvent(XmlPullParser.START_DOCUMENT, null));
+    StringBuilder sb = new StringBuilder();
+    sb.append("<root>");
+    String eNames[] = { "a", "b", "c", "d" };
+    sb.append(elements(eNames));
+    sb.append("</root>");
+    parser.setInput(new StringReader(sb.toString()));
+    assertTrue(parser.isEvent(XmlPullParser.START_DOCUMENT));
     parser.nextTag();
-    assertTrue(parser.isEvent(XmlPullParser.START_TAG, null));
+    assertTrue(parser.isEvent(XmlPullParser.START_TAG));
     assertTrue(parser.isEvent(XmlPullParser.START_TAG, "root"));
+    assertFalse(parser.isEvent(XmlPullParser.END_TAG));
+    assertFalse(parser.isEvent(XmlPullParser.START_TAG, "foobar"));
+    for (int i = 0; i < eNames.length; i++) {
+      parser.nextTag();
+      assertTrue(parser.isEvent(XmlPullParser.START_TAG, eNames));
+      parser.nextTag();
+      assertTrue(parser.isEvent(XmlPullParser.END_TAG, eNames));
+    }
     parser.nextTag();
-    assertTrue(parser.isEvent(XmlPullParser.END_TAG, null));
+    assertTrue(parser.isEvent(XmlPullParser.END_TAG));
     assertTrue(parser.isEvent(XmlPullParser.END_TAG, "root"));
     parser.next();
-    parser.isEvent(XmlPullParser.END_DOCUMENT, null);
+    parser.isEvent(XmlPullParser.END_DOCUMENT);
 
   }
 
