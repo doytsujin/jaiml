@@ -64,15 +64,17 @@ public class InterpreterDemo {
       if (line.equals("/gv")) {
         System.out.println(Classifier.gvGraph(new StringBuilder()).toString());
       } else {
-        e.pushInput(line);
-        MatchState<Script> m = Classifier.match(e);
-        if (m != null) {
-          System.out.println(Formatter.collapseWhitespace(m.getResult().evaluate(
-              m)));
-        } else {
-          System.out.println("no match found");
+        for (String input : b.preprocessInput(line)) {
+          e.pushInput(input);
+          MatchState<Script> m = Classifier.match(e);
+          if (m != null) {
+            System.out.println(Formatter.collapseWhitespace(m.getResult().evaluate(
+                m)));
+          } else {
+            System.out.println("no match found");
+          }
+          e.popInput();
         }
-        e.popInput();
       }
       System.out.print("> ");
       line = in.readLine();

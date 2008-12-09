@@ -19,10 +19,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -36,6 +38,7 @@ import aiml.environment.Environment;
 import aiml.parser.AIMLParser;
 import aiml.parser.AimlParserException;
 import aiml.parser.CheckingParser;
+import aiml.script.Formatter;
 import aiml.substitutions.DuplicateSubstitutionException;
 import aiml.substitutions.Substitutions;
 import aiml.text.SentenceSplitter;
@@ -358,6 +361,25 @@ public class Bot {
    */
   public Environment createEnvironment() {
     return new Environment(this);
+  }
+
+  /**
+   * Apply input preprocessing and sentence splitting
+   * 
+   * @param input
+   *          The user input
+   * @return A list of preprocessed sentences.
+   */
+  public List<String> preprocessInput(String input) {
+    ArrayList<String> result = new ArrayList<String>();
+    if (substitutions.containsKey("input")) {
+      input = substitutions.get("input").apply(input);
+    }
+    for (String sentence : sentenceSplitter.split(input)) {
+      sentence = Formatter.collapseWhitespace(sentence);
+      result.add(sentence);
+    }
+    return result;
   }
 
 }
