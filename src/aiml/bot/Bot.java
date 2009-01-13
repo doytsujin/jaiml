@@ -377,6 +377,7 @@ public class Bot {
     }
     for (String sentence : sentenceSplitter.split(input)) {
       sentence = Formatter.collapseWhitespace(sentence);
+      sentence = Formatter.trimPunctiation(sentence);
       result.add(sentence);
     }
     return result;
