@@ -51,9 +51,9 @@ public class StringNode extends PatternNode {
    * pattern starting at depth.
    * 
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @param next
-   *                the subtree
+   *          the subtree
    */
   public StringNode(String pattern, PatternNode next) {
     type = PatternNode.STRING;
@@ -65,9 +65,9 @@ public class StringNode extends PatternNode {
    * Add the pattern to itself. Preform any necessary tree splitting.
    * 
    * @param depth
-   *                int
+   *          int
    * @param pattern
-   *                String
+   *          String
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
@@ -91,9 +91,9 @@ public class StringNode extends PatternNode {
     int nextw = Pattern.nextWildcard(depth, pattern);
     String thissegment;
     if (nextw == -1) {
-      thissegment = pattern.substring(depth).toUpperCase();
+      thissegment = Pattern.normalize(pattern.substring(depth));
     } else {
-      thissegment = pattern.substring(depth, nextw).toUpperCase();
+      thissegment = Pattern.normalize(pattern.substring(depth, nextw));
 
     }
 
@@ -145,7 +145,7 @@ public class StringNode extends PatternNode {
   }
 
   public boolean match(MatchState match) {
-    String cValue = match.getContextValue().toUpperCase();
+    String cValue = Pattern.normalize(match.getContextValue());
     int plength = Pattern.prefixLength(cValue.substring(match.depth), s);
     //String thissegment = cValue.substring(match.depth, match.depth + s.length());
     if (plength == s.length()) { //match, so try it
@@ -173,10 +173,10 @@ public class StringNode extends PatternNode {
 
   /**
    * Returns the pattern this node represents. Actually, this might be replaced
-   * by something like <code>Set getFirst()</code> in the future, because
-   * that's what it is used for (and, for further optimizations of wildcard
-   * matching, it will more closely resemble the FIRST-FOLLOW functions used in
-   * computer linguistics.
+   * by something like <code>Set getFirst()</code> in the future, because that's
+   * what it is used for (and, for further optimizations of wildcard matching,
+   * it will more closely resemble the FIRST-FOLLOW functions used in computer
+   * linguistics.
    * 
    * @return the pattern
    */
@@ -190,7 +190,7 @@ public class StringNode extends PatternNode {
    * implementation to EndOfStringNode.
    * 
    * @param length
-   *                int
+   *          int
    * @return PatternNode
    */
   public PatternNode removePrefix(int length) {
@@ -224,29 +224,29 @@ public class StringNode extends PatternNode {
 
     });
   }
-  
+
   @Override
   public String toString() {
-    if (next!=null) {
+    if (next != null) {
       return "\"" + s + "\"" + next.toString() + super.toString();
     } else {
       return "\"" + s + "\"" + super.toString();
     }
-	}
-  
+  }
+
   @Override
   public StringBuilder gvNodes(StringBuilder sb) {
-    return Graphviz.node(sb, gvNodeID(), "label","");
+    return Graphviz.node(sb, gvNodeID(), "label", "");
   }
-  
+
   @Override
   public StringBuilder gvInternalGraph(StringBuilder sb) {
-    return Graphviz.connectGraph(sb, this, next, "'"+s+"'");
+    return Graphviz.connectGraph(sb, this, next, "'" + s + "'");
   }
 
   @Override
   public StringBuilder gvExternalGraph(StringBuilder sb) {
-    return Graphviz.connectGraph(sb,this,subContext,"'"+s+"'");
+    return Graphviz.connectGraph(sb, this, subContext, "'" + s + "'");
   }
 
 }

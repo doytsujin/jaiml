@@ -37,9 +37,9 @@ public class Pattern {
    * PatternNode.STAR PatternNode.STRING or PatternNode.UNDERSCORE.
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return the type of pattern
    */
   public static int getType(int depth, String pattern) {
@@ -60,9 +60,9 @@ public class Pattern {
    * Determines if the current character in the pattern is a wildcard
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return <code>true</code> if the current character in the pattern is a
    *         wildcard <code>false</code> otherwise
    */
@@ -78,9 +78,9 @@ public class Pattern {
    * Determines if the current character in the pattern is a * wildcard
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return <code>true</code> if the current character in the pattern is a *
    *         wildcard <code>false</code> otherwise
    */
@@ -96,9 +96,9 @@ public class Pattern {
    * Determines if the current character in the pattern is a _ wildcard
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return <code>true</code> if the current character in the pattern is a _
    *         wildcard <code>false</code> otherwise
    */
@@ -115,9 +115,9 @@ public class Pattern {
    * Retrieves the position of the next * wildcard
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return the position of the next * wildcard; -1 if it is not present
    */
   public static int nextStar(int depth, String pattern) {
@@ -128,9 +128,9 @@ public class Pattern {
    * Retrieves the position of the next _ wildcard
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return the position of the next _ wildcard; -1 if it is not present
    */
   public static int nextUnderscore(int depth, String pattern) {
@@ -141,9 +141,9 @@ public class Pattern {
    * Retrieves the position of the next wildcard
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return the position of the next wildcard; -1 if it is not present
    */
 
@@ -164,9 +164,9 @@ public class Pattern {
    * Returns the length of the common prefix of the two strings a and b.
    * 
    * @param a
-   *                a string
+   *          a string
    * @param b
-   *                a string
+   *          a string
    * @return the length of the longest common prefix of strings a and b
    */
   public static int prefixLength(String a, String b) {
@@ -182,6 +182,14 @@ public class Pattern {
       }
     }
     return length;
+  }
+
+  public static String normalize(String s) {
+    return s.toUpperCase();
+  }
+
+  public static char normalize(char ch) {
+    return Character.toUpperCase(ch);
   }
 
 }

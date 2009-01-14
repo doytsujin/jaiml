@@ -17,7 +17,6 @@ package aiml.classifier.node;
 import graphviz.Graphviz;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import aiml.classifier.MatchState;
@@ -60,9 +59,9 @@ public class StringBranchNode extends PatternNode {
    * string, or a wildcard.
    * 
    * @param depth
-   *                int
+   *          int
    * @param pattern
-   *                String
+   *          String
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
@@ -78,7 +77,7 @@ public class StringBranchNode extends PatternNode {
       return result;
     }
 
-    char c = Character.toUpperCase(pattern.charAt(depth));
+    char c = Pattern.normalize(pattern.charAt(depth));
     Character key = new Character(c);
 
     PatternNode node = map.get(key);
@@ -97,7 +96,7 @@ public class StringBranchNode extends PatternNode {
     //Match
     char c;
     try {
-      c = Character.toUpperCase(match.getContextValue().charAt(match.depth));
+      c = Pattern.normalize(match.getContextValue().charAt(match.depth));
     } catch (StringIndexOutOfBoundsException e) {
       return false; //the current context is an empty string
     }
@@ -134,21 +133,23 @@ public class StringBranchNode extends PatternNode {
 
     });
   }
+
   @Override
   public String toString() {
-    
-    return map.toString()+super.toString();
+
+    return map.toString() + super.toString();
   }
-  
+
   @Override
   public StringBuilder gvNodes(StringBuilder sb) {
-    return Graphviz.node(sb, gvNodeID(), "label","");
+    return Graphviz.node(sb, gvNodeID(), "label", "");
   }
-  
+
   @Override
   public StringBuilder gvInternalGraph(StringBuilder sb) {
     for (Entry<Character, PatternNode> branch : map.entrySet()) {
-      Graphviz.connectGraph(sb, this, branch.getValue(), "'"+branch.getKey()+"'");
+      Graphviz.connectGraph(sb, this, branch.getValue(), "'" + branch.getKey() +
+          "'");
     }
     return sb;
   }

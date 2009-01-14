@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import aiml.classifier.MatchState;
+import aiml.classifier.Pattern;
 
 /**
  * <p>
@@ -48,14 +49,14 @@ public class HashMapNode extends PatternNode {
    * Adds the rest of the pattern to a hashmap.
    * 
    * @param depth
-   *                int
+   *          int
    * @param pattern
-   *                String
+   *          String
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
-    pattern = pattern.substring(depth).toUpperCase();
+    pattern = Pattern.normalize(pattern.substring(depth));
 
     PatternNode node = map.get(pattern);
     depth += pattern.length();
@@ -76,13 +77,13 @@ public class HashMapNode extends PatternNode {
    * no wildcards are processed.
    * 
    * @param match
-   *                the match state
+   *          the match state
    * @return <code>true</code> if the match was successful; <code>false</code>
    *         if not
    */
   public boolean match(MatchState match) {
     //Match
-    String s = match.getContextValue().substring(match.depth).toUpperCase();
+    String s = Pattern.normalize(match.getContextValue().substring(match.depth));
     PatternNode node = map.get(s);
     //match is "done" check result:
     if (node != null) {
