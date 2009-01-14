@@ -16,6 +16,8 @@ package aiml.classifier;
 
 import aiml.classifier.node.PatternNode;
 
+import com.ibm.icu.text.Transliterator;
+
 /**
  * Utility methods for analyzing patterns.
  * <p>
@@ -31,6 +33,12 @@ import aiml.classifier.node.PatternNode;
  */
 
 public class Pattern {
+
+  /**
+   * A transliterator that removes diacritics and turns the result into
+   * uppercase. Used for pattern normalization.
+   */
+  private static Transliterator normalizer = Transliterator.getInstance("NFD; [:Nonspacing Mark:] Remove; Upper; NFC;");
 
   /**
    * Returns the type of the pattern at the current depth. This can be either
@@ -184,12 +192,36 @@ public class Pattern {
     return length;
   }
 
+  /**
+   * Normalize a string according to pattern matching rules. This means that:
+   * <ol>
+   * <li>all diacritical marks are stripped and</li>
+   * <li>characters are converted to uppercase.</li>
+   * </ol>
+   * This method is called both when adding a pattern to the classifier, as well
+   * as on input that is matched.
+   * 
+   * @param s
+   * @return
+   */
   public static String normalize(String s) {
-    return s.toUpperCase();
+    return normalizer.transliterate(s);
   }
 
+  /**
+   * Normalize a string according to pattern matching rules. This means that:
+   * <ol>
+   * <li>all diacritical marks are stripped and</li>
+   * <li>characters are converted to uppercase.</li>
+   * </ol>
+   * This method is called both when adding a pattern to the classifier, as well
+   * as on input that is matched.
+   * 
+   * @param ch
+   * @return
+   */
   public static char normalize(char ch) {
-    return Character.toUpperCase(ch);
+    return normalizer.transliterate(String.valueOf(ch)).charAt(0);
   }
 
 }
