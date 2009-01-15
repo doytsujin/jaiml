@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="cs"/>
+-->
+
+<category>
+<pattern>*</pattern>
+<template>
+<random>
+<li>Tak tomu jsem bohužel nerozuměla.</li>
+<li>Zkus uhodnout moje jméno!</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>AHOJ</pattern>
+<template>
+<random>
+<li>Nazdar.</li>
+<li>Ahoj.</li>
+</random>
+</template>
+</category>
+
+<category>
+<pattern>JAK SE JMENUJEŠ</pattern>
+<template>To máš právě že uhodnout ;-)</template>
+</category>
+
+<category>
+<pattern>JAK SE MÁŠ</pattern>
+<template>Dobře, děkuji za optání. A ty?</template>
+</category>
+
+<category>
+<pattern>JMENUJEŠ SE PETRA</pattern>
+<template>Ne, Petra se nejmenuju.</template>
+</category>
+
+<category>
+<pattern>JMENUJEŠ SE <bot name="name"/></pattern>
+<template>Ano, jak tě to napadlo?</template>
+</category>
+
+</aiml>

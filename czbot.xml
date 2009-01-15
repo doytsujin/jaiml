@@ -1,0 +1,14 @@
+<bot id="example" enabled="true">
+<properties>
+	<property name="name" value="Ezri"/>
+</properties>
+	<substitutions>
+		    <input>
+    </input>
+    </substitutions>
+	<sentence-splitters>
+	  <rules src="sentencerules.txt"/>
+	</sentence-splitters>
+  	<learn>aiml/cz/namegame.aiml</learn>
+  	<learn>aiml/cz/names.aiml</learn>
+</bot>

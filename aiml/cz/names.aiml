@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<aiml version="1.0">
+
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License -->
+<!-- as published by the Free Software Foundation. -->
+
+<!--
+<meta name="author" content="Kim Sullivan"/>
+<meta name="language" content="cs"/>
+-->
+
+<category>
+<pattern>JMENUJI SE *</pattern>
+<template>
+<think>
+  <set name="name"><formal><star/></formal></set>
+  <set name="name5"><formal><srai>{osloveni pro <star/>} <star/></srai></formal></set>  
+</think>
+<condition name="name5">
+<li value=""><get name="name"/>? Těší mě. Jak tě mám oslovovat?</li>
+<li>Těší mě, <get name="name5"/>.</li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *}*</pattern>
+<template/></category>
+
+<category>
+<pattern>{osloveni pro *a}*</pattern>
+<template><star/>o</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *i}*</pattern>
+<template><star/>i</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *y}*</pattern>
+<template><star/>y</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *o}*</pattern>
+<template><star/>y</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *e}*</pattern>
+<template><star/>e</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *rek}*</pattern>
+<template><star/>rku</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *k}*</pattern>
+<template><star/>ku</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *tr}*</pattern>
+<template><star/>tře</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *gr}*</pattern>
+<template><star/>gře</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *br}*</pattern>
+<template><star/>bře</template>
+</category>
+
+<!-- 
+<category>
+<pattern>{osloveni pro *es}*</pattern>
+<template><star/>e</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *us}*</pattern>
+<template><star/>e</template>
+</category>
+ -->
+<category>
+<pattern>{osloveni pro *s}*</pattern>
+<template><star index="2"/>i</template>
+</category>
+
+<category>
+<pattern>{osloveni pro *lav}*</pattern>
+<template><think><set name="gender">m</set>
+</think><star index="2"/>e</template>
+</category>
+
+</aiml>
