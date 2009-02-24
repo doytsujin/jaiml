@@ -14,6 +14,8 @@
 
 package demo;
 
+import graphviz.GraphvizGraph;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +64,7 @@ public class InterpreterDemo {
     Environment e = b.createEnvironment();
     while (!line.equals("/exit")) {
       if (line.equals("/gv")) {
-        System.out.println(Classifier.gvGraph(new StringBuilder()).toString());
+        System.out.println(Classifier.gvGraph(new GraphvizGraph()));
       } else {
         for (String input : b.preprocessInput(line)) {
           e.pushInput(input);
