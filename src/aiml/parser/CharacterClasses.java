@@ -1,6 +1,6 @@
 /*
     jaiml - java AIML library
-    Copyright (C) 2004-2008  Kim Sullivan
+    Copyright (C) 2004, 2009  Kim Sullivan
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,19 +19,7 @@ package aiml.parser;
  * Title: AIML Pull Parser
  * </p>
  * 
- * <p>
- * Description:
- * </p>
- * 
- * <p>
- * Copyright: Copyright (c) 2006
- * </p>
- * 
- * <p>
- * Company:
- * </p>
- * 
- * @author not attributable
+ * @author Kim Sullivan
  * @version 1.0
  */
 public class CharacterClasses {
