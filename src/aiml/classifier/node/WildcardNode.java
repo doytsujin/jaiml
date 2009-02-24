@@ -52,7 +52,7 @@ public class WildcardNode extends PatternNode {
    * <code>PatternNodeFactory</code> class.
    * 
    * @param type
-   *                the wildcard type
+   *          the wildcard type
    */
 
   private WildcardNode(int type) {
@@ -153,15 +153,15 @@ public class WildcardNode extends PatternNode {
     });
 
   }
-  
+
   @Override
   public String toString() {
-    if (next!=null) {
+    if (next != null) {
       return "WildCard" + next.toString() + super.toString();
     }
     return "WildCard" + super.toString();
   }
-  
+
   public String gvNodeLabel() {
     switch (type) {
     case PatternNode.STAR:
@@ -169,19 +169,20 @@ public class WildcardNode extends PatternNode {
     case PatternNode.UNDERSCORE:
       return "_";
     default:
-      return "WC"+type;
+      return "WC" + type;
     }
   }
+
   @Override
-  public StringBuilder gvInternalGraph(StringBuilder sb) {
-    Graphviz.edge(sb, gvNodeID(), gvNodeID(), "label", Graphviz.ALPHABET);
-    Graphviz.connectGraph(sb, this, next, Graphviz.ALPHABET);
-    return sb;
+  public Graphviz gvInternalGraph(Graphviz graph) {
+    graph.edge(gvNodeID(), gvNodeID(), "label", Graphviz.ALPHABET);
+    graph.connectGraph(this, next, Graphviz.ALPHABET);
+    return graph;
   }
-  
+
   @Override
-  public StringBuilder gvExternalGraph(StringBuilder sb) {
-    return Graphviz.connectGraph(sb, this, subContext, Graphviz.ALPHABET);
+  public Graphviz gvExternalGraph(Graphviz graph) {
+    return graph.connectGraph(this, subContext, Graphviz.ALPHABET);
   }
 
 }

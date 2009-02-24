@@ -42,7 +42,7 @@ public class EndOfStringNode extends PatternNode {
    * terminator after a consuming branch.
    * 
    * @param next
-   *                the subtree
+   *          the subtree
    */
   public EndOfStringNode(PatternNode next) {
     this.next = next;
@@ -53,9 +53,9 @@ public class EndOfStringNode extends PatternNode {
    * Adds the pattern to itself.
    * 
    * @param depth
-   *                the current depth
+   *          the current depth
    * @param pattern
-   *                the pattern to add
+   *          the pattern to add
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
@@ -81,7 +81,7 @@ public class EndOfStringNode extends PatternNode {
    * match state.
    * 
    * @param match
-   *                MatchState
+   *          MatchState
    * @return boolean
    */
   public boolean match(MatchState match) {
@@ -117,15 +117,15 @@ public class EndOfStringNode extends PatternNode {
 
     });
   }
-    
+
   @Override
-  public StringBuilder gvNodes(StringBuilder sb) {
-    return Graphviz.node(sb, gvNodeID(), "label","");
+  public Graphviz gvNodes(Graphviz graph) {
+    return graph.node(gvNodeID(), "label", "");
   }
-  
+
   @Override
-  public StringBuilder gvExternalGraph(StringBuilder sb) {
-    return Graphviz.connectGraph(sb, this, subContext, Graphviz.EPSILON);
+  public Graphviz gvExternalGraph(Graphviz graph) {
+    return graph.connectGraph(this, subContext, Graphviz.EPSILON);
   }
 
 }

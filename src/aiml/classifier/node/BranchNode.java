@@ -170,11 +170,11 @@ public class BranchNode extends PatternNode {
     return "";
   }
   
-  public StringBuilder gvInternalGraph(StringBuilder sb) {
-    Graphviz.connectGraph(sb, this, underscore, Graphviz.EPSILON);
-    Graphviz.connectGraph(sb, this, string, Graphviz.EPSILON);
-    Graphviz.connectGraph(sb, this, star, Graphviz.EPSILON);
-    return sb;
+  public Graphviz gvInternalGraph(Graphviz graph) {
+    graph.connectGraph(this, underscore, Graphviz.EPSILON);
+    graph.connectGraph(this, string, Graphviz.EPSILON);
+    graph.connectGraph(this, star, Graphviz.EPSILON);
+    return graph;
   }
   
 }

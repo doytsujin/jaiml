@@ -14,25 +14,32 @@
 package graphviz;
 
 /**
- * This class provides utility methods for generating edges and nodes in the Graphviz language.
+ * This class provides utility methods for generating edges and nodes in the
+ * Graphviz language.
+ * 
  * @author Kim Sullivan
- *
+ * 
  */
 public class Graphviz {
   /**
    * Indentation level.
    */
-  private static int indent=0;
+  private int indent = 0;
+
+  /**
+   * The buffer where to construct the string
+   */
+  private StringBuilder sb = new StringBuilder();
+
   /**
    * Generates indentation according to the current indentation level.
-   * @param sb
    */
-  private static void indent(StringBuilder sb) {
-    for (int i=0;i<indent; i++) {
+  private void indent() {
+    for (int i = 0; i < indent; i++) {
       sb.append("\t");
     }
   }
-  
+
   /**
    * The epsilon symbol used in epsilon transitions
    */
@@ -44,18 +51,19 @@ public class Graphviz {
   public static final String ALPHABET = "T";
 
   /**
-   * Generate a list of node or edge attributes according to the graphviz syntax 
-   * @param sb
-   * @param attributes an array of key - value strings.
+   * Generate a list of node or edge attributes according to the graphviz syntax
+   * 
+   * @param attributes
+   *          an array of key - value strings.
    * @return
    */
-  private static StringBuilder attributes(StringBuilder sb, String... attributes) {
-    if (attributes.length >0) {
+  private StringBuilder attributes(String... attributes) {
+    if (attributes.length > 0) {
       sb.append('[');
-      for (int i=0; i<attributes.length;i+=2) {
+      for (int i = 0; i < attributes.length; i += 2) {
         sb.append(attributes[i]);
         sb.append("=\"");
-        sb.append(attributes[i+1]);
+        sb.append(attributes[i + 1]);
         sb.append("\" ");
       }
       sb.append(']');
@@ -63,99 +71,120 @@ public class Graphviz {
 
     return sb;
   }
-  
+
   /**
-   * Generate a list of graph or subgraph attributes with the correct graphviz syntax.
-   * @param sb
-   * @param attributes an array of key - value strings.
+   * Generate a list of graph or subgraph attributes with the correct graphviz
+   * syntax.
+   * 
+   * @param attributes
+   *          an array of key - value strings.
    * @return
    */
-  public static StringBuilder graphAttributes(StringBuilder sb, String... attributes) {
-    if (attributes.length >0) {
-      indent(sb);
-      for (int i=0; i<attributes.length;i+=2) {
+  public Graphviz graphAttributes(String... attributes) {
+    if (attributes.length > 0) {
+      indent();
+      for (int i = 0; i < attributes.length; i += 2) {
         sb.append(attributes[i]);
         sb.append("=\"");
-        sb.append(attributes[i+1]);
+        sb.append(attributes[i + 1]);
         sb.append("\";\n");
       }
     }
 
-    return sb;
+    return this;
   }
+
   /**
    * Generate a graphviz node (with optional attributes)
+   * 
    * @param sb
-   * @param id the node id
-   * @param attributes keys and values
+   * @param id
+   *          the node id
+   * @param attributes
+   *          keys and values
    * @return
    */
-  public static StringBuilder node(StringBuilder sb,String id, String... attributes) {  
-    indent(sb);
+
+  public Graphviz node(String id, String... attributes) {
+    indent();
     sb.append(id);
-    attributes(sb,attributes);
-    sb.append(";\n"); 
-    return sb;
+    attributes(attributes);
+    sb.append(";\n");
+    return this;
   }
-  
+
   /**
    * Generate a graphviz edge between the two specified nodes.
-   * @param sb
-   * @param from source node id
-   * @param to destination node id
-   * @param attributes optional list of attributes
+   * 
+   * @param from
+   *          source node id
+   * @param to
+   *          destination node id
+   * @param attributes
+   *          optional list of attributes
    * @return
    */
-  public static StringBuilder edge(StringBuilder sb, String from, String to, String...attributes) {
-    indent(sb);
+  public Graphviz edge(String from, String to, String... attributes) {
+    indent();
     sb.append(from);
     sb.append("->");
     sb.append(to);
-    attributes(sb,attributes);
-    sb.append(";\n");     
-    return sb;    
+    attributes(attributes);
+    sb.append(";\n");
+    return this;
   }
-  
+
   /**
    * Starts a new graph or subgraph, and increases indentation.
-   * @param sb
+   * 
    * @param what
    * @return
    */
-  public static StringBuilder start(StringBuilder sb, String what) {
-    indent(sb);
+  public Graphviz start(String what) {
+    indent();
     sb.append(what);
     sb.append(" {\n");
     indent++;
-    return sb;
+    return this;
   }
+
   /**
    * Ends a graph or subgraph, and decreases indentation.
+   * 
    * @param sb
    * @return
    */
-  public static StringBuilder end(StringBuilder sb) {
+  public Graphviz end() {
     indent--;
-    indent(sb);
+    indent();
     sb.append("}\n");
-    return sb;
+    return this;
   }
-  
+
   /**
-   * Generates a labeled edge between a GraphvizNode and another,
-   * and generates the graph induced by the "to" node.
-   * @param sb
-   * @param from source node
-   * @param to destination graph
-   * @param edgeLabel edge label
+   * Generates a labeled edge between a GraphvizNode and another, and generates
+   * the graph induced by the "to" node.
+   * 
+   * @param from
+   *          source node
+   * @param to
+   *          destination graph
+   * @param edgeLabel
+   *          edge label
    * @return
    */
-  public static StringBuilder connectGraph(StringBuilder sb, GraphvizNode from, GraphvizNode to, String edgeLabel) {
-    if (to!=null) {      
-      edge(sb, from.gvNodeID(), to.gvNodeID(),"label",edgeLabel);
-      to.gvGraph(sb);      
+  public Graphviz connectGraph(GraphvizNode from, GraphvizNode to,
+      String edgeLabel) {
+    if (to != null) {
+      edge(from.gvNodeID(), to.gvNodeID(), "label", edgeLabel);
+      to.gvGraph(this);
     }
-    return sb;
+    return this;
   }
-  
+
+  @Override
+  public String toString() {
+    return sb.toString();
+  }
+
 }

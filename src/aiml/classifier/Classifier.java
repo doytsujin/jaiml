@@ -65,9 +65,9 @@ public class Classifier {
    * Add a path to the matching tree.
    * 
    * @param path
-   *                the path to be added
+   *          the path to be added
    * @param o
-   *                the object to be stored
+   *          the object to be stored
    * @throws DuplicatePathException
    */
   public static void add(Path path, Object o) throws DuplicatePathException {
@@ -125,14 +125,14 @@ public class Classifier {
     EndOfStringNode.register();
     WildcardNode.register();
   }
-  
-  public static StringBuilder gvGraph(StringBuilder sb) {
-    Graphviz.start(sb, "digraph classifier");
-    Graphviz.graphAttributes(sb,"rankdir","LR");
-    if (tree!=null) {
-      tree.gvGraph(sb);
+
+  public static Graphviz gvGraph(Graphviz graph) {
+    graph.start("digraph classifier");
+    graph.graphAttributes("rankdir", "LR");
+    if (tree != null) {
+      tree.gvGraph(graph);
     }
-    Graphviz.end(sb);
-    return sb;
+    graph.end();
+    return graph;
   }
 }

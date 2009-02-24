@@ -37,7 +37,7 @@ public class LeafContextNode extends ContextNode {
    * Create a new leaf context, and associate an object with it.
    * 
    * @param o
-   *                the stored object
+   *          the stored object
    */
   public LeafContextNode(Object o) {
     context = Integer.MAX_VALUE;
@@ -48,7 +48,7 @@ public class LeafContextNode extends ContextNode {
    * Set's the result in the matchstate, and returns true.
    * 
    * @param match
-   *                the match state, used to store the resulting object
+   *          the match state, used to store the resulting object
    * @return <code>true</code>
    */
   public boolean match(MatchState match) {
@@ -64,7 +64,7 @@ public class LeafContextNode extends ContextNode {
    * method.
    * 
    * @param pattern
-   *                Pattern
+   *          Pattern
    */
   public PatternNode addPattern(Path.Pattern pattern) {
     throw new UnsupportedOperationException(
@@ -76,9 +76,9 @@ public class LeafContextNode extends ContextNode {
    * a DuplicatePathException.
    * 
    * @param path
-   *                the path
+   *          the path
    * @param o
-   *                the object
+   *          the object
    * @throws DuplicatePathException
    * @return the resulting context tree, with all modifications applied and the
    *         correct ordering
@@ -94,17 +94,17 @@ public class LeafContextNode extends ContextNode {
   public String toString() {
     return "<LEAF>" + result;
   }
-  
+
   @Override
   public String gvNodeID() {
-    return "Leaf"+hashCode();
+    return "Leaf" + hashCode();
   }
-  
+
   @Override
-  public StringBuilder gvGraph(StringBuilder sb) {
-    Graphviz.start(sb, "subgraph cluster_leaf_"+hashCode());
-    Graphviz.node(sb, gvNodeID(), "label","","shape","doublecircle");
-    Graphviz.end(sb);
-    return sb;
+  public Graphviz gvGraph(Graphviz graph) {
+    graph.start("subgraph cluster_leaf_" + hashCode());
+    graph.node(gvNodeID(), "label", "", "shape", "doublecircle");
+    graph.end();
+    return graph;
   }
 }

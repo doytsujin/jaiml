@@ -45,30 +45,30 @@ public interface GraphvizNode {
   /**
    * Appends a textual description of the subgraph that has this node as root (possibly
    * recursively calling the gvGraph() method of child nodes).
-   * @param sb the destination buffer
+   * @param graph the destination buffer
    * @return the modified buffer
    */
-  public abstract StringBuilder gvGraph(StringBuilder sb);
+  public abstract Graphviz gvGraph(Graphviz graph);
 
   /**
    * Appends a textual description of this node (without any edges).
-   * @param sb the destination buffer
+   * @param graph the destination buffer
    * @return the modified buffer
    */
-  public abstract StringBuilder gvNodes(StringBuilder sb);
+  public abstract Graphviz gvNodes(Graphviz graph);
 
   /**
    * Generates edges that belong to the same graph.
-   * @param sb the destination buffer
+   * @param graph the destination buffer
    * @return the modified buffer
    */
-  public abstract StringBuilder gvInternalGraph(StringBuilder sb);
+  public abstract Graphviz gvInternalGraph(Graphviz graph);
 
   /**
    * Generates edges that belong to a different (sub)graph.
-   * @param sb the destination buffer
+   * @param graph the destination buffer
    * @return the modified buffer
    */
-  public abstract StringBuilder gvExternalGraph(StringBuilder sb);
+  public abstract Graphviz gvExternalGraph(Graphviz graph);
 
 }

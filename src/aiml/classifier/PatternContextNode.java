@@ -47,7 +47,7 @@ public class PatternContextNode extends ContextNode {
    * Create a new context tree with no subcontexts.
    * 
    * @param context
-   *                the context ID
+   *          the context ID
    */
   public PatternContextNode(int context) {
     this.context = context;
@@ -59,9 +59,9 @@ public class PatternContextNode extends ContextNode {
    * object.
    * 
    * @param path
-   *                the path
+   *          the path
    * @param o
-   *                Object
+   *          Object
    */
   public PatternContextNode(ListIterator path, Object o) {
     if (!path.hasNext()) {
@@ -74,7 +74,7 @@ public class PatternContextNode extends ContextNode {
     try {
       add(path, o);
     } catch (DuplicatePathException e) {
-    	assert false : "Duplicate path exception after adding a single path to a newly created empty tree - should never happen";
+      assert false : "Duplicate path exception after adding a single path to a newly created empty tree - should never happen";
     }
   }
 
@@ -84,9 +84,9 @@ public class PatternContextNode extends ContextNode {
    * </p>
    * 
    * @param context
-   *                the context ID
+   *          the context ID
    * @param subcontext
-   *                the subcontext tree
+   *          the subcontext tree
    */
   public PatternContextNode(int context, ContextNode subcontext) {
     this.context = context;
@@ -101,7 +101,7 @@ public class PatternContextNode extends ContextNode {
    * method.
    * 
    * @param pattern
-   *                Pattern
+   *          Pattern
    */
   public PatternNode addPattern(Path.Pattern pattern) {
     //add the pattern into the current tree.
@@ -120,9 +120,9 @@ public class PatternContextNode extends ContextNode {
    * Try to match the current match state.
    * 
    * @param match
-   *                MatchState
-   * @return <code>true</code> if a match was found; <code>false</code> if
-   *         the match failed
+   *          MatchState
+   * @return <code>true</code> if a match was found; <code>false</code> if the
+   *         match failed
    */
   public boolean match(MatchState match) {
     match.addContext(context);
@@ -145,26 +145,25 @@ public class PatternContextNode extends ContextNode {
     return "<" + context + ">" + tree + "\n" + "[" + context + ".NEXT]: " +
         next;
   }
-  
-  public StringBuilder gvGraph(StringBuilder sb) {
-    Graphviz.start(sb, "subgraph cluster_"+context+"_"+hashCode());
-    super.gvGraph(sb);
-    Graphviz.end(sb);
-    return sb;
+
+  public Graphviz gvGraph(Graphviz graph) {
+    graph.start(("subgraph cluster_" + context + "_" + hashCode()));
+    super.gvGraph(graph);
+    graph.end();
+    return graph;
   }
 
-  
-  public StringBuilder gvNodes(StringBuilder sb) {
-    return Graphviz.node(sb, gvNodeID(), "label", "<"+context+">", "shape", "diamond");    
+  public Graphviz gvNodes(Graphviz graph) {
+    return graph.node(gvNodeID(), "label", "<" + context + ">", "shape",
+        "diamond");
   }
-  
-  public StringBuilder gvInternalGraph(StringBuilder sb) {
-    if (tree!=null) {
-      Graphviz.edge(sb, gvNodeID(), tree.gvNodeID());
-      tree.gvGraph(sb);
+
+  public Graphviz gvInternalGraph(Graphviz graph) {
+    if (tree != null) {
+      graph.edge(gvNodeID(), tree.gvNodeID());
+      tree.gvGraph(graph);
     }
-    return sb;
+    return graph;
   }
 
-  
 }

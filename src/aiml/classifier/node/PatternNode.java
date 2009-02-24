@@ -70,21 +70,21 @@ public abstract class PatternNode implements GraphvizNode {
   protected ContextNode subContext;
 
   /**
-   * A unique node identifier, used for node output 
+   * A unique node identifier, used for node output
    */
-  private static int gvMaxId=0;
+  private static int gvMaxId = 0;
   private int gvId;
-  
+
   public PatternNode() {
     gvId = gvMaxId++;
   }
-  
+
   /**
    * <p>
    * This inner class is a wrapper for the
-   * {@link aiml.classifier.node.PatternNode#add(int depth, String pattern) add(int, String)}
-   * result type, which needs to return several values, and Java doesn't support
-   * "pass by reference" method parameters.
+   * {@link aiml.classifier.node.PatternNode#add(int depth, String pattern)
+   * add(int, String)} result type, which needs to return several values, and
+   * Java doesn't support "pass by reference" method parameters.
    * </p>
    * 
    * <p>
@@ -119,8 +119,8 @@ public abstract class PatternNode implements GraphvizNode {
 
   /**
    * <p>
-   * Adds the <code>pattern</code> to itself. Implementations should preform
-   * any necessary node splitting. It is assumed that each node class knows of
+   * Adds the <code>pattern</code> to itself. Implementations should preform any
+   * necessary node splitting. It is assumed that each node class knows of
    * itself and the other more specific node classes, and returns the
    * appropriate type. In the future, this decision logic might be moved into a
    * separate helper class that takes a node type and a pattern and returns the
@@ -128,9 +128,9 @@ public abstract class PatternNode implements GraphvizNode {
    * </p>
    * 
    * @param depth
-   *                the current depth, or position in the pattern
+   *          the current depth, or position in the pattern
    * @param pattern
-   *                the whole currently added pattern
+   *          the whole currently added pattern
    * @return the resulting root and leaf nodes after adding part of the pattern
    */
 
@@ -143,7 +143,7 @@ public abstract class PatternNode implements GraphvizNode {
    * </p>
    * 
    * @param match
-   *                the match state
+   *          the match state
    * @return <code>true</code> if the match was successful; <code>false</code>
    *         if not
    */
@@ -156,9 +156,9 @@ public abstract class PatternNode implements GraphvizNode {
    * </p>
    * 
    * @param path
-   *                ListIterator
+   *          ListIterator
    * @param o
-   *                Object
+   *          Object
    */
   public void addContext(ListIterator path, Object o)
       throws DuplicatePathException {
@@ -191,50 +191,50 @@ public abstract class PatternNode implements GraphvizNode {
   public String toString() {
     return "" + subContext;
   }
-  
+
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#gvName()
    */
   public String gvNodeID() {
-    return getClass().getSimpleName()+"_"+gvId;
+    return getClass().getSimpleName() + "_" + gvId;
   }
-  
+
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#gvLabel()
    */
   public String gvNodeLabel() {
-     return getClass().getSimpleName();
+    return getClass().getSimpleName();
   }
-  
+
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#gvGraph(java.lang.StringBuilder)
    */
-  public StringBuilder gvGraph(StringBuilder sb) {
-    gvNodes(sb);
-    gvInternalGraph(sb);
-    gvExternalGraph(sb);
-    return sb;
+  public Graphviz gvGraph(Graphviz graph) {
+    gvNodes(graph);
+    gvInternalGraph(graph);
+    gvExternalGraph(graph);
+    return graph;
   }
 
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#gvNodes(java.lang.StringBuilder)
    */
-  public StringBuilder gvNodes(StringBuilder sb) {
-    Graphviz.node(sb, gvNodeID(), "label",gvNodeLabel());
-    return sb;
+  public Graphviz gvNodes(Graphviz graph) {
+    graph.node(gvNodeID(), "label", gvNodeLabel());
+    return graph;
   }
 
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#internalGraph(java.lang.StringBuilder)
    */
-  public StringBuilder gvInternalGraph(StringBuilder sb) {
-    return sb;
+  public Graphviz gvInternalGraph(Graphviz graph) {
+    return graph;
   }
-  
+
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#externalGraph(java.lang.StringBuilder)
    */
-  public StringBuilder gvExternalGraph(StringBuilder sb) {
-    return Graphviz.connectGraph(sb, this, subContext, "");
+  public Graphviz gvExternalGraph(Graphviz graph) {
+    return graph.connectGraph(this, subContext, "");
   }
 }

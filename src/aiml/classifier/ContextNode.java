@@ -41,7 +41,6 @@ import aiml.classifier.node.PatternNode;
 
 public abstract class ContextNode implements GraphvizNode {
 
-
   /** The context this tree applies to */
   int context;
 
@@ -59,9 +58,9 @@ public abstract class ContextNode implements GraphvizNode {
    * is maintained.
    * 
    * @param path
-   *                the path
+   *          the path
    * @param o
-   *                the object to be added to the tree
+   *          the object to be added to the tree
    * @throws DuplicatePathException
    * @return the resulting context tree, with all modifications applied and the
    *         correct ordering.
@@ -113,7 +112,7 @@ public abstract class ContextNode implements GraphvizNode {
    * method.
    * 
    * @param pattern
-   *                Pattern
+   *          Pattern
    */
   public abstract PatternNode addPattern(Path.Pattern pattern);
 
@@ -121,9 +120,9 @@ public abstract class ContextNode implements GraphvizNode {
    * Try to match the current match state.
    * 
    * @param match
-   *                MatchState
-   * @return <code>true</code> if a match was found; <code>false</code> if
-   *         the match failed
+   *          MatchState
+   * @return <code>true</code> if a match was found; <code>false</code> if the
+   *         match failed
    */
   public abstract boolean match(MatchState match);
 
@@ -131,36 +130,36 @@ public abstract class ContextNode implements GraphvizNode {
   public String toString() {
     return "<" + context + ">" + "\n" + "[" + context + ".NEXT]: " + next;
   }
-  
+
   public String gvNodeID() {
-    return "ContextNode_"+ context+"_"+hashCode();
+    return "ContextNode_" + context + "_" + hashCode();
   }
 
   public String gvNodeLabel() {
-    return "<"+context+">";
+    return "<" + context + ">";
   }
-  
-  public StringBuilder gvGraph(StringBuilder sb) {
-    gvNodes(sb);
-    gvInternalGraph(sb);
-    gvExternalGraph(sb);
-    return sb;
+
+  public Graphviz gvGraph(Graphviz graph) {
+    gvNodes(graph);
+    gvInternalGraph(graph);
+    gvExternalGraph(graph);
+    return graph;
   }
-  
-  public StringBuilder gvNodes(StringBuilder sb) {
-    return Graphviz.node(sb, gvNodeID(), "label",gvNodeLabel());
+
+  public Graphviz gvNodes(Graphviz graph) {
+    return graph.node(gvNodeID(), "label", gvNodeLabel());
   }
-  
-  public StringBuilder gvInternalGraph(StringBuilder sb) {
-    return sb;
+
+  public Graphviz gvInternalGraph(Graphviz graph) {
+    return graph;
   }
-  
-  public StringBuilder gvExternalGraph(StringBuilder sb) {
-    if (next!=null) {
-      Graphviz.edge(sb, gvNodeID(), next.gvNodeID());
-      next.gvGraph(sb);
+
+  public Graphviz gvExternalGraph(Graphviz graph) {
+    if (next != null) {
+      graph.edge(gvNodeID(), next.gvNodeID());
+      next.gvGraph(graph);
     }
-    return sb;
+    return graph;
   }
 
 }
