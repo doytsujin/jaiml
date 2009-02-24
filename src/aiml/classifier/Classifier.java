@@ -15,7 +15,6 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
-import graphviz.GraphvizGraph;
 import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
@@ -66,9 +65,9 @@ public class Classifier {
    * Add a path to the matching tree.
    * 
    * @param path
-   *          the path to be added
+   *                the path to be added
    * @param o
-   *          the object to be stored
+   *                the object to be stored
    * @throws DuplicatePathException
    */
   public static void add(Path path, Object o) throws DuplicatePathException {
@@ -126,14 +125,14 @@ public class Classifier {
     EndOfStringNode.register();
     WildcardNode.register();
   }
-
-  public static GraphvizGraph gvGraph(GraphvizGraph graph) {
-    Graphviz.start(graph.getSb(), "digraph classifier");
-    Graphviz.graphAttributes(graph.getSb(), "rankdir", "LR");
-    if (tree != null) {
-      tree.gvGraph(graph.getSb());
+  
+  public static StringBuilder gvGraph(StringBuilder sb) {
+    Graphviz.start(sb, "digraph classifier");
+    Graphviz.graphAttributes(sb,"rankdir","LR");
+    if (tree!=null) {
+      tree.gvGraph(sb);
     }
-    Graphviz.end(graph.getSb());
-    return graph;
+    Graphviz.end(sb);
+    return sb;
   }
 }
