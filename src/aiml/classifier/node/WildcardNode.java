@@ -174,15 +174,14 @@ public class WildcardNode extends PatternNode {
   }
 
   @Override
-  public Graphviz gvInternalGraph(Graphviz graph) {
+  public void gvInternalGraph(Graphviz graph) {
     graph.edge(gvNodeID(), gvNodeID(), "label", Graphviz.ALPHABET);
     graph.connectGraph(this, next, Graphviz.ALPHABET);
-    return graph;
   }
 
   @Override
-  public Graphviz gvExternalGraph(Graphviz graph) {
-    return graph.connectGraph(this, subContext, Graphviz.ALPHABET);
+  public void gvExternalGraph(Graphviz graph) {
+    graph.connectGraph(this, subContext, Graphviz.ALPHABET);
   }
 
 }

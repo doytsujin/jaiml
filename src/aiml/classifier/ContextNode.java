@@ -139,27 +139,24 @@ public abstract class ContextNode implements GraphvizNode {
     return "<" + context + ">";
   }
 
-  public Graphviz gvGraph(Graphviz graph) {
+  public void gvGraph(Graphviz graph) {
     gvNodes(graph);
     gvInternalGraph(graph);
     gvExternalGraph(graph);
-    return graph;
   }
 
-  public Graphviz gvNodes(Graphviz graph) {
-    return graph.node(gvNodeID(), "label", gvNodeLabel());
+  public void gvNodes(Graphviz graph) {
+    graph.node(gvNodeID(), "label", gvNodeLabel());
   }
 
-  public Graphviz gvInternalGraph(Graphviz graph) {
-    return graph;
+  public void gvInternalGraph(Graphviz graph) {
   }
 
-  public Graphviz gvExternalGraph(Graphviz graph) {
+  public void gvExternalGraph(Graphviz graph) {
     if (next != null) {
       graph.edge(gvNodeID(), next.gvNodeID());
       next.gvGraph(graph);
     }
-    return graph;
   }
 
 }

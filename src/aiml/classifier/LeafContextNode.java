@@ -101,10 +101,9 @@ public class LeafContextNode extends ContextNode {
   }
 
   @Override
-  public Graphviz gvGraph(Graphviz graph) {
+  public void gvGraph(Graphviz graph) {
     graph.start("subgraph cluster_leaf_" + hashCode());
     graph.node(gvNodeID(), "label", "", "shape", "doublecircle");
     graph.end();
-    return graph;
   }
 }

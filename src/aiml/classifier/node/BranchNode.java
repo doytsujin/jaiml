@@ -56,7 +56,7 @@ public class BranchNode extends PatternNode {
    * of the subtree (star, string, underscore) is determined at run-time.
    * 
    * @param node
-   *                the first subtree
+   *          the first subtree
    */
   public BranchNode(PatternNode node) {
     switch (node.getType()) {
@@ -143,6 +143,7 @@ public class BranchNode extends PatternNode {
     }
     return false;
   }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -165,16 +166,16 @@ public class BranchNode extends PatternNode {
     sb.append('}');
     return sb.toString();
   }
+
   @Override
-  public String gvNodeLabel() { 
+  public String gvNodeLabel() {
     return "";
   }
-  
-  public Graphviz gvInternalGraph(Graphviz graph) {
+
+  public void gvInternalGraph(Graphviz graph) {
     graph.connectGraph(this, underscore, Graphviz.EPSILON);
     graph.connectGraph(this, string, Graphviz.EPSILON);
     graph.connectGraph(this, star, Graphviz.EPSILON);
-    return graph;
   }
-  
+
 }

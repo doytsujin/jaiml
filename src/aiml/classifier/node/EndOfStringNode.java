@@ -119,13 +119,13 @@ public class EndOfStringNode extends PatternNode {
   }
 
   @Override
-  public Graphviz gvNodes(Graphviz graph) {
-    return graph.node(gvNodeID(), "label", "");
+  public void gvNodes(Graphviz graph) {
+    graph.node(gvNodeID(), "label", "");
   }
 
   @Override
-  public Graphviz gvExternalGraph(Graphviz graph) {
-    return graph.connectGraph(this, subContext, Graphviz.EPSILON);
+  public void gvExternalGraph(Graphviz graph) {
+    graph.connectGraph(this, subContext, Graphviz.EPSILON);
   }
 
 }

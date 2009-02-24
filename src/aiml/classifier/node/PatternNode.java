@@ -209,32 +209,29 @@ public abstract class PatternNode implements GraphvizNode {
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#gvGraph(java.lang.StringBuilder)
    */
-  public Graphviz gvGraph(Graphviz graph) {
+  public void gvGraph(Graphviz graph) {
     gvNodes(graph);
     gvInternalGraph(graph);
     gvExternalGraph(graph);
-    return graph;
   }
 
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#gvNodes(java.lang.StringBuilder)
    */
-  public Graphviz gvNodes(Graphviz graph) {
+  public void gvNodes(Graphviz graph) {
     graph.node(gvNodeID(), "label", gvNodeLabel());
-    return graph;
   }
 
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#internalGraph(java.lang.StringBuilder)
    */
-  public Graphviz gvInternalGraph(Graphviz graph) {
-    return graph;
+  public void gvInternalGraph(Graphviz graph) {
   }
 
   /* (non-Javadoc)
    * @see aiml.classifier.node.GraphvizProducer#externalGraph(java.lang.StringBuilder)
    */
-  public Graphviz gvExternalGraph(Graphviz graph) {
-    return graph.connectGraph(this, subContext, "");
+  public void gvExternalGraph(Graphviz graph) {
+    graph.connectGraph(this, subContext, "");
   }
 }

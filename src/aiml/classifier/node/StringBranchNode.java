@@ -141,16 +141,14 @@ public class StringBranchNode extends PatternNode {
   }
 
   @Override
-  public Graphviz gvNodes(Graphviz graph) {
-    return graph.node(gvNodeID(), "label", "");
+  public void gvNodes(Graphviz graph) {
+    graph.node(gvNodeID(), "label", "");
   }
 
   @Override
-  public Graphviz gvInternalGraph(Graphviz graph) {
+  public void gvInternalGraph(Graphviz graph) {
     for (Entry<Character, PatternNode> branch : map.entrySet()) {
-      graph.connectGraph(this, branch.getValue(), ("'" +
-      branch.getKey() + "'"));
+      graph.connectGraph(this, branch.getValue(), ("'" + branch.getKey() + "'"));
     }
-    return graph;
   }
 }

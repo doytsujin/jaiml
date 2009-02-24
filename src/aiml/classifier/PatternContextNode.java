@@ -146,24 +146,21 @@ public class PatternContextNode extends ContextNode {
         next;
   }
 
-  public Graphviz gvGraph(Graphviz graph) {
+  public void gvGraph(Graphviz graph) {
     graph.start(("subgraph cluster_" + context + "_" + hashCode()));
     super.gvGraph(graph);
     graph.end();
-    return graph;
   }
 
-  public Graphviz gvNodes(Graphviz graph) {
-    return graph.node(gvNodeID(), "label", "<" + context + ">", "shape",
-        "diamond");
+  public void gvNodes(Graphviz graph) {
+    graph.node(gvNodeID(), "label", "<" + context + ">", "shape", "diamond");
   }
 
-  public Graphviz gvInternalGraph(Graphviz graph) {
+  public void gvInternalGraph(Graphviz graph) {
     if (tree != null) {
       graph.edge(gvNodeID(), tree.gvNodeID());
       tree.gvGraph(graph);
     }
-    return graph;
   }
 
 }

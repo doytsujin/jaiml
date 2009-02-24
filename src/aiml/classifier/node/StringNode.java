@@ -235,18 +235,18 @@ public class StringNode extends PatternNode {
   }
 
   @Override
-  public Graphviz gvNodes(Graphviz graph) {
-    return graph.node(gvNodeID(), "label", "");
+  public void gvNodes(Graphviz graph) {
+    graph.node(gvNodeID(), "label", "");
   }
 
   @Override
-  public Graphviz gvInternalGraph(Graphviz graph) {
-    return graph.connectGraph(this, next, ("'" + s + "'"));
+  public void gvInternalGraph(Graphviz graph) {
+    graph.connectGraph(this, next, ("'" + s + "'"));
   }
 
   @Override
-  public Graphviz gvExternalGraph(Graphviz graph) {
-    return graph.connectGraph(this, subContext, ("'" + s + "'"));
+  public void gvExternalGraph(Graphviz graph) {
+    graph.connectGraph(this, subContext, ("'" + s + "'"));
   }
 
 }

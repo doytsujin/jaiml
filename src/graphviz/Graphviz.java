@@ -57,7 +57,7 @@ public class Graphviz {
    *          an array of key - value strings.
    * @return
    */
-  private StringBuilder attributes(String... attributes) {
+  private void attributes(String... attributes) {
     if (attributes.length > 0) {
       sb.append('[');
       for (int i = 0; i < attributes.length; i += 2) {
@@ -68,8 +68,6 @@ public class Graphviz {
       }
       sb.append(']');
     }
-
-    return sb;
   }
 
   /**
@@ -80,7 +78,7 @@ public class Graphviz {
    *          an array of key - value strings.
    * @return
    */
-  public Graphviz graphAttributes(String... attributes) {
+  public void graphAttributes(String... attributes) {
     if (attributes.length > 0) {
       indent();
       for (int i = 0; i < attributes.length; i += 2) {
@@ -90,8 +88,6 @@ public class Graphviz {
         sb.append("\";\n");
       }
     }
-
-    return this;
   }
 
   /**
@@ -105,12 +101,11 @@ public class Graphviz {
    * @return
    */
 
-  public Graphviz node(String id, String... attributes) {
+  public void node(String id, String... attributes) {
     indent();
     sb.append(id);
     attributes(attributes);
     sb.append(";\n");
-    return this;
   }
 
   /**
@@ -124,14 +119,13 @@ public class Graphviz {
    *          optional list of attributes
    * @return
    */
-  public Graphviz edge(String from, String to, String... attributes) {
+  public void edge(String from, String to, String... attributes) {
     indent();
     sb.append(from);
     sb.append("->");
     sb.append(to);
     attributes(attributes);
     sb.append(";\n");
-    return this;
   }
 
   /**
@@ -140,12 +134,11 @@ public class Graphviz {
    * @param what
    * @return
    */
-  public Graphviz start(String what) {
+  public void start(String what) {
     indent();
     sb.append(what);
     sb.append(" {\n");
     indent++;
-    return this;
   }
 
   /**
@@ -154,11 +147,10 @@ public class Graphviz {
    * @param sb
    * @return
    */
-  public Graphviz end() {
+  public void end() {
     indent--;
     indent();
     sb.append("}\n");
-    return this;
   }
 
   /**
@@ -173,13 +165,11 @@ public class Graphviz {
    *          edge label
    * @return
    */
-  public Graphviz connectGraph(GraphvizNode from, GraphvizNode to,
-      String edgeLabel) {
+  public void connectGraph(GraphvizNode from, GraphvizNode to, String edgeLabel) {
     if (to != null) {
       edge(from.gvNodeID(), to.gvNodeID(), "label", edgeLabel);
       to.gvGraph(this);
     }
-    return this;
   }
 
   @Override
