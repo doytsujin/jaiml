@@ -25,7 +25,7 @@ public class SraiElement extends SimpleScriptElement {
 
     String newInput = content.evaluate(m);
     m.getEnvironment().pushInput(newInput);
-    MatchState result = Classifier.match(m.getEnvironment());
+    MatchState result = Classifier.getInstance().match(m.getEnvironment());
     m.getEnvironment().popInput();
     if (result != null) {
       return ((aiml.script.Script) result.getResult()).evaluate(result);

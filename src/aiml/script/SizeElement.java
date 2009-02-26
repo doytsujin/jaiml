@@ -20,7 +20,7 @@ import aiml.classifier.MatchState;
 public class SizeElement extends EmptyElement {
 
   public String evaluate(MatchState m) {
-    return String.valueOf(Classifier.getCount());
+    return String.valueOf(Classifier.getInstance().getCount());
   }
 
   public String toString() {

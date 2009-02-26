@@ -66,7 +66,7 @@ public class AIMLParserTest extends TestCase {
     ContextInfo.registerContext(new StringContext("ni"));
     ContextInfo.registerContext(new StringContext("san"));
 
-    Classifier.registerDefaultNodeHandlers();
+    Classifier.getInstance().registerDefaultNodeHandlers();
   }
 
   @Override
@@ -74,7 +74,7 @@ public class AIMLParserTest extends TestCase {
     super.tearDown();
     ContextInfo.reset();
     PatternNodeFactory.reset();
-    Classifier.reset();
+    Classifier.getInstance().reset();
   }
 
   private void loadFail(Reader in, Class<? extends Exception> exception)

@@ -50,12 +50,15 @@ public class InterpreterDemo {
         return;
       }
     }
-    Classifier.registerDefaultNodeHandlers();
+
+    Classifier classifier = Classifier.getInstance();
+
+    classifier.registerDefaultNodeHandlers();
     Bot b = new Bot();
     System.out.println("Loading bot...");
     // b.setProperty("name","Really Complicated");
     b.load(args[0]);
-    System.out.println("done, loaded " + Classifier.getCount() + " categories.");
+    System.out.println("done, loaded " + classifier.getCount() + " categories.");
     System.out.println("Enter text to match, or /exit to quit");
 
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -64,11 +67,11 @@ public class InterpreterDemo {
     Environment e = b.createEnvironment();
     while (!line.equals("/exit")) {
       if (line.equals("/gv")) {
-        System.out.println(Classifier.gvGraph(new Graphviz()));
+        System.out.println(classifier.gvGraph(new Graphviz()));
       } else {
         for (String input : b.preprocessInput(line)) {
           e.pushInput(input);
-          MatchState<Script> m = Classifier.match(e);
+          MatchState<Script> m = classifier.match(e);
           if (m != null) {
             System.out.println(Formatter.collapseWhitespace(m.getResult().evaluate(
                 m)));

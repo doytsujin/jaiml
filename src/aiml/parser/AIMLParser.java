@@ -161,7 +161,7 @@ public class AIMLParser {
     Script s = doTemplate();
     parser.require(XmlPullParser.END_TAG, "category");
     try {
-      Classifier.add(currentPath, s);
+      Classifier.getInstance().add(currentPath, s);
       log.info("added category " + currentPath + "{" + s + "}");
     } catch (DuplicatePathException e) {
       log.warning("Duplicate category " + currentPath + " " +

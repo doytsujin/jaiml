@@ -32,11 +32,12 @@ import aiml.environment.Environment;
  */
 
 public class Classifier {
+
   /** The root context tree */
-  private static ContextNode tree;
+  private ContextNode tree;
 
   /** The number of paths in the tree */
-  private static int count = 0;
+  private int count = 0;
 
   /**
    * Creates an instance of the aiml matcher. Since this class is meant to be
@@ -46,12 +47,20 @@ public class Classifier {
   private Classifier() {
   }
 
+  private static class Holder {
+    private static final Classifier classifier = new Classifier();
+  }
+
+  public static Classifier getInstance() {
+    return Holder.classifier;
+  }
+
   /**
    * Match the current context state to the paths in the tree.
    * 
    * @return a complete match state if succesfull; <code>null</code> otherwise
    */
-  public static MatchState match(Environment e) {
+  public MatchState match(Environment e) {
     MatchState m = new MatchState(e);
 
     if (tree != null && tree.match(m)) {
@@ -70,7 +79,7 @@ public class Classifier {
    *          the object to be stored
    * @throws DuplicatePathException
    */
-  public static void add(Path path, Object o) throws DuplicatePathException {
+  public void add(Path path, Object o) throws DuplicatePathException {
     assert (PatternNodeFactory.getCount() > 0) : "You have to register node types";
     if (tree == null) {
       if (path.getLength() != 0) {
@@ -90,7 +99,7 @@ public class Classifier {
    * 
    * @return the number of loaded patterns.
    */
-  public static int getCount() {
+  public int getCount() {
     return count;
   }
 
@@ -106,7 +115,7 @@ public class Classifier {
    * 
    * @see aiml.context.ContextInfo#reset()
    */
-  public static void reset() {
+  public void reset() {
     tree = null;
     count = 0;
   }
@@ -120,13 +129,13 @@ public class Classifier {
    * 
    * @see aiml.classifier.node
    */
-  public static void registerDefaultNodeHandlers() {
+  public void registerDefaultNodeHandlers() {
     StringNode.register();
     EndOfStringNode.register();
     WildcardNode.register();
   }
 
-  public static Graphviz gvGraph(Graphviz graph) {
+  public Graphviz gvGraph(Graphviz graph) {
     graph.start("digraph classifier");
     graph.graphAttributes("rankdir", "LR");
     if (tree != null) {
