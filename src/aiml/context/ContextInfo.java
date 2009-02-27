@@ -43,13 +43,13 @@ public class ContextInfo {
    * An array of known contexts, the context order is defined by the order of
    * insertion.
    */
-  private static List<Context> contexts = new ArrayList<Context>();
+  private List<Context> contexts = new ArrayList<Context>();
 
   /**
    * An array of known contexts but this tame keyed by their name, and not
    * order.
    */
-  private static Map<String, Context> contextNames = new HashMap<String, Context>();
+  private Map<String, Context> contextNames = new HashMap<String, Context>();
 
   /**
    * The default constructor is private, people aren't generally supposed to
@@ -57,6 +57,14 @@ public class ContextInfo {
    * use a more robust mechanism.
    */
   private ContextInfo() {
+  }
+
+  private static class Holder {
+    private static final ContextInfo contextInfo = new ContextInfo();
+  }
+
+  public static ContextInfo getInstance() {
+    return Holder.contextInfo;
   }
 
   /**
@@ -71,11 +79,11 @@ public class ContextInfo {
    * </p>
    * 
    * @param name
-   *                the name of the context
+   *          the name of the context
    * @return information about a context
    */
 
-  public static Context getContext(String name) {
+  public Context getContext(String name) {
     Context c = contextNames.get(name);
     if (c == null) {
       throw new UnknownContextException("The context \"" + name +
@@ -97,10 +105,10 @@ public class ContextInfo {
    * </p>
    * 
    * @param context
-   *                the order of the context
+   *          the order of the context
    * @return information about a context
    */
-  public static Context getContext(int context) {
+  public Context getContext(int context) {
     try {
       return contexts.get(context);
     } catch (IndexOutOfBoundsException e) {
@@ -114,9 +122,9 @@ public class ContextInfo {
    * to te list of known contexts.
    * 
    * @param c
-   *                the context to be added
+   *          the context to be added
    */
-  public static void registerContext(Context c) {
+  public void registerContext(Context c) {
     //Ensure that duplicate contexts can't be added...
     if (contextNames.get(c.getName()) != null) {
       throw new DuplicateContextException();
@@ -136,7 +144,7 @@ public class ContextInfo {
    * 
    * @return the number of registered contexts
    */
-  public static int getCount() {
+  public int getCount() {
     return contexts.size();
   }
 
@@ -146,7 +154,7 @@ public class ContextInfo {
    * matching tree is invalid, and must be regenerated (this is <i>not</i>
    * ensured by a call to this method).
    */
-  public static void reset() {
+  public void reset() {
     contexts.clear();
     contextNames.clear();
   }

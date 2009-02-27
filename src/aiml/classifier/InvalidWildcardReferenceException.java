@@ -26,7 +26,7 @@ public class InvalidWildcardReferenceException extends Exception {
 
   public InvalidWildcardReferenceException(int context, int wildcadIndex) {
     super("Invalid wildcard reference: context \"" +
-        ContextInfo.getContext(context).getName() +
+        ContextInfo.getInstance().getContext(context).getName() +
         "\" does not have a wildcard with the index " + wildcadIndex +
         " bound for the current match");
   }

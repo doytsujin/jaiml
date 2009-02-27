@@ -167,9 +167,10 @@ public class Bot {
       doContexts();
     } else {
       // TODO provide actual implementations of topics...
-      ContextInfo.registerContext(new EnvironmentInputContext("input"));
-      ContextInfo.registerContext(new StringContext("that", "dummy that"));
-      ContextInfo.registerContext(new StringContext("topic", "dummy topic"));
+      ContextInfo contextInfo = ContextInfo.getInstance();
+      contextInfo.registerContext(new EnvironmentInputContext("input"));
+      contextInfo.registerContext(new StringContext("that", "dummy that"));
+      contextInfo.registerContext(new StringContext("topic", "dummy topic"));
     }
 
     if (sentenceSplitter == null) {

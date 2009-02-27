@@ -29,8 +29,8 @@ public class SrElement extends EmptyElement {
       IOException, AimlParserException {
 
     super.parse(parser);
-    StarElement star = new StarElement(
-        ContextInfo.getContext("input").getOrder(), 1);
+    StarElement star = new StarElement(ContextInfo.getInstance().getContext(
+        "input").getOrder(), 1);
     SraiElement srai = new SraiElement();
     srai.content = star;
 

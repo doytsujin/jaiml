@@ -33,8 +33,7 @@ import aiml.environment.Environment;
  * 
  * @author Kim Sullivan
  * @version 1.0
- * @param <T
- *                extends Object> The result type
+ * @param <T extends Object> The result type
  */
 
 public class MatchState<T extends Object> {
@@ -53,16 +52,18 @@ public class MatchState<T extends Object> {
   /** The current depth in the context */
   public int depth;
 
+  ContextInfo contextInfo = ContextInfo.getInstance();
+
   /**
    * An array of Strings that represent the individual state of the context
    * variables during matching.
    */
-  String contextValues[] = new String[ContextInfo.getCount()];
+  String contextValues[] = new String[contextInfo.getCount()];
 
   /**
    * An array of lists, each list represents wildcards from a context
    */
-  List<Wildcard> wildcards[] = new List[ContextInfo.getCount()];
+  List<Wildcard> wildcards[] = new List[contextInfo.getCount()];
 
   /**
    * This contains the result of the matching.
@@ -109,9 +110,9 @@ public class MatchState<T extends Object> {
      * Creates a new wildcard with length 0
      * 
      * @param context
-     *                The context this wildcard applies to
+     *          The context this wildcard applies to
      * @param beginIndex
-     *                The starting position of this wildcard
+     *          The starting position of this wildcard
      */
     public Wildcard(int context, int beginIndex) {
       this.beginIndex = beginIndex;
@@ -130,7 +131,7 @@ public class MatchState<T extends Object> {
      * Increases the size of the string matched by the wildcard
      * 
      * @param length
-     *                how much more characters are matched by the wildcard
+     *          how much more characters are matched by the wildcard
      */
     public void grow(int length) {
       endIndex += length;
@@ -184,7 +185,7 @@ public class MatchState<T extends Object> {
    */
   public MatchState(Environment e) {
     this.e = e;
-    if (ContextInfo.getCount() <= 0) {
+    if (contextInfo.getCount() <= 0) {
       throw new NoContextPresentException();
     }
     initializeContexts(e);
@@ -200,15 +201,15 @@ public class MatchState<T extends Object> {
    * @param e
    */
   private void initializeContexts(Environment e) {
-    for (int i = 0; i < ContextInfo.getCount(); i++)
-      contextValues[i] = ContextInfo.getContext(i).getValue(e);
+    for (int i = 0; i < contextInfo.getCount(); i++)
+      contextValues[i] = contextInfo.getContext(i).getValue(e);
   }
 
   /**
    * Adds a new context to the match state.
    * 
    * @param context
-   *                The new context
+   *          The new context
    */
   public void addContext(int context) {
     contextStack.addLast(new Integer(this.context));
@@ -247,9 +248,9 @@ public class MatchState<T extends Object> {
    * Add a new wildcard to s context at a certain depth
    * 
    * @param context
-   *                the context
+   *          the context
    * @param depth
-   *                the depth (the starting index of the wildcard)
+   *          the depth (the starting index of the wildcard)
    * @return Wildcard
    */
   public Wildcard addWildcard(int context, int depth) {
@@ -274,9 +275,9 @@ public class MatchState<T extends Object> {
    * </p>
    * 
    * @param context
-   *                The context
+   *          The context
    * @param index
-   *                The index of the wildcard (1 based)
+   *          The index of the wildcard (1 based)
    * @return The wildcard
    * @throws InvalidWildcardReferenceException
    */
@@ -302,10 +303,10 @@ public class MatchState<T extends Object> {
    * case, using &lt;star&gt; returns the whole context.
    * </p>
    * 
-   * @param context -
-   *                the context ID
-   * @param index -
-   *                the wildcard index (0 based)
+   * @param context
+   *          - the context ID
+   * @param index
+   *          - the wildcard index (0 based)
    * @return <code>true</code> if the wildcard is bound to a "don't care"
    *         context.
    */
@@ -316,10 +317,10 @@ public class MatchState<T extends Object> {
   /**
    * Checks if the context id and the wildard index are valid.
    * 
-   * @param context -
-   *                the context ID
-   * @param index -
-   *                the wildcard index (0 based)
+   * @param context
+   *          - the context ID
+   * @param index
+   *          - the wildcard index (0 based)
    * @return <code>true</code> if the index and context are valid
    */
   private boolean isValidWildcard(int context, int index) {
@@ -347,7 +348,7 @@ public class MatchState<T extends Object> {
    * Set the result object.
    * 
    * @param o
-   *                the result object
+   *          the result object
    */
   public void setResult(T o) {
     result = o;

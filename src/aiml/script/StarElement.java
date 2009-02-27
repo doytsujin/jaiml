@@ -31,6 +31,8 @@ public class StarElement extends EmptyElement {
   private int context;
   private int index;
 
+  private ContextInfo contextInfo = ContextInfo.getInstance();
+
   public StarElement() {
     super();
   }
@@ -47,14 +49,14 @@ public class StarElement extends EmptyElement {
     String contextName = parser.getAttributeValue(null, "context");
     try {
       if (type.equals("thatstar") && contextName == null) {
-        context = ContextInfo.getContext("that").getOrder();
+        context = contextInfo.getContext("that").getOrder();
       } else if (type.equals("topicstar") && contextName == null) {
-        context = ContextInfo.getContext("topic").getOrder();
+        context = contextInfo.getContext("topic").getOrder();
       } else if (type.equals("star")) {
         if (contextName == null)
-          context = ContextInfo.getContext("input").getOrder();
+          context = contextInfo.getContext("input").getOrder();
         else
-          context = ContextInfo.getContext(contextName).getOrder();
+          context = contextInfo.getContext(contextName).getOrder();
       } else {
         throw new AimlSyntaxException("Syntax error: wildcard reference tag " +
             type + "may not contain a reference to a context " +
@@ -93,7 +95,7 @@ public class StarElement extends EmptyElement {
   }
 
   public String toString() {
-    return "star[" + ContextInfo.getContext(context).getName() + "," + index +
+    return "star[" + contextInfo.getContext(context).getName() + "," + index +
         "]";
   }
 

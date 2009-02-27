@@ -61,6 +61,8 @@ public class Path {
   /** An internal stack of previous path states (used for loading) */
   private LinkedList<LinkedList<Pattern>> historyStack = new LinkedList<LinkedList<Pattern>>();
 
+  private ContextInfo contextInfo = ContextInfo.getInstance();
+
   /**
    * A wrapper for a context pattern.
    * 
@@ -78,9 +80,9 @@ public class Path {
      * Creates a new Pattern and sets it's context and value
      * 
      * @param context
-     *                the context
+     *          the context
      * @param pattern
-     *                the pattern
+     *          the pattern
      */
     public Pattern(int context, String pattern) {
       this.context = context;
@@ -112,7 +114,7 @@ public class Path {
      * @return a string representation of this Pattern object
      */
     public String toString() {
-      return ContextInfo.getContext(context).getName() + "=\"" + pattern + "\"";
+      return contextInfo.getContext(context).getName() + "=\"" + pattern + "\"";
     }
   }
 
@@ -134,7 +136,7 @@ public class Path {
    * </p>
    * 
    * @param path
-   *                an array of name-pattern pairs
+   *          an array of name-pattern pairs
    * @throws MultipleContextsException
    */
   public void add(String[][] path) throws MultipleContextsException {
@@ -147,9 +149,9 @@ public class Path {
    * Adds a single context pattern to the path.
    * 
    * @param context
-   *                the context
+   *          the context
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @throws MultipleContextsException
    * 
    * @throws MultipleContextsException
@@ -158,7 +160,7 @@ public class Path {
       throws MultipleContextsException {
     //if (context.equals("input") && pattern.equals("64 F *"))
     //  System.out.println("["+context+"]\""+pattern+"\"");
-    Context c = ContextInfo.getContext(context);
+    Context c = contextInfo.getContext(context);
     Pattern p = new Pattern(c.getOrder(), pattern);
     ListIterator<Pattern> i = contextQueue.listIterator();
     if (!i.hasNext()) {

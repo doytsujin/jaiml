@@ -36,6 +36,7 @@ public class AIMLParserTest extends TestCase {
 
   private AIMLParser ap;
   private Bot b;
+  private ContextInfo contextInfo;
 
   public AIMLParserTest(String s) {
     super(s);
@@ -50,21 +51,22 @@ public class AIMLParserTest extends TestCase {
     b.setProperty("baz", "bar");
 
     ap = new AIMLParser(b);
-    ContextInfo.registerContext(new EnvironmentInputContext("input"));
-    ContextInfo.registerContext(new StringContext("that"));
-    ContextInfo.registerContext(new StringContext("topic"));
+    contextInfo = ContextInfo.getInstance();
+    contextInfo.registerContext(new EnvironmentInputContext("input"));
+    contextInfo.registerContext(new StringContext("that"));
+    contextInfo.registerContext(new StringContext("topic"));
 
-    ContextInfo.registerContext(new StringContext("alpha"));
-    ContextInfo.registerContext(new StringContext("beta"));
-    ContextInfo.registerContext(new StringContext("gama"));
-    ContextInfo.registerContext(new StringContext("delta"));
+    contextInfo.registerContext(new StringContext("alpha"));
+    contextInfo.registerContext(new StringContext("beta"));
+    contextInfo.registerContext(new StringContext("gama"));
+    contextInfo.registerContext(new StringContext("delta"));
 
-    ContextInfo.registerContext(new StringContext("foo"));
-    ContextInfo.registerContext(new StringContext("bar"));
+    contextInfo.registerContext(new StringContext("foo"));
+    contextInfo.registerContext(new StringContext("bar"));
 
-    ContextInfo.registerContext(new StringContext("ichi"));
-    ContextInfo.registerContext(new StringContext("ni"));
-    ContextInfo.registerContext(new StringContext("san"));
+    contextInfo.registerContext(new StringContext("ichi"));
+    contextInfo.registerContext(new StringContext("ni"));
+    contextInfo.registerContext(new StringContext("san"));
 
     Classifier.getInstance().registerDefaultNodeHandlers();
   }
@@ -72,7 +74,7 @@ public class AIMLParserTest extends TestCase {
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
-    ContextInfo.reset();
+    contextInfo.reset();
     PatternNodeFactory.reset();
     Classifier.getInstance().reset();
   }
