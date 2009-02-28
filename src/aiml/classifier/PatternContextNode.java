@@ -19,7 +19,6 @@ import graphviz.Graphviz;
 import java.util.ListIterator;
 
 import aiml.classifier.node.PatternNode;
-import aiml.classifier.node.PatternNodeFactory;
 
 /**
  * <p>
@@ -49,7 +48,8 @@ public class PatternContextNode extends ContextNode {
    * @param context
    *          the context ID
    */
-  public PatternContextNode(int context) {
+  public PatternContextNode(Classifier classifier, int context) {
+    super(classifier);
     this.context = context;
   }
 
@@ -63,7 +63,8 @@ public class PatternContextNode extends ContextNode {
    * @param o
    *          Object
    */
-  public PatternContextNode(ListIterator path, Object o) {
+  public PatternContextNode(Classifier classifier, ListIterator path, Object o) {
+    super(classifier);
     if (!path.hasNext()) {
       throw new UnsupportedOperationException(
           "Can't add an empty path to a PatternContextNode");
@@ -88,7 +89,9 @@ public class PatternContextNode extends ContextNode {
    * @param subcontext
    *          the subcontext tree
    */
-  public PatternContextNode(int context, ContextNode subcontext) {
+  public PatternContextNode(Classifier classifier, int context,
+      ContextNode subcontext) {
+    super(classifier);
     this.context = context;
     this.next = subcontext;
   }
@@ -107,7 +110,7 @@ public class PatternContextNode extends ContextNode {
     //add the pattern into the current tree.
     String s = pattern.getPattern();
     if (tree == null) {
-      tree = PatternNodeFactory.getFactory().getInstance(0, s);
+      tree = classifier.getPNF().getInstance(this, 0, s);
     }
     PatternNode.AddResult result = tree.add(0, s);
     assert (result.newDepth == s.length()) : "A pattern node tree has failed to add a pattern completely";

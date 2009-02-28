@@ -70,12 +70,18 @@ public abstract class PatternNode implements GraphvizNode {
   protected ContextNode subContext;
 
   /**
+   * Points to the current context.
+   */
+  protected ContextNode parentContext;
+
+  /**
    * A unique node identifier, used for node output
    */
   private static int gvMaxId = 0;
   private int gvId;
 
-  public PatternNode() {
+  public PatternNode(ContextNode parent) {
+    this.parentContext = parent;
     gvId = gvMaxId++;
   }
 
@@ -166,9 +172,10 @@ public abstract class PatternNode implements GraphvizNode {
       subContext = subContext.add(path, o);
     } else {
       if (path.hasNext()) {
-        subContext = new PatternContextNode(path, o);
+        subContext = new PatternContextNode(parentContext.getClassifier(),
+            path, o);
       } else {
-        subContext = new LeafContextNode(o);
+        subContext = new LeafContextNode(parentContext.getClassifier(), o);
       }
     }
   }

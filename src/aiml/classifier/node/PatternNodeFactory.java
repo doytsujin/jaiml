@@ -16,6 +16,8 @@ package aiml.classifier.node;
 
 import java.util.ArrayList;
 
+import aiml.classifier.ContextNode;
+
 /**
  * A factory class for pattern nodes. A call to <code>getInstance()</code> will
  * return an empty instance of a particular node type, able to handle the
@@ -36,15 +38,7 @@ public class PatternNodeFactory {
   /**
    * Do not create instances of PatternNodeFactory
    */
-  private PatternNodeFactory() {
-  }
-
-  private static class Holder {
-    private static final PatternNodeFactory factory = new PatternNodeFactory();
-  }
-
-  public static PatternNodeFactory getFactory() {
-    return Holder.factory;
+  public PatternNodeFactory() {
   }
 
   /**
@@ -69,26 +63,23 @@ public class PatternNodeFactory {
   /**
    * Return an instance of a node class most appropriate for the pattern.
    * 
+   * @param parentContext
+   *          TODO
    * @param depth
    *          the depth
    * @param pattern
    *          the pattern
+   * 
    * @return an appropriate instance of PatternNode
    */
-  public PatternNode getInstance(int depth, String pattern) {
+  public PatternNode getInstance(ContextNode parentContext, int depth,
+      String pattern) {
     for (Creatable nodeType : nodeTypes) {
       if (nodeType.canCreate(depth, pattern)) {
-        return nodeType.getInstance();
+        return nodeType.getInstance(parentContext);
       }
     }
     return null;
-  }
-
-  /**
-   * Clears all information about node type handlers.
-   */
-  public void reset() {
-    nodeTypes.clear();
   }
 
 }

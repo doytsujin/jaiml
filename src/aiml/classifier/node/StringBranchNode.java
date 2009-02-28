@@ -19,6 +19,8 @@ import graphviz.Graphviz;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import aiml.classifier.Classifier;
+import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -41,11 +43,13 @@ public class StringBranchNode extends PatternNode {
   /**
    * Create a new empty string branch node. The type is PatternNode.STRING
    */
-  public StringBranchNode() {
+  public StringBranchNode(ContextNode parent) {
+    super(parent);
     type = PatternNode.STRING;
   }
 
-  public StringBranchNode(StringNode node) {
+  public StringBranchNode(ContextNode parent, StringNode node) {
+    super(parent);
     type = PatternNode.STRING;
     char c = node.getPattern().charAt(0); //this is safe, because a stringnode always represents at least 1 character
     Character key = new Character(c);
@@ -66,14 +70,14 @@ public class StringBranchNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
     if (depth == pattern.length()) {
-      PatternNode node = new EndOfStringNode(this);
+      PatternNode node = new EndOfStringNode(parentContext, this);
       result = node.add(depth, pattern);
       return result;
     }
     if (Pattern.isWildcard(depth, pattern)) {
-      PatternNode node = new BranchNode(this);
+      PatternNode node = new BranchNode(parentContext, this);
       result = node.add(depth, pattern);
       return result;
     }
@@ -84,7 +88,7 @@ public class StringBranchNode extends PatternNode {
     PatternNode node = map.get(key);
     depth++;
     if (node == null) {
-      node = patternNodeFactory.getInstance(depth, pattern);
+      node = patternNodeFactory.getInstance(parentContext, depth, pattern);
     }
     result = node.add(depth, pattern);
     map.put(key, result.root);
@@ -119,9 +123,12 @@ public class StringBranchNode extends PatternNode {
 
   /**
    * Register this node type in PatternNodeFactory.
+   * 
+   * @param classifier
+   *          TODO
    */
-  public static void register() {
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+  public static void register(Classifier classifier) {
+    PatternNodeFactory patternNodeFactory = classifier.getPNF();
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
 
@@ -129,8 +136,8 @@ public class StringBranchNode extends PatternNode {
             depth, pattern));
       }
 
-      public PatternNode getInstance() {
-        return new StringBranchNode();
+      public PatternNode getInstance(ContextNode parentContext) {
+        return new StringBranchNode(parentContext);
       }
 
     });

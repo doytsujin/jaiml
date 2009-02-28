@@ -44,6 +44,9 @@ public abstract class ContextNode implements GraphvizNode {
   /** The context this tree applies to */
   int context;
 
+  /** The classifier this context node is a part of */
+  Classifier classifier;
+
   /**
    * the next lower context (subcontext), used when we fail matching to this
    * context's pattern tree or if there wasn't any pattern tree in the first
@@ -51,6 +54,10 @@ public abstract class ContextNode implements GraphvizNode {
    * not be a context tree for them)
    */
   ContextNode next;
+
+  protected ContextNode(Classifier classifier) {
+    this.classifier = classifier;
+  }
 
   /**
    * Adds the path (from the current position) to itself. Creates all necessary
@@ -79,13 +86,14 @@ public abstract class ContextNode implements GraphvizNode {
         //add as next
         path.previous();
         if (next == null) {
-          next = new PatternContextNode(pattern.getContext());
+          next = new PatternContextNode(classifier, pattern.getContext());
         }
         next = next.add(path, o);
         return this;
       } else if (pattern.getContext() < context) {
         //add instead of self
-        ContextNode cn = new PatternContextNode(pattern.getContext(), this);
+        ContextNode cn = new PatternContextNode(classifier,
+            pattern.getContext(), this);
         path.previous();
         return cn.add(path, o); //actually, just cn should be sufficient, but let's not make any assumptions
       } else {
@@ -96,7 +104,7 @@ public abstract class ContextNode implements GraphvizNode {
       }
     } else { //we're at the end of the path, so we can add a Leaf node
       if (next == null) {
-        next = new LeafContextNode(o);
+        next = new LeafContextNode(classifier, o);
       } else {
         next = next.add(path, o);
       }
@@ -115,6 +123,10 @@ public abstract class ContextNode implements GraphvizNode {
    *          Pattern
    */
   public abstract PatternNode addPattern(Path.Pattern pattern);
+
+  public Classifier getClassifier() {
+    return classifier;
+  }
 
   /**
    * Try to match the current match state.

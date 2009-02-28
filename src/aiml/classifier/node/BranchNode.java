@@ -15,6 +15,7 @@
 package aiml.classifier.node;
 
 import graphviz.Graphviz;
+import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -48,7 +49,8 @@ public class BranchNode extends PatternNode {
   /**
    * Creates a new, empty branch node
    */
-  public BranchNode() {
+  public BranchNode(ContextNode parent) {
+    super(parent);
   }
 
   /**
@@ -58,7 +60,8 @@ public class BranchNode extends PatternNode {
    * @param node
    *          the first subtree
    */
-  public BranchNode(PatternNode node) {
+  public BranchNode(ContextNode parent, PatternNode node) {
+    super(parent);
     switch (node.getType()) {
     case PatternNode.UNDERSCORE:
       underscore = node;
@@ -82,7 +85,7 @@ public class BranchNode extends PatternNode {
    */
   public PatternNode.AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
     //this is a really ugly method... should I put the subnodes in an Array? is it OK to use
     //static final ints as hardcoded indexes?
     int t = Pattern.getType(depth, pattern);
@@ -92,7 +95,8 @@ public class BranchNode extends PatternNode {
     }
     if (t == PatternNode.UNDERSCORE) {
       if (underscore == null) {
-        underscore = patternNodeFactory.getInstance(depth, pattern);
+        underscore = patternNodeFactory.getInstance(parentContext, depth,
+            pattern);
       }
       result = underscore.add(depth, pattern);
       underscore = result.root;
@@ -101,7 +105,7 @@ public class BranchNode extends PatternNode {
     }
     if (t == PatternNode.STAR) {
       if (star == null) {
-        star = patternNodeFactory.getInstance(depth, pattern);
+        star = patternNodeFactory.getInstance(parentContext, depth, pattern);
       }
       result = star.add(depth, pattern);
       star = result.root;
@@ -110,7 +114,7 @@ public class BranchNode extends PatternNode {
     }
     if (t == PatternNode.STRING) {
       if (string == null) {
-        string = patternNodeFactory.getInstance(depth, pattern);
+        string = patternNodeFactory.getInstance(parentContext, depth, pattern);
       }
       result = string.add(depth, pattern);
       string = result.root;

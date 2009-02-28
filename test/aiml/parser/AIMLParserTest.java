@@ -74,7 +74,6 @@ public class AIMLParserTest extends TestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     contextInfo.reset();
-    Classifier.getInstance().getPNF().reset();
     Classifier.getInstance().reset();
   }
 

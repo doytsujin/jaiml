@@ -36,6 +36,9 @@ public class Classifier {
   /** The root context tree */
   private ContextNode tree;
 
+  /** The factory that creates pattern nodes */
+  private PatternNodeFactory patternNodeFactory;
+
   /** The number of paths in the tree */
   private int count = 0;
 
@@ -45,6 +48,8 @@ public class Classifier {
    * be used in the future.
    */
   private Classifier() {
+    patternNodeFactory = new PatternNodeFactory();
+
   }
 
   private static class Holder {
@@ -83,9 +88,9 @@ public class Classifier {
     assert (getPNF().getCount() > 0) : "You have to register node types";
     if (tree == null) {
       if (path.getLength() != 0) {
-        tree = new PatternContextNode(path.iterator(), o);
+        tree = new PatternContextNode(this, path.iterator(), o);
       } else {
-        tree = new LeafContextNode(o);
+        tree = new LeafContextNode(this, o);
       }
     } else {
       tree = tree.add(path.iterator(), o);
@@ -95,7 +100,7 @@ public class Classifier {
   }
 
   public PatternNodeFactory getPNF() {
-    return PatternNodeFactory.getFactory();
+    return patternNodeFactory;
   }
 
   /**
@@ -120,6 +125,7 @@ public class Classifier {
    * @see aiml.context.ContextInfo#reset()
    */
   public void reset() {
+    patternNodeFactory = new PatternNodeFactory();
     tree = null;
     count = 0;
   }
@@ -134,9 +140,9 @@ public class Classifier {
    * @see aiml.classifier.node
    */
   public void registerDefaultNodeHandlers() {
-    StringNode.register();
-    EndOfStringNode.register();
-    WildcardNode.register();
+    StringNode.register(this);
+    EndOfStringNode.register(this);
+    WildcardNode.register(this);
   }
 
   public Graphviz gvGraph(Graphviz graph) {

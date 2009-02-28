@@ -39,7 +39,8 @@ public class LeafContextNode extends ContextNode {
    * @param o
    *          the stored object
    */
-  public LeafContextNode(Object o) {
+  public LeafContextNode(Classifier classifier, Object o) {
+    super(classifier);
     context = Integer.MAX_VALUE;
     result = o;
   }

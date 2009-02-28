@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import aiml.classifier.Classifier;
+import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -42,7 +44,8 @@ public class HashMapNode extends PatternNode {
   /**
    * Creates a new hash map pattern node
    */
-  public HashMapNode() {
+  public HashMapNode(ContextNode parent) {
+    super(parent);
   }
 
   /**
@@ -56,13 +59,13 @@ public class HashMapNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
     pattern = Pattern.normalize(pattern.substring(depth));
 
     PatternNode node = map.get(pattern);
     depth += pattern.length();
     if (node == null) {
-      node = patternNodeFactory.getInstance(depth, pattern);
+      node = patternNodeFactory.getInstance(parentContext, depth, pattern);
     }
     result = node.add(depth, pattern);
     map.put(pattern, result.root);
@@ -115,16 +118,19 @@ public class HashMapNode extends PatternNode {
 
   /**
    * Register this node type in PatternNodeFactory.
+   * 
+   * @param classifier
+   *          TODO
    */
-  public static void register() {
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+  public static void register(Classifier classifier) {
+    PatternNodeFactory patternNodeFactory = classifier.getPNF();
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (depth != pattern.length());
       }
 
-      public PatternNode getInstance() {
-        return new HashMapNode();
+      public PatternNode getInstance(ContextNode parentContext) {
+        return new HashMapNode(parentContext);
       }
 
     });

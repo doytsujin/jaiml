@@ -15,6 +15,8 @@
 package aiml.classifier.node;
 
 import graphviz.Graphviz;
+import aiml.classifier.Classifier;
+import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -41,7 +43,8 @@ public class StringNode extends PatternNode {
   /**
    * Create a new, empty string node.
    */
-  public StringNode() {
+  public StringNode(ContextNode parent) {
+    super(parent);
     type = PatternNode.STRING;
   }
 
@@ -55,7 +58,8 @@ public class StringNode extends PatternNode {
    * @param next
    *          the subtree
    */
-  public StringNode(String pattern, PatternNode next) {
+  public StringNode(ContextNode parent, String pattern, PatternNode next) {
+    super(parent);
     type = PatternNode.STRING;
     s = pattern;
     this.next = next;
@@ -72,14 +76,14 @@ public class StringNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
     if (depth == pattern.length()) {
-      PatternNode node = new EndOfStringNode(this);
+      PatternNode node = new EndOfStringNode(parentContext, this);
       result = node.add(depth, pattern);
       return result;
     }
     if (Pattern.isWildcard(depth, pattern)) {
-      PatternNode node = new BranchNode(this);
+      PatternNode node = new BranchNode(parentContext, this);
       result = node.add(depth, pattern);
       return result;
     }
@@ -114,7 +118,7 @@ public class StringNode extends PatternNode {
         result = new AddResult(this, this, depth);
       } else { //we still have to add the rest of the pattern
         if (next == null) {
-          next = patternNodeFactory.getInstance(depth, pattern);
+          next = patternNodeFactory.getInstance(parentContext, depth, pattern);
         }
         result = next.add(depth, pattern);
         next = result.root;
@@ -124,7 +128,7 @@ public class StringNode extends PatternNode {
     } //(plength==s.length())
 
     if (plength == 0) { //another relatively simple case - no common prefix, substitute a string branch node
-      PatternNode node = new StringBranchNode(this);
+      PatternNode node = new StringBranchNode(parentContext, this);
       result = node.add(depth, pattern);
       return result;
     }
@@ -132,8 +136,8 @@ public class StringNode extends PatternNode {
     //assert(plength>0&&plength<s.length())
     //split prefix
     depth += plength;
-    PatternNode node = new StringNode(thissegment.substring(0, plength),
-        this.removePrefix(plength));
+    PatternNode node = new StringNode(parentContext, thissegment.substring(0,
+        plength), this.removePrefix(plength));
     if (depth == pattern.length()) { //the new node is the final one, don't create unnecessary EOS nodes...
       result = new AddResult(node, node, depth);
     } else {
@@ -203,16 +207,19 @@ public class StringNode extends PatternNode {
     if (s.length() > 0) {
       return this;
     }
-    EndOfStringNode node = new EndOfStringNode(next);
+    EndOfStringNode node = new EndOfStringNode(parentContext, next);
     node.subContext = subContext;
     return node;
   }
 
   /**
    * Register this node type in PatternNodeFactory.
+   * 
+   * @param classifier
+   *          TODO
    */
-  public static void register() {
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+  public static void register(Classifier classifier) {
+    PatternNodeFactory patternNodeFactory = classifier.getPNF();
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
 
@@ -220,8 +227,8 @@ public class StringNode extends PatternNode {
             depth, pattern));
       }
 
-      public PatternNode getInstance() {
-        return new StringNode();
+      public PatternNode getInstance(ContextNode parentContext) {
+        return new StringNode(parentContext);
       }
 
     });

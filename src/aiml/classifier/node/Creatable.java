@@ -14,6 +14,8 @@
 
 package aiml.classifier.node;
 
+import aiml.classifier.ContextNode;
+
 /**
  * <p>
  * Implementing this interface means that a node can be created as a base node,
@@ -43,8 +45,9 @@ public interface Creatable {
 
   /**
    * Returns an empty instance of this PatternNode.
+   * @param parentContext TODO
    * 
    * @return PatternNode
    */
-  PatternNode getInstance();
+  PatternNode getInstance(ContextNode parentContext);
 }

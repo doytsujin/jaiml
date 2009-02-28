@@ -15,6 +15,8 @@
 package aiml.classifier.node;
 
 import graphviz.Graphviz;
+import aiml.classifier.Classifier;
+import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 
@@ -55,7 +57,8 @@ public class WildcardNode extends PatternNode {
    *          the wildcard type
    */
 
-  private WildcardNode(int type) {
+  private WildcardNode(ContextNode parent, int type) {
+    super(parent);
     this.type = type;
   }
 
@@ -65,14 +68,14 @@ public class WildcardNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
     if (depth == pattern.length()) {
-      PatternNode node = new EndOfStringNode(this);
+      PatternNode node = new EndOfStringNode(parentContext, this);
       result = node.add(depth, pattern);
       return result;
     }
     if (Pattern.getType(depth, pattern) != type) {
-      PatternNode node = new BranchNode(this);
+      PatternNode node = new BranchNode(parentContext, this);
       result = node.add(depth, pattern);
       return result;
     }
@@ -85,7 +88,7 @@ public class WildcardNode extends PatternNode {
     }
 
     if (next == null) {
-      next = patternNodeFactory.getInstance(depth, pattern);
+      next = patternNodeFactory.getInstance(parentContext, depth, pattern);
     }
     result = next.add(depth, pattern);
     next = result.root;
@@ -130,16 +133,19 @@ public class WildcardNode extends PatternNode {
   /**
    * Register this node type in PatternNodeFactory. This actually registers 2
    * node types, one for the * and one for the _ wildcard.
+   * 
+   * @param classifier
+   *          TODO
    */
-  public static void register() {
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+  public static void register(Classifier classifier) {
+    PatternNodeFactory patternNodeFactory = classifier.getPNF();
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (Pattern.isStar(depth, pattern));
       }
 
-      public PatternNode getInstance() {
-        return new WildcardNode(PatternNode.STAR);
+      public PatternNode getInstance(ContextNode parentContext) {
+        return new WildcardNode(parentContext, PatternNode.STAR);
       }
 
     });
@@ -148,8 +154,8 @@ public class WildcardNode extends PatternNode {
         return (Pattern.isUnderscore(depth, pattern));
       }
 
-      public PatternNode getInstance() {
-        return new WildcardNode(PatternNode.UNDERSCORE);
+      public PatternNode getInstance(ContextNode parentContext) {
+        return new WildcardNode(parentContext, PatternNode.UNDERSCORE);
       }
 
     });

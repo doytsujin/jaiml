@@ -15,6 +15,8 @@
 package aiml.classifier.node;
 
 import graphviz.Graphviz;
+import aiml.classifier.Classifier;
+import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 
 /**
@@ -32,7 +34,8 @@ public class EndOfStringNode extends PatternNode {
   PatternNode next;
 
   /** Create a new end of string node */
-  public EndOfStringNode() {
+  public EndOfStringNode(ContextNode parent) {
+    super(parent);
     type = PatternNode.STRING;
   }
 
@@ -44,7 +47,8 @@ public class EndOfStringNode extends PatternNode {
    * @param next
    *          the subtree
    */
-  public EndOfStringNode(PatternNode next) {
+  public EndOfStringNode(ContextNode parent, PatternNode next) {
+    super(parent);
     this.next = next;
     type = PatternNode.STRING;
   }
@@ -59,7 +63,7 @@ public class EndOfStringNode extends PatternNode {
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
     if (depth == pattern.length()) {
       //OK, we can "add" the end of the string;
       //System.out.println("AddEOS");
@@ -68,7 +72,7 @@ public class EndOfStringNode extends PatternNode {
     } else {
       //System.out.println("AddEOS.next");
       if (next == null) {
-        next = patternNodeFactory.getInstance(depth, pattern);
+        next = patternNodeFactory.getInstance(parentContext, depth, pattern);
       }
       AddResult result = next.add(depth, pattern);
       next = result.root;
@@ -106,15 +110,15 @@ public class EndOfStringNode extends PatternNode {
   /**
    * Register this node type in PatternNodeFactory.
    */
-  public static void register() {
-    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+  public static void register(Classifier classifier) {
+    PatternNodeFactory patternNodeFactory = classifier.getPNF();
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (depth == pattern.length());
       }
 
-      public PatternNode getInstance() {
-        return new EndOfStringNode();
+      public PatternNode getInstance(ContextNode parentContext) {
+        return new EndOfStringNode(parentContext);
       }
 
     });
