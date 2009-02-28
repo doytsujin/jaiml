@@ -82,6 +82,7 @@ public class BranchNode extends PatternNode {
    */
   public PatternNode.AddResult add(int depth, String pattern) {
     AddResult result;
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
     //this is a really ugly method... should I put the subnodes in an Array? is it OK to use
     //static final ints as hardcoded indexes?
     int t = Pattern.getType(depth, pattern);
@@ -91,7 +92,7 @@ public class BranchNode extends PatternNode {
     }
     if (t == PatternNode.UNDERSCORE) {
       if (underscore == null) {
-        underscore = PatternNodeFactory.getInstance(depth, pattern);
+        underscore = patternNodeFactory.getInstance(depth, pattern);
       }
       result = underscore.add(depth, pattern);
       underscore = result.root;
@@ -100,7 +101,7 @@ public class BranchNode extends PatternNode {
     }
     if (t == PatternNode.STAR) {
       if (star == null) {
-        star = PatternNodeFactory.getInstance(depth, pattern);
+        star = patternNodeFactory.getInstance(depth, pattern);
       }
       result = star.add(depth, pattern);
       star = result.root;
@@ -109,7 +110,7 @@ public class BranchNode extends PatternNode {
     }
     if (t == PatternNode.STRING) {
       if (string == null) {
-        string = PatternNodeFactory.getInstance(depth, pattern);
+        string = patternNodeFactory.getInstance(depth, pattern);
       }
       result = string.add(depth, pattern);
       string = result.root;

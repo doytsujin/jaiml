@@ -17,8 +17,8 @@ package aiml.classifier.node;
 import java.util.ArrayList;
 
 /**
- * A factory class for pattern nodes. A call to <code>getInstance()</code>
- * will return an empty instance of a particular node type, able to handle the
+ * A factory class for pattern nodes. A call to <code>getInstance()</code> will
+ * return an empty instance of a particular node type, able to handle the
  * pattern at it's current depth. Node classes have to register themselves using
  * the <code>registerNode()</code> method and the <code>Creatable</code>
  * interface.
@@ -31,7 +31,7 @@ public class PatternNodeFactory {
    * A dynamic array of known node types. More precisely, a dynamic array of
    * Creatable instances that know how to create a specific node type
    */
-  private static ArrayList<Creatable> nodeTypes = new ArrayList<Creatable>();
+  private ArrayList<Creatable> nodeTypes = new ArrayList<Creatable>();
 
   /**
    * Do not create instances of PatternNodeFactory
@@ -39,13 +39,21 @@ public class PatternNodeFactory {
   private PatternNodeFactory() {
   }
 
+  private static class Holder {
+    private static final PatternNodeFactory factory = new PatternNodeFactory();
+  }
+
+  public static PatternNodeFactory getFactory() {
+    return Holder.factory;
+  }
+
   /**
    * Register a node type via the Creatable interface.
    * 
    * @param nodeType
-   *                an implementation of the Creatable interface
+   *          an implementation of the Creatable interface
    */
-  public static void registerNode(Creatable nodeType) {
+  public void registerNode(Creatable nodeType) {
     nodeTypes.add(nodeType);
   }
 
@@ -54,7 +62,7 @@ public class PatternNodeFactory {
    * 
    * @return the number of registered node types
    */
-  public static int getCount() {
+  public int getCount() {
     return nodeTypes.size();
   }
 
@@ -62,12 +70,12 @@ public class PatternNodeFactory {
    * Return an instance of a node class most appropriate for the pattern.
    * 
    * @param depth
-   *                the depth
+   *          the depth
    * @param pattern
-   *                the pattern
+   *          the pattern
    * @return an appropriate instance of PatternNode
    */
-  public static PatternNode getInstance(int depth, String pattern) {
+  public PatternNode getInstance(int depth, String pattern) {
     for (Creatable nodeType : nodeTypes) {
       if (nodeType.canCreate(depth, pattern)) {
         return nodeType.getInstance();
@@ -79,7 +87,7 @@ public class PatternNodeFactory {
   /**
    * Clears all information about node type handlers.
    */
-  public static void reset() {
+  public void reset() {
     nodeTypes.clear();
   }
 

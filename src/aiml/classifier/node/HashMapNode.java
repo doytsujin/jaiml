@@ -56,12 +56,13 @@ public class HashMapNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
     pattern = Pattern.normalize(pattern.substring(depth));
 
     PatternNode node = map.get(pattern);
     depth += pattern.length();
     if (node == null) {
-      node = PatternNodeFactory.getInstance(depth, pattern);
+      node = patternNodeFactory.getInstance(depth, pattern);
     }
     result = node.add(depth, pattern);
     map.put(pattern, result.root);
@@ -116,7 +117,8 @@ public class HashMapNode extends PatternNode {
    * Register this node type in PatternNodeFactory.
    */
   public static void register() {
-    PatternNodeFactory.registerNode(new Creatable() {
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (depth != pattern.length());
       }

@@ -65,6 +65,7 @@ public class WildcardNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
     if (depth == pattern.length()) {
       PatternNode node = new EndOfStringNode(this);
       result = node.add(depth, pattern);
@@ -84,7 +85,7 @@ public class WildcardNode extends PatternNode {
     }
 
     if (next == null) {
-      next = PatternNodeFactory.getInstance(depth, pattern);
+      next = patternNodeFactory.getInstance(depth, pattern);
     }
     result = next.add(depth, pattern);
     next = result.root;
@@ -131,7 +132,8 @@ public class WildcardNode extends PatternNode {
    * node types, one for the * and one for the _ wildcard.
    */
   public static void register() {
-    PatternNodeFactory.registerNode(new Creatable() {
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (Pattern.isStar(depth, pattern));
       }
@@ -141,7 +143,7 @@ public class WildcardNode extends PatternNode {
       }
 
     });
-    PatternNodeFactory.registerNode(new Creatable() {
+    patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (Pattern.isUnderscore(depth, pattern));
       }

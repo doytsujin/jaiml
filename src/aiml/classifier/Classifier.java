@@ -80,7 +80,7 @@ public class Classifier {
    * @throws DuplicatePathException
    */
   public void add(Path path, Object o) throws DuplicatePathException {
-    assert (PatternNodeFactory.getCount() > 0) : "You have to register node types";
+    assert (getPNF().getCount() > 0) : "You have to register node types";
     if (tree == null) {
       if (path.getLength() != 0) {
         tree = new PatternContextNode(path.iterator(), o);
@@ -92,6 +92,10 @@ public class Classifier {
     }
     count++; // this is OK, because if the path isn't added, an exception gets
     // thrown before we reach this
+  }
+
+  public PatternNodeFactory getPNF() {
+    return PatternNodeFactory.getFactory();
   }
 
   /**

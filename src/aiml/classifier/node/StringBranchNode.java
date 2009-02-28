@@ -66,6 +66,7 @@ public class StringBranchNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
     if (depth == pattern.length()) {
       PatternNode node = new EndOfStringNode(this);
       result = node.add(depth, pattern);
@@ -83,7 +84,7 @@ public class StringBranchNode extends PatternNode {
     PatternNode node = map.get(key);
     depth++;
     if (node == null) {
-      node = PatternNodeFactory.getInstance(depth, pattern);
+      node = patternNodeFactory.getInstance(depth, pattern);
     }
     result = node.add(depth, pattern);
     map.put(key, result.root);
@@ -120,7 +121,8 @@ public class StringBranchNode extends PatternNode {
    * Register this node type in PatternNodeFactory.
    */
   public static void register() {
-    PatternNodeFactory.registerNode(new Creatable() {
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
 
         return (depth != pattern.length() && pattern.length() > 0 && !Pattern.isWildcard(

@@ -107,7 +107,7 @@ public class PatternContextNode extends ContextNode {
     //add the pattern into the current tree.
     String s = pattern.getPattern();
     if (tree == null) {
-      tree = PatternNodeFactory.getInstance(0, s);
+      tree = PatternNodeFactory.getFactory().getInstance(0, s);
     }
     PatternNode.AddResult result = tree.add(0, s);
     assert (result.newDepth == s.length()) : "A pattern node tree has failed to add a pattern completely";

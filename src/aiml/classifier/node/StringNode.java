@@ -72,6 +72,7 @@ public class StringNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
     if (depth == pattern.length()) {
       PatternNode node = new EndOfStringNode(this);
       result = node.add(depth, pattern);
@@ -113,7 +114,7 @@ public class StringNode extends PatternNode {
         result = new AddResult(this, this, depth);
       } else { //we still have to add the rest of the pattern
         if (next == null) {
-          next = PatternNodeFactory.getInstance(depth, pattern);
+          next = patternNodeFactory.getInstance(depth, pattern);
         }
         result = next.add(depth, pattern);
         next = result.root;
@@ -211,7 +212,8 @@ public class StringNode extends PatternNode {
    * Register this node type in PatternNodeFactory.
    */
   public static void register() {
-    PatternNodeFactory.registerNode(new Creatable() {
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
 
         return (depth != pattern.length() && pattern.length() > 0 && !Pattern.isWildcard(

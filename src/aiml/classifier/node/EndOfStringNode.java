@@ -59,6 +59,7 @@ public class EndOfStringNode extends PatternNode {
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
     if (depth == pattern.length()) {
       //OK, we can "add" the end of the string;
       //System.out.println("AddEOS");
@@ -67,7 +68,7 @@ public class EndOfStringNode extends PatternNode {
     } else {
       //System.out.println("AddEOS.next");
       if (next == null) {
-        next = PatternNodeFactory.getInstance(depth, pattern);
+        next = patternNodeFactory.getInstance(depth, pattern);
       }
       AddResult result = next.add(depth, pattern);
       next = result.root;
@@ -106,7 +107,8 @@ public class EndOfStringNode extends PatternNode {
    * Register this node type in PatternNodeFactory.
    */
   public static void register() {
-    PatternNodeFactory.registerNode(new Creatable() {
+    PatternNodeFactory patternNodeFactory = PatternNodeFactory.getFactory();
+    patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (depth == pattern.length());
       }

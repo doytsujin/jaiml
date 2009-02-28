@@ -27,7 +27,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.bot.Bot;
 import aiml.classifier.Classifier;
-import aiml.classifier.node.PatternNodeFactory;
 import aiml.context.ContextInfo;
 import aiml.context.EnvironmentInputContext;
 import aiml.context.StringContext;
@@ -75,7 +74,7 @@ public class AIMLParserTest extends TestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     contextInfo.reset();
-    PatternNodeFactory.reset();
+    Classifier.getInstance().getPNF().reset();
     Classifier.getInstance().reset();
   }
 
