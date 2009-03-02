@@ -17,15 +17,17 @@ package aiml.script;
 import java.util.logging.Logger;
 
 import aiml.classifier.MatchState;
+import aiml.environment.Environment;
 
 public class SraiElement extends SimpleScriptElement {
 
   public String evaluate(MatchState m) {
 
     String newInput = content.evaluate(m);
-    m.getEnvironment().pushInput(newInput);
-    MatchState result = m.getEnvironment().getBot().match(m.getEnvironment());
-    m.getEnvironment().popInput();
+    Environment environment = m.getEnvironment();
+    environment.pushInput(newInput);
+    MatchState result = environment.match();
+    environment.popInput();
     if (result != null) {
       return ((aiml.script.Script) result.getResult()).evaluate(result);
     } else {

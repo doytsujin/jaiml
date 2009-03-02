@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import aiml.bot.Bot;
+import aiml.classifier.MatchState;
 
 /**
  * <p>
@@ -109,6 +110,13 @@ public class Environment {
 
   public String getVersion() {
     return "0.1.0";
+  }
+
+  /**
+   * @return
+   */
+  public MatchState match() {
+    return getBot().getClassifier().match(this);
   }
 
 }
