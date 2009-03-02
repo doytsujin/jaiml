@@ -32,6 +32,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.classifier.Classifier;
+import aiml.classifier.MatchState;
 import aiml.context.ContextInfo;
 import aiml.context.EnvironmentInputContext;
 import aiml.context.StringContext;
@@ -99,6 +100,10 @@ public class Bot {
    */
   public Classifier getClassifier() {
     return classifier;
+  }
+
+  public MatchState match(Environment e) {
+    return classifier.match(e);
   }
 
   public String applySubstitutions(String list, String text)
@@ -394,4 +399,5 @@ public class Bot {
     }
     return result;
   }
+
 }

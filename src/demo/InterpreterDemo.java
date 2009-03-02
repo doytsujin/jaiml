@@ -71,7 +71,7 @@ public class InterpreterDemo {
       } else {
         for (String input : b.preprocessInput(line)) {
           e.pushInput(input);
-          MatchState<Script> m = classifier.match(e);
+          MatchState<Script> m = b.match(e);
           if (m != null) {
             System.out.println(Formatter.collapseWhitespace(m.getResult().evaluate(
                 m)));
