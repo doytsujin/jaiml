@@ -43,21 +43,11 @@ public class Classifier {
   private int count = 0;
 
   /**
-   * Creates an instance of the aiml matcher. Since this class is meant to be
-   * static, it's hidden. More robust techniques for making it a singleton might
-   * be used in the future.
+   * Creates an instance of the aiml matcher.
    */
-  private Classifier() {
+  public Classifier() {
     patternNodeFactory = new PatternNodeFactory();
 
-  }
-
-  private static class Holder {
-    private static final Classifier classifier = new Classifier();
-  }
-
-  public static Classifier getInstance() {
-    return Holder.classifier;
   }
 
   /**
@@ -110,24 +100,6 @@ public class Classifier {
    */
   public int getCount() {
     return count;
-  }
-
-  /**
-   * <p>
-   * Resets the whole matching tree. This is usefull when the order of contexts
-   * needs to be changed, because this invalidates the whole data structure.
-   * </p>
-   * <p>
-   * This must follow after resetting the ContextInfo structure, but can be used
-   * as a stand-alone method to remove all patterns from the matching tree.
-   * </p>
-   * 
-   * @see aiml.context.ContextInfo#reset()
-   */
-  public void reset() {
-    patternNodeFactory = new PatternNodeFactory();
-    tree = null;
-    count = 0;
   }
 
   /**

@@ -46,7 +46,7 @@ public class AIMLParserTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    classifier = Classifier.getInstance();
+    classifier = new Classifier();
 
     b = new Bot(classifier, "foobar");
     b.setProperty("name", "foobar");
@@ -77,7 +77,6 @@ public class AIMLParserTest extends TestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     contextInfo.reset();
-    classifier.reset();
   }
 
   private void loadFail(Reader in, Class<? extends Exception> exception)

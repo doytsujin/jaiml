@@ -51,7 +51,7 @@ public class InterpreterDemo {
       }
     }
 
-    Classifier classifier = Classifier.getInstance();
+    Classifier classifier = new Classifier();
 
     classifier.registerDefaultNodeHandlers();
     Bot b = new Bot(classifier);
