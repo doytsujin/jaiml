@@ -33,7 +33,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.bot.Bot;
 import aiml.bot.InvalidPropertyException;
-import aiml.classifier.Classifier;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
@@ -161,7 +160,7 @@ public class AIMLParser {
     Script s = doTemplate();
     parser.require(XmlPullParser.END_TAG, "category");
     try {
-      Classifier.getInstance().add(currentPath, s);
+      bot.getClassifier().add(currentPath, s);
       log.info("added category " + currentPath + "{" + s + "}");
     } catch (DuplicatePathException e) {
       log.warning("Duplicate category " + currentPath + " " +

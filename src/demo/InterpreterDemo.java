@@ -54,7 +54,7 @@ public class InterpreterDemo {
     Classifier classifier = Classifier.getInstance();
 
     classifier.registerDefaultNodeHandlers();
-    Bot b = new Bot();
+    Bot b = new Bot(classifier);
     System.out.println("Loading bot...");
     // b.setProperty("name","Really Complicated");
     b.load(args[0]);

@@ -14,13 +14,12 @@
 
 package aiml.script;
 
-import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 
 public class SizeElement extends EmptyElement {
 
   public String evaluate(MatchState m) {
-    return String.valueOf(Classifier.getInstance().getCount());
+    return String.valueOf(m.getEnvironment().getBot().getClassifier().getCount());
   }
 
   public String toString() {

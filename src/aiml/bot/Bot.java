@@ -31,6 +31,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import aiml.classifier.Classifier;
 import aiml.context.ContextInfo;
 import aiml.context.EnvironmentInputContext;
 import aiml.context.StringContext;
@@ -56,17 +57,20 @@ public class Bot {
 
   private CheckingParser parser;
   private SentenceSplitter sentenceSplitter;
+  private Classifier classifier;
   public static final String UNKNOWN_PROPERTY = "";
 
-  public Bot() throws XmlPullParserException {
+  public Bot(Classifier classifier) throws XmlPullParserException {
     super();
     parser = new CheckingParser(
         XmlPullParserFactory.newInstance().newPullParser(),
         BotSyntaxException.class);
+    this.classifier = classifier;
   }
 
-  public Bot(String name) throws XmlPullParserException, AimlParserException {
-    this();
+  public Bot(Classifier classifier, String name) throws XmlPullParserException,
+      AimlParserException {
+    this(classifier);
     this.name = name;
   }
 
@@ -88,6 +92,13 @@ public class Bot {
 
   public String getName() {
     return name;
+  }
+
+  /**
+   * @return the classifier
+   */
+  public Classifier getClassifier() {
+    return classifier;
   }
 
   public String applySubstitutions(String list, String text)
@@ -383,5 +394,4 @@ public class Bot {
     }
     return result;
   }
-
 }

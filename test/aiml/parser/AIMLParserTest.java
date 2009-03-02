@@ -33,6 +33,7 @@ import aiml.context.StringContext;
 
 public class AIMLParserTest extends TestCase {
 
+  private Classifier classifier;
   private AIMLParser ap;
   private Bot b;
   private ContextInfo contextInfo;
@@ -45,7 +46,9 @@ public class AIMLParserTest extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    b = new Bot("foobar");
+    classifier = Classifier.getInstance();
+
+    b = new Bot(classifier, "foobar");
     b.setProperty("name", "foobar");
     b.setProperty("baz", "bar");
 
@@ -67,14 +70,14 @@ public class AIMLParserTest extends TestCase {
     contextInfo.registerContext(new StringContext("ni"));
     contextInfo.registerContext(new StringContext("san"));
 
-    Classifier.getInstance().registerDefaultNodeHandlers();
+    classifier.registerDefaultNodeHandlers();
   }
 
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
     contextInfo.reset();
-    Classifier.getInstance().reset();
+    classifier.reset();
   }
 
   private void loadFail(Reader in, Class<? extends Exception> exception)
