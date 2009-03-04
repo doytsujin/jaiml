@@ -292,7 +292,8 @@ public class MatchState<T extends Object> {
       wc.growRest();
       return wc;
     }
-    throw new InvalidWildcardReferenceException(context, index);
+    throw new InvalidWildcardReferenceException(
+        contextInfo.getContext(context), index);
   }
 
   /**

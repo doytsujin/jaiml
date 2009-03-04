@@ -13,7 +13,7 @@
 */
 package aiml.classifier;
 
-import aiml.context.ContextInfo;
+import aiml.context.Context;
 
 /**
  * This exception gets raised whenever a template script requests a value for a
@@ -24,9 +24,8 @@ import aiml.context.ContextInfo;
  */
 public class InvalidWildcardReferenceException extends Exception {
 
-  public InvalidWildcardReferenceException(int context, int wildcadIndex) {
-    super("Invalid wildcard reference: context \"" +
-        ContextInfo.getInstance().getContext(context).getName() +
+  public InvalidWildcardReferenceException(Context context, int wildcadIndex) {
+    super("Invalid wildcard reference: context \"" + context.getName() +
         "\" does not have a wildcard with the index " + wildcadIndex +
         " bound for the current match");
   }
