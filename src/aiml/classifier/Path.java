@@ -61,7 +61,7 @@ public class Path {
   /** An internal stack of previous path states (used for loading) */
   private LinkedList<LinkedList<Pattern>> historyStack = new LinkedList<LinkedList<Pattern>>();
 
-  private ContextInfo contextInfo = ContextInfo.getInstance();
+  private ContextInfo contextInfo;
 
   /**
    * A wrapper for a context pattern.
@@ -122,8 +122,12 @@ public class Path {
    * The default constructor that creates a new empty path. Other overloaded
    * constructors are not provided, because in real-world situations the path
    * will be built incrementally as the <context> tags will be read.
+   * 
+   * @param contextInfo
+   *          TODO
    */
-  public Path() {
+  public Path(ContextInfo contextInfo) {
+    this.contextInfo = contextInfo;
   }
 
   /**

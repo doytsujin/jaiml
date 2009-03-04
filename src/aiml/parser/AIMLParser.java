@@ -36,6 +36,7 @@ import aiml.bot.InvalidPropertyException;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
 import aiml.classifier.Path;
+import aiml.context.ContextInfo;
 import aiml.script.Block;
 import aiml.script.Formatter;
 import aiml.script.Script;
@@ -66,7 +67,7 @@ public class AIMLParser {
               parser.getPositionDescription());
 
     parser.nextTag();
-    currentPath = new Path();
+    currentPath = new Path(ContextInfo.getInstance());
     doCategoryList();
     parser.require(XmlPullParser.END_TAG, "aiml");
     parser.next();
