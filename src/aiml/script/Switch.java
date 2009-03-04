@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -72,8 +73,8 @@ public class Switch implements Script {
     this.name = name;
   }
 
-  private void parseCase(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  private void parseCase(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     if (!(parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals(
         "li")))
       throw new AimlSyntaxException(
@@ -91,13 +92,13 @@ public class Switch implements Script {
     }
     String value = parser.getAttributeValue(null, "value");
     if (value == null) {
-      defaultCase = new Block().parse(parser);
+      defaultCase = new Block().parse(parser, classifier);
     } else {
       if (cases.containsKey(value))
         throw new AimlSyntaxException("Syntax error: duplicate case " + name +
             "==\"" + value + "\" in switch type condition " +
             parser.getPositionDescription());
-      cases.put(value, new Block().parse(parser));
+      cases.put(value, new Block().parse(parser, classifier));
     }
     if (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
         "li")))
@@ -107,11 +108,11 @@ public class Switch implements Script {
     parser.nextTag();
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  public Script parse(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     parser.nextTag();
     do {
-      parseCase(parser);
+      parseCase(parser, classifier);
     } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
         "condition")));
     if (cases.size() == 1 && defaultCase == null) {

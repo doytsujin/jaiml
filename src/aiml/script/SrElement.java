@@ -19,16 +19,17 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.context.ContextInfo;
 import aiml.parser.AimlParserException;
 
 public class SrElement extends EmptyElement {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
 
-    super.parse(parser);
+    super.parse(parser, classifier);
     StarElement star = new StarElement(ContextInfo.getInstance().getContext(
         "input").getOrder(), 1);
     SraiElement srai = new SraiElement();

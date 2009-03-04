@@ -19,13 +19,14 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.parser.AimlParserException;
 
 public abstract class NonEmptyElement extends SimpleScriptElement {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
-    super.parse(parser);
+    super.parse(parser, classifier);
     if (content instanceof EmptyScript)
       return content;
     else

@@ -19,12 +19,13 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
 public abstract class EmptyElement implements Script {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     if (!parser.isEmptyElementTag())
       throw new AimlSyntaxException("Syntax error while parsing " +

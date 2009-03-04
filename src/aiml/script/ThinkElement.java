@@ -19,16 +19,17 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
 public class ThinkElement extends NonEmptyElement {
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     String name = parser.getName();
-    content = new ElementBlock().parse(parser);
+    content = new ElementBlock().parse(parser, classifier);
     if (parser.getEventType() == XmlPullParser.END_TAG &&
         parser.getName().equals(name)) {
       parser.next();

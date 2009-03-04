@@ -19,6 +19,7 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 
@@ -48,7 +49,7 @@ public class OtherElement extends SimpleScriptElement {
     return attValue.replace("\"", "&quot;");
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     StringBuffer b = new StringBuffer();
     // First recreate the tag with all it's attributes
@@ -68,7 +69,7 @@ public class OtherElement extends SimpleScriptElement {
 
       String ETag = "</" + parser.getName() + ">";
       // Parse the contents of this element
-      super.parse(parser);
+      super.parse(parser, classifier);
       if (content instanceof EmptyScript) {
         return new TextElement(b.append(ETag).toString());
       } else {

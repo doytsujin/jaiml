@@ -19,19 +19,20 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.parser.AimlParserException;
 
 public class ElementBlock extends Block {
 
   @Override
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  public Script parse(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     blockName = parser.getName();
     Script lastScript;
     parser.next();
     while (!((parser.getEventType() == XmlPullParser.END_TAG) && parser.getName().equals(
         blockName))) {
-      lastScript = ElementParserFactory.getElementParser(parser);
+      lastScript = ElementParserFactory.getElementParser(parser, classifier);
       if (!(lastScript instanceof EmptyScript || lastScript instanceof TextElement))
         items.add(lastScript);
     }

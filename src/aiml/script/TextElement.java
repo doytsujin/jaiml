@@ -19,6 +19,7 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 
 public class TextElement implements Script {
@@ -33,7 +34,7 @@ public class TextElement implements Script {
     this.text = text;
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException {
     text = parser.getText();
     parser.next();

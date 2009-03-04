@@ -19,6 +19,7 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
@@ -26,10 +27,10 @@ public abstract class SimpleScriptElement implements Script {
 
   protected Script content;
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     String name = parser.getName();
-    content = new Block().parse(parser);
+    content = new Block().parse(parser, classifier);
     if (parser.getEventType() == XmlPullParser.END_TAG &&
         parser.getName().equals(name)) {
       parser.next();

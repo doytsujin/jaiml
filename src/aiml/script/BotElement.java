@@ -22,6 +22,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.bot.Bot;
 import aiml.bot.InvalidPropertyException;
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -29,14 +30,14 @@ import aiml.parser.AimlSyntaxException;
 public class BotElement extends EmptyElement {
   private String name;
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     name = parser.getAttributeValue(null, "name");
     if (name == null)
       throw new AimlSyntaxException(
           "Syntax error: mandatory attribute 'name' missing from element '" +
               parser.getName() + "' " + parser.getPositionDescription());
-    return super.parse(parser);
+    return super.parse(parser, classifier);
   }
 
   public String evaluate(MatchState m) {

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.parser.AimlParserException;
 
 public class ElementParserFactory {
@@ -70,22 +71,24 @@ public class ElementParserFactory {
     text = c;
   }
 
-  public static Script getElementParser(XmlPullParser parser)
-      throws XmlPullParserException, AimlParserException, IOException {
+  public static Script getElementParser(XmlPullParser parser,
+      Classifier classifier) throws XmlPullParserException,
+      AimlParserException, IOException {
     try {
       switch (parser.getEventType()) {
       case XmlPullParser.TEXT:
         if (text != null) {
-          return text.newInstance().parse(parser);
+          return text.newInstance().parse(parser, classifier);
         } else
           throw new NullPointerException("Cannot handle text events " +
               parser.getPositionDescription());
       case XmlPullParser.START_TAG:
         if (elements.containsKey(parser.getName())) {
-          return elements.get(parser.getName()).newInstance().parse(parser);
+          return elements.get(parser.getName()).newInstance().parse(parser,
+              classifier);
         }
         if (defaultElementHandler != null)
-          return defaultElementHandler.newInstance().parse(parser);
+          return defaultElementHandler.newInstance().parse(parser, classifier);
         /* fall through */
       default:
         throw new AimlParserException("Unexpected " +

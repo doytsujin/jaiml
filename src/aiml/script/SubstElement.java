@@ -21,6 +21,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.bot.InvalidSubstitutionException;
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -28,7 +29,7 @@ import aiml.parser.AimlSyntaxException;
 public class SubstElement extends NonEmptyElement {
   private String type;
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     type = parser.getName();
     if (type.equals("subst")) {
@@ -38,7 +39,7 @@ public class SubstElement extends NonEmptyElement {
             "Syntax error: mandatory attribute 'name' for 'subst' element missing");
       }
     }
-    return super.parse(parser);
+    return super.parse(parser, classifier);
   }
 
   public String evaluate(MatchState m) {

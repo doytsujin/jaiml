@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 
@@ -27,14 +28,14 @@ public class Block implements Script {
   String blockName;
   ArrayList<Script> items = new ArrayList<Script>();
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  public Script parse(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     blockName = parser.getName();
     Script lastScript;
     parser.next();
     while (!((parser.getEventType() == XmlPullParser.END_TAG) && parser.getName().equals(
         blockName))) {
-      lastScript = ElementParserFactory.getElementParser(parser);
+      lastScript = ElementParserFactory.getElementParser(parser, classifier);
       if (!(lastScript instanceof EmptyScript))
         items.add(lastScript);
     }

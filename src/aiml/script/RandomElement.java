@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -31,14 +32,14 @@ public class RandomElement implements Script {
   private ArrayList<Script> items = new ArrayList<Script>();
   private final Random random = new Random();
 
-  private void parseItem(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  private void parseItem(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     if (!(parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals(
         "li")))
       throw new AimlSyntaxException(
           "Syntax error: expecting start tag 'li' while parsing 'random' " +
               parser.getPositionDescription());
-    items.add(new Block().parse(parser));
+    items.add(new Block().parse(parser, classifier));
     if (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
         "li")))
       throw new AimlSyntaxException(
@@ -47,11 +48,11 @@ public class RandomElement implements Script {
     parser.nextTag();
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  public Script parse(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     parser.nextTag();
     do {
-      parseItem(parser);
+      parseItem(parser, classifier);
     } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
         "random")));
     if (items.size() == 1) {

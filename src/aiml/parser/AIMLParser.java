@@ -174,7 +174,7 @@ public class AIMLParser {
       AimlParserException {
     parser.require(XmlPullParser.START_TAG, "template");
     Script s = new Block();
-    s = s.parse(parser);
+    s = s.parse(parser, bot.getClassifier());
     parser.require(XmlPullParser.END_TAG, "template");
     parser.nextTag();
     return s;

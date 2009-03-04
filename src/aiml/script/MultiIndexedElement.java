@@ -19,6 +19,7 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
@@ -27,7 +28,7 @@ public abstract class MultiIndexedElement extends EmptyElement {
   protected int i1;
   protected int i2;
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     String indexAttribute = parser.getAttributeValue(null, "index");
     if (indexAttribute == null) {
@@ -54,7 +55,7 @@ public abstract class MultiIndexedElement extends EmptyElement {
         i2 = 1;
     }
 
-    return super.parse(parser);
+    return super.parse(parser, classifier);
   }
 
 }

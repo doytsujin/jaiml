@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.InvalidWildcardReferenceException;
 import aiml.classifier.MatchState;
 import aiml.context.ContextInfo;
@@ -43,7 +44,7 @@ public class StarElement extends EmptyElement {
     this.index = index;
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
+  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
       IOException, AimlParserException {
     String type = parser.getName();
     String contextName = parser.getAttributeValue(null, "context");
@@ -82,7 +83,7 @@ public class StarElement extends EmptyElement {
                 parser.getPositionDescription(), e);
       }
 
-    return super.parse(parser);
+    return super.parse(parser, classifier);
   }
 
   public String evaluate(MatchState m) {

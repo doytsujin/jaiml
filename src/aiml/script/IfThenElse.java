@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
@@ -35,7 +36,7 @@ import aiml.parser.AimlSyntaxException;
  *      &lt;li name=&quot;varA&quot; value=&quot;A&quot;&gt;true if (varA==&quot;A&quot;)&lt;/li&gt;&lt;!--else--&gt;
  *      &lt;li name=&quot;varB&quot; value=&quot;B&quot;&gt;true if (varB==&quot;B&quot;)&lt;/li&gt;&lt;!--else--&gt;
  *      &lt;li name=&quot;varC&quot; value=&quot;C&quot;&gt;true if (varC==&quot;C&quot;)&lt;/li&gt;
- *   &lt;/condition&gt;   
+ *   &lt;/condition&gt;
  * </pre>
  * 
  * <p>
@@ -46,7 +47,7 @@ import aiml.parser.AimlSyntaxException;
  *   &lt;condition&gt;
  *      &lt;li name=&quot;varA&quot; value=&quot;&quot;&gt;Variable A is not set&lt;/li&gt;      
  *      &lt;li&gt;Variable A is set&lt;/li&gt;
- *   &lt;/condition&gt;   
+ *   &lt;/condition&gt;
  * </pre>
  * 
  * <p>
@@ -92,8 +93,8 @@ public class IfThenElse implements Script {
   ArrayList<Entry> conditions = new ArrayList<Entry>();
   Script defaultBlock;
 
-  private void parseEntry(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  private void parseEntry(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     if (!(parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals(
         "li")))
       throw new AimlSyntaxException(
@@ -108,9 +109,10 @@ public class IfThenElse implements Script {
     String name = parser.getAttributeValue(null, "name");
     String value = parser.getAttributeValue(null, "value");
     if (value == null && name == null) {
-      defaultBlock = new Block().parse(parser);
+      defaultBlock = new Block().parse(parser, classifier);
     } else if (value != null && name != null) {
-      conditions.add(new Entry(name, value, new Block().parse(parser)));
+      conditions.add(new Entry(name, value, new Block().parse(parser,
+          classifier)));
     } else {
       throw new AimlSyntaxException(
           "Syntax error, both name and value attributes must be present in if-else condition " +
@@ -125,11 +127,11 @@ public class IfThenElse implements Script {
     parser.nextTag();
   }
 
-  public Script parse(XmlPullParser parser) throws XmlPullParserException,
-      IOException, AimlParserException {
+  public Script parse(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     parser.nextTag();
     do {
-      parseEntry(parser);
+      parseEntry(parser, classifier);
     } while (!(parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(
         "condition")));
 
