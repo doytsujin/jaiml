@@ -52,18 +52,18 @@ public class MatchState<T extends Object> {
   /** The current depth in the context */
   public int depth;
 
-  ContextInfo contextInfo = ContextInfo.getInstance();
+  final ContextInfo contextInfo;
 
   /**
    * An array of Strings that represent the individual state of the context
    * variables during matching.
    */
-  String contextValues[] = new String[contextInfo.getCount()];
+  String contextValues[];
 
   /**
    * An array of lists, each list represents wildcards from a context
    */
-  List<Wildcard> wildcards[] = new List[contextInfo.getCount()];
+  List<Wildcard> wildcards[];
 
   /**
    * This contains the result of the matching.
@@ -185,6 +185,9 @@ public class MatchState<T extends Object> {
    */
   public MatchState(Environment e) {
     this.e = e;
+    contextInfo = ContextInfo.getInstance();
+    contextValues = new String[contextInfo.getCount()];
+    wildcards = new List[contextInfo.getCount()];
     if (contextInfo.getCount() <= 0) {
       throw new NoContextPresentException();
     }
