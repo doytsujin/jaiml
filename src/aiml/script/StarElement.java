@@ -33,8 +33,6 @@ public class StarElement extends EmptyElement {
   private Context context;
   private int index;
 
-  private ContextInfo contextInfo = ContextInfo.getInstance();
-
   public StarElement() {
     super();
   }
@@ -49,6 +47,7 @@ public class StarElement extends EmptyElement {
       throws XmlPullParserException, IOException, AimlParserException {
     String type = parser.getName();
     String contextName = parser.getAttributeValue(null, "context");
+    ContextInfo contextInfo = ContextInfo.getInstance();
     try {
       if (type.equals("thatstar") && contextName == null) {
         context = contextInfo.getContext("that");
