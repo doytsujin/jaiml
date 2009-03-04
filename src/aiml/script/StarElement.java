@@ -23,13 +23,14 @@ import org.xmlpull.v1.XmlPullParserException;
 import aiml.classifier.Classifier;
 import aiml.classifier.InvalidWildcardReferenceException;
 import aiml.classifier.MatchState;
+import aiml.context.Context;
 import aiml.context.ContextInfo;
 import aiml.context.UnknownContextException;
 import aiml.parser.AimlParserException;
 import aiml.parser.AimlSyntaxException;
 
 public class StarElement extends EmptyElement {
-  private int context;
+  private Context context;
   private int index;
 
   private ContextInfo contextInfo = ContextInfo.getInstance();
@@ -38,26 +39,26 @@ public class StarElement extends EmptyElement {
     super();
   }
 
-  public StarElement(int context, int index) {
+  public StarElement(Context context, int index) {
     this();
     this.context = context;
     this.index = index;
   }
 
-  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
-      IOException, AimlParserException {
+  public Script parse(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
     String type = parser.getName();
     String contextName = parser.getAttributeValue(null, "context");
     try {
       if (type.equals("thatstar") && contextName == null) {
-        context = contextInfo.getContext("that").getOrder();
+        context = contextInfo.getContext("that");
       } else if (type.equals("topicstar") && contextName == null) {
-        context = contextInfo.getContext("topic").getOrder();
+        context = contextInfo.getContext("topic");
       } else if (type.equals("star")) {
         if (contextName == null)
-          context = contextInfo.getContext("input").getOrder();
+          context = contextInfo.getContext("input");
         else
-          context = contextInfo.getContext(contextName).getOrder();
+          context = contextInfo.getContext(contextName);
       } else {
         throw new AimlSyntaxException("Syntax error: wildcard reference tag " +
             type + "may not contain a reference to a context " +
@@ -88,7 +89,7 @@ public class StarElement extends EmptyElement {
 
   public String evaluate(MatchState m) {
     try {
-      return m.getWildcard(context, index).getValue();
+      return m.getWildcard(context.getOrder(), index).getValue();
     } catch (InvalidWildcardReferenceException e) {
       Logger.getLogger(StarElement.class.getName()).severe(e.getMessage());
       return "";
@@ -96,8 +97,7 @@ public class StarElement extends EmptyElement {
   }
 
   public String toString() {
-    return "star[" + contextInfo.getContext(context).getName() + "," + index +
-        "]";
+    return "star[" + context.getName() + "," + index + "]";
   }
 
 }

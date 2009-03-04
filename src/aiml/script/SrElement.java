@@ -26,12 +26,12 @@ import aiml.parser.AimlParserException;
 
 public class SrElement extends EmptyElement {
 
-  public Script parse(XmlPullParser parser, Classifier classifier) throws XmlPullParserException,
-      IOException, AimlParserException {
+  public Script parse(XmlPullParser parser, Classifier classifier)
+      throws XmlPullParserException, IOException, AimlParserException {
 
     super.parse(parser, classifier);
     StarElement star = new StarElement(ContextInfo.getInstance().getContext(
-        "input").getOrder(), 1);
+        "input"), 1);
     SraiElement srai = new SraiElement();
     srai.content = star;
 
