@@ -19,6 +19,7 @@ import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
 import aiml.classifier.node.WildcardNode;
+import aiml.context.ContextInfo;
 import aiml.environment.Environment;
 
 /**
@@ -39,6 +40,9 @@ public class Classifier {
   /** The factory that creates pattern nodes */
   private PatternNodeFactory patternNodeFactory;
 
+  /** Information about context set up */
+  private ContextInfo contextInfo;
+
   /** The number of paths in the tree */
   private int count = 0;
 
@@ -47,7 +51,7 @@ public class Classifier {
    */
   public Classifier() {
     patternNodeFactory = new PatternNodeFactory();
-
+    contextInfo = new ContextInfo();
   }
 
   /**
@@ -91,6 +95,10 @@ public class Classifier {
 
   public PatternNodeFactory getPNF() {
     return patternNodeFactory;
+  }
+
+  public ContextInfo getContextInfo() {
+    return contextInfo;
   }
 
   /**

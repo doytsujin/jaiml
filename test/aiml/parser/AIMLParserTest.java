@@ -53,7 +53,7 @@ public class AIMLParserTest extends TestCase {
     b.setProperty("baz", "bar");
 
     ap = new AIMLParser(b);
-    contextInfo = ContextInfo.getInstance();
+    contextInfo = classifier.getContextInfo();
     contextInfo.registerContext(new EnvironmentInputContext("input"));
     contextInfo.registerContext(new StringContext("that"));
     contextInfo.registerContext(new StringContext("topic"));

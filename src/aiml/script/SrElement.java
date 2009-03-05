@@ -21,7 +21,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
-import aiml.context.ContextInfo;
 import aiml.parser.AimlParserException;
 
 public class SrElement extends EmptyElement {
@@ -30,7 +29,7 @@ public class SrElement extends EmptyElement {
       throws XmlPullParserException, IOException, AimlParserException {
 
     super.parse(parser, classifier);
-    StarElement star = new StarElement(ContextInfo.getInstance().getContext(
+    StarElement star = new StarElement(classifier.getContextInfo().getContext(
         "input"), 1);
     SraiElement srai = new SraiElement();
     srai.content = star;

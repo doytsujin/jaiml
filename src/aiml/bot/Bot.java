@@ -178,7 +178,7 @@ public class Bot {
       doContexts();
     } else {
       // TODO provide actual implementations of topics...
-      ContextInfo contextInfo = ContextInfo.getInstance();
+      ContextInfo contextInfo = classifier.getContextInfo();
       contextInfo.registerContext(new EnvironmentInputContext("input"));
       contextInfo.registerContext(new StringContext("that", "dummy that"));
       contextInfo.registerContext(new StringContext("topic", "dummy topic"));

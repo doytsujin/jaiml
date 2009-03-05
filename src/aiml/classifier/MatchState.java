@@ -52,8 +52,6 @@ public class MatchState<T extends Object> {
   /** The current depth in the context */
   public int depth;
 
-  final ContextInfo contextInfo;
-
   /**
    * An array of Strings that represent the individual state of the context
    * variables during matching.
@@ -185,10 +183,9 @@ public class MatchState<T extends Object> {
    */
   public MatchState(Environment e) {
     this.e = e;
-    contextInfo = ContextInfo.getInstance();
-    contextValues = new String[contextInfo.getCount()];
-    wildcards = new List[contextInfo.getCount()];
-    if (contextInfo.getCount() <= 0) {
+    contextValues = new String[getContextInfo().getCount()];
+    wildcards = new List[getContextInfo().getCount()];
+    if (getContextInfo().getCount() <= 0) {
       throw new NoContextPresentException();
     }
     initializeContexts(e);
@@ -204,8 +201,8 @@ public class MatchState<T extends Object> {
    * @param e
    */
   private void initializeContexts(Environment e) {
-    for (int i = 0; i < contextInfo.getCount(); i++)
-      contextValues[i] = contextInfo.getContext(i).getValue(e);
+    for (int i = 0; i < getContextInfo().getCount(); i++)
+      contextValues[i] = getContextInfo().getContext(i).getValue(e);
   }
 
   /**
@@ -295,8 +292,8 @@ public class MatchState<T extends Object> {
       wc.growRest();
       return wc;
     }
-    throw new InvalidWildcardReferenceException(
-        contextInfo.getContext(context), index);
+    throw new InvalidWildcardReferenceException(getContextInfo().getContext(
+        context), index);
   }
 
   /**
@@ -394,6 +391,10 @@ public class MatchState<T extends Object> {
 
   public Environment getEnvironment() {
     return e;
+  }
+
+  private ContextInfo getContextInfo() {
+    return e.getBot().getClassifier().getContextInfo();
   }
 
 }

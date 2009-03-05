@@ -56,15 +56,7 @@ public class ContextInfo {
    * create ContextInfo objects. It is possible that future implementations will
    * use a more robust mechanism.
    */
-  private ContextInfo() {
-  }
-
-  private static class Holder {
-    private static final ContextInfo contextInfo = new ContextInfo();
-  }
-
-  public static ContextInfo getInstance() {
-    return Holder.contextInfo;
+  public ContextInfo() {
   }
 
   /**
