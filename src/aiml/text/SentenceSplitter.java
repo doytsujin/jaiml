@@ -14,31 +14,9 @@
 
 package aiml.text;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
-import com.ibm.icu.text.BreakIterator;
-import com.ibm.icu.text.RuleBasedBreakIterator;
-
-public class SentenceSplitter {
-  BreakIterator sentenceIterator;
-
-  public SentenceSplitter() {
-    sentenceIterator = BreakIterator.getSentenceInstance();
-  }
-
-  public SentenceSplitter(String rules) {
-    sentenceIterator = new RuleBasedBreakIterator(rules);
-  }
-
-  public List<String> split(String text) {
-    ArrayList<String> result = new ArrayList<String>();
-    sentenceIterator.setText(text);
-    int start = sentenceIterator.first();
-    for (int end = sentenceIterator.next(); end != BreakIterator.DONE; start = end, end = sentenceIterator.next()) {
-      result.add(text.substring(start, end));
-    }
-
-    return result;
-  }
+public interface SentenceSplitter {
+  public List<String> split(String text);
 }

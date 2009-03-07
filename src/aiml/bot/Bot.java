@@ -42,6 +42,7 @@ import aiml.parser.CheckingParser;
 import aiml.script.Formatter;
 import aiml.substitutions.DuplicateSubstitutionException;
 import aiml.substitutions.Substitutions;
+import aiml.text.ICUSentenceSplitter;
 import aiml.text.SentenceSplitter;
 
 public class Bot {
@@ -186,7 +187,7 @@ public class Bot {
 
     if (sentenceSplitter == null) {
       logger.info("No explicit sentence splitting rules defined, using default sentence splitter");
-      sentenceSplitter = new SentenceSplitter();
+      sentenceSplitter = new ICUSentenceSplitter();
     }
 
     doLearn();
@@ -276,7 +277,7 @@ public class Bot {
     }
 
     if (rules != null) {
-      sentenceSplitter = new SentenceSplitter(rules);
+      sentenceSplitter = new ICUSentenceSplitter(rules);
     }
     parser.require(XmlPullParser.END_TAG, "sentence-splitters");
     parser.nextTag();
