@@ -212,7 +212,7 @@ public class MatchState<T extends Object> {
    *          The new context
    */
   public void addContext(int context) {
-    contextStack.addLast(new Integer(this.context));
+    contextStack.addLast(this.context);
     this.context = context;
     depth = 0;
   }

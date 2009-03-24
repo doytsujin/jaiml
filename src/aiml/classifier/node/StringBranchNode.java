@@ -52,8 +52,7 @@ public class StringBranchNode extends PatternNode {
     super(parent);
     type = PatternNode.STRING;
     char c = node.getPattern().charAt(0); //this is safe, because a stringnode always represents at least 1 character
-    Character key = new Character(c);
-    map.put(key, node.removePrefix(1));
+    map.put(c, node.removePrefix(1));
 
   }
 
@@ -83,15 +82,13 @@ public class StringBranchNode extends PatternNode {
     }
 
     char c = Pattern.normalize(pattern.charAt(depth));
-    Character key = new Character(c);
-
-    PatternNode node = map.get(key);
+    PatternNode node = map.get(c);
     depth++;
     if (node == null) {
       node = patternNodeFactory.getInstance(parentContext, depth, pattern);
     }
     result = node.add(depth, pattern);
-    map.put(key, result.root);
+    map.put(c, result.root);
     result.root = this;
     return result;
 
@@ -105,7 +102,7 @@ public class StringBranchNode extends PatternNode {
     } catch (StringIndexOutOfBoundsException e) {
       return false; //the current context is an empty string
     }
-    PatternNode node = map.get(new Character(c));
+    PatternNode node = map.get(c);
     //match is "done" check result:
     if (node != null) {
       match.depth++;
