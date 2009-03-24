@@ -26,7 +26,7 @@ public class DuplicateSubstitutionException extends Exception {
   public DuplicateSubstitutionException(String pattern, String replacement) {
     super(
         String.format(
-            "Substitution map already contains the replacement \"$s\" for the pattern \"%s\"",
+            "Substitution map already contains the replacement \"%s\" for the pattern \"%s\"",
             replacement, pattern));
   }
 
