@@ -103,19 +103,6 @@ public abstract class Context implements Comparable {
   }
 
   /**
-   * Indicates wether two contexts are equal
-   * 
-   * @param c
-   *                Object
-   * @return <code>true</code> if both contexts have the same name and order;
-   *         <code>false</code> otherwise
-   */
-  public boolean equals(Object c) {
-    return (c instanceof Context) && (((Context) c).getName() == name) &&
-        (((Context) c).getOrder() == order);
-  }
-
-  /**
    * Get the value currently associated with the context in the specified
    * environment. This method must be overriden in inherited classes to provide
    * meaningfull behaviour.
@@ -123,4 +110,38 @@ public abstract class Context implements Comparable {
    * @return The value currently associated with the context.
    */
   public abstract String getValue(Environment e);
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + order;
+    return result;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (!(obj instanceof Context))
+      return false;
+    Context other = (Context) obj;
+    if (name == null) {
+      if (other.name != null)
+        return false;
+    } else if (!name.equals(other.name))
+      return false;
+    if (order != other.order)
+      return false;
+    return true;
+  }
 }
