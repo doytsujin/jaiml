@@ -99,7 +99,7 @@ public abstract class PatternNode implements GraphvizNode {
    * in this case superfluous (it's only a wrapper for return values).
    * </p>
    */
-  public class AddResult {
+  public static class AddResult {
     /**
      * The root node of the resulting tree after adding the <code>pattern</code>
      */

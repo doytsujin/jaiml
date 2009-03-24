@@ -66,7 +66,7 @@ import aiml.parser.AimlSyntaxException;
  */
 public class IfThenElse implements Script {
 
-  private class Entry {
+  private static class Entry {
     private String name;
     private String value;
     private Script content;

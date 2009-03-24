@@ -38,7 +38,7 @@ public class XmlParser implements XmlPullParser {
   char ch; //the current character in the input
   private HashMap<String, String> entityReplacementText = new HashMap<String, String>();
 
-  class Attribute {
+  static class Attribute {
     String name;
     String value;
     boolean isdefault = false;
@@ -389,6 +389,7 @@ public class XmlParser implements XmlPullParser {
         nextChar();
         tryXmlDecl();
         internalState = InternalState.PROLOG;
+        //$FALL-THROUGH$ fall through to the prolog
       case PROLOG:
         if (CharacterClasses.isS(ch)) {
           nextS();
@@ -532,6 +533,7 @@ public class XmlParser implements XmlPullParser {
       nextChar();
       tryXmlDecl();
       internalState = InternalState.PROLOG;
+      //$FALL-THROUGH$ fall through to the prolog
     case PROLOG:
       if (CharacterClasses.isS(ch)) {
         text = nextS();
@@ -1345,6 +1347,7 @@ public class XmlParser implements XmlPullParser {
         case SLASH:
           isEmptyElemTag = true;
           nextChar();
+          //$FALL-THROUGH$ - both / and > break the attribute list so fall through
         case GT:
           break AttList;
         default:
@@ -1357,6 +1360,7 @@ public class XmlParser implements XmlPullParser {
         case SLASH:
           isEmptyElemTag = true;
           nextChar();
+          //$FALL-THROUGH$ - both / and > break the attribute list so fall through
         case GT:
           break AttList;
         default:
