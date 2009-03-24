@@ -19,7 +19,7 @@ import aiml.classifier.MatchState;
 public class IDElement extends EmptyElement {
 
   public String evaluate(MatchState m) {
-    return m.getEnvironment().getUserID().toString();
+    return m.getEnvironment().getUserID();
   }
 
   public String toString() {
