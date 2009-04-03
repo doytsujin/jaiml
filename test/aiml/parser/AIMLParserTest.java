@@ -119,49 +119,127 @@ public class AIMLParserTest extends TestCase {
   }
 
   public void testCategoryList() throws Exception {
-    ap.load(new FileInputStream("tests/categoryList-ok.aiml"), "UTF-8");
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/categoryList-ok.aiml");
+      ap.load(in, "UTF-8");
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
+
   }
 
   public void testCategoryListBadStart() throws Exception {
-    loadFail(new FileInputStream("tests/categoryList-badstart.aiml"), "UTF-8",
-        AimlSyntaxException.class);
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/categoryList-badstart.aiml");
+      loadFail(in, "UTF-8", AimlSyntaxException.class);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void testCategoryListBadStart2() throws Exception {
-    loadFail(new FileInputStream("tests/categoryList-badstart2.aiml"), "UTF-8",
-        AimlSyntaxException.class);
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/categoryList-badstart2.aiml");
+      loadFail(in, "UTF-8", AimlSyntaxException.class);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void testCategoryListBadEnd() throws Exception {
-    loadFail(new FileInputStream("tests/categoryList-badend.aiml"), "UTF-8",
-        AimlSyntaxException.class);
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/categoryList-badend.aiml");
+      loadFail(in, "UTF-8", AimlSyntaxException.class);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void testLoadPatterns() throws Exception {
-    ap.load(new FileInputStream("tests/patterns.aiml"), "UTF-8");
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/patterns.aiml");
+      ap.load(in, "UTF-8");
+
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
+
   }
 
   public void testLoadPatternsBad1() throws Exception {
-    loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-        AimlSyntaxException.class);
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/patterns-bad1.aiml");
+      loadFail(in, "UTF-8", AimlSyntaxException.class);
+
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void testLoadPatternsBad2() throws Exception {
-    loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-        AimlSyntaxException.class);
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/patterns-bad1.aiml");
+      loadFail(in, "UTF-8", AimlSyntaxException.class);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void testLoadPatternsBad3() throws Exception {
-    loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-        AimlSyntaxException.class);
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/patterns-bad1.aiml");
+      loadFail(in, "UTF-8", AimlSyntaxException.class);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void testLoadPatternsBad4() throws Exception {
-    loadFail(new FileInputStream("tests/patterns-bad1.aiml"), "UTF-8",
-        AimlSyntaxException.class);
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/patterns-bad1.aiml");
+      loadFail(in, "UTF-8", AimlSyntaxException.class);
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void testLoadTemplate() throws Exception {
-    ap.load(new FileInputStream("tests/templates.aiml"), "UTF-8");
+    InputStream in = null;
+    try {
+      in = new FileInputStream("tests/templates.aiml");
+      ap.load(in, "UTF-8");
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
+
   }
 }
