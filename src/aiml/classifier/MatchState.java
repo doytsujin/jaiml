@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import aiml.context.Context;
 import aiml.context.ContextInfo;
 import aiml.environment.Environment;
 
@@ -41,13 +42,13 @@ public class MatchState<T extends Object> {
   private Environment e;
 
   /** The currently matched context */
-  public int context;
+  public Context context;
 
   /**
    * The contextStack list stores the history of context traversal, used for
    * backtracking.
    */
-  private LinkedList<Integer> contextStack = new LinkedList<Integer>();
+  private LinkedList<Context> contextStack = new LinkedList<Context>();
 
   /** The current depth in the context */
   public int depth;
@@ -102,7 +103,7 @@ public class MatchState<T extends Object> {
     /**
      * The context that this wildcard has been matched in
      */
-    private int context;
+    private Context context;
 
     /**
      * Creates a new wildcard with length 0
@@ -112,7 +113,7 @@ public class MatchState<T extends Object> {
      * @param beginIndex
      *          The starting position of this wildcard
      */
-    public Wildcard(int context, int beginIndex) {
+    public Wildcard(Context context, int beginIndex) {
       this.beginIndex = beginIndex;
       this.endIndex = beginIndex;
       this.context = context;
@@ -136,7 +137,7 @@ public class MatchState<T extends Object> {
     }
 
     public void growRest() {
-      endIndex = contextValues[context].length();
+      endIndex = contextValues[context.getOrder()].length();
     }
 
     /**
@@ -163,7 +164,7 @@ public class MatchState<T extends Object> {
      * @return the wildcard value
      */
     public String getValue() {
-      return contextValues[context].substring(beginIndex, endIndex);
+      return contextValues[context.getOrder()].substring(beginIndex, endIndex);
     }
 
     /**
@@ -173,8 +174,8 @@ public class MatchState<T extends Object> {
      * @return a string representation of this wildcard
      */
     public String toString() {
-      return "WC{" + context + ":(" + getBeginIndex() + "," + getLength() +
-          ")=\"" + getValue() + "\"}";
+      return "WC{" + context.getOrder() + ":(" + getBeginIndex() + "," +
+          getLength() + ")=\"" + getValue() + "\"}";
     }
   }
 
@@ -211,7 +212,7 @@ public class MatchState<T extends Object> {
    * @param context
    *          The new context
    */
-  public void addContext(int context) {
+  public void addContext(Context context) {
     contextStack.addLast(this.context);
     this.context = context;
     depth = 0;
@@ -231,7 +232,7 @@ public class MatchState<T extends Object> {
   public void dropContext() {
     // shouldn't this be error-checked? The default NoSuchElementException is
     // probably enough though...
-    this.context = contextStack.removeLast().intValue();
+    this.context = contextStack.removeLast();
     depth = getContextValue().length();
   }
 
@@ -253,12 +254,12 @@ public class MatchState<T extends Object> {
    *          the depth (the starting index of the wildcard)
    * @return Wildcard
    */
-  public Wildcard addWildcard(int context, int depth) {
+  public Wildcard addWildcard(Context context, int depth) {
     Wildcard wc = new Wildcard(context, depth);
-    if (wildcards[context] == null) {
-      wildcards[context] = new ArrayList<Wildcard>();
+    if (wildcards[context.getOrder()] == null) {
+      wildcards[context.getOrder()] = new ArrayList<Wildcard>();
     }
-    wildcards[context].add(wc);
+    wildcards[context.getOrder()].add(wc);
     return wc;
   }
 
@@ -281,19 +282,20 @@ public class MatchState<T extends Object> {
    * @return The wildcard
    * @throws InvalidWildcardReferenceException
    */
-  public Wildcard getWildcard(int context, int index)
+  public Wildcard getWildcard(Context context, int index)
       throws InvalidWildcardReferenceException {
     if (isValidWildcard(context, index)) {
-      return wildcards[context].get(index - 1);
+      return wildcards[context.getOrder()].get(index - 1);
     }
-    if (wildcards[context] == null && isDontCareWildcard(context, index)) {
+    if (wildcards[context.getOrder()] == null &&
+        isDontCareWildcard(context, index)) {
       //lazily bind implicit wildcards (from don't care contexts)
       Wildcard wc = addWildcard(context, 0);
       wc.growRest();
       return wc;
     }
     throw new InvalidWildcardReferenceException(getContextInfo().getContext(
-        context), index);
+        context.getOrder()), index);
   }
 
   /**
@@ -311,7 +313,7 @@ public class MatchState<T extends Object> {
    * @return <code>true</code> if the wildcard is bound to a "don't care"
    *         context.
    */
-  private boolean isDontCareWildcard(int context, int index) {
+  private boolean isDontCareWildcard(Context context, int index) {
     return !contextStack.contains(context) && index == 1;
   }
 
@@ -324,16 +326,16 @@ public class MatchState<T extends Object> {
    *          - the wildcard index (0 based)
    * @return <code>true</code> if the index and context are valid
    */
-  private boolean isValidWildcard(int context, int index) {
-    return wildcards[context] != null && index >= 1 &&
-        index <= wildcards[context].size();
+  private boolean isValidWildcard(Context context, int index) {
+    return wildcards[context.getOrder()] != null && index >= 1 &&
+        index <= wildcards[context.getOrder()].size();
   }
 
   /**
    * Removes the last wildcard during matching.
    */
   public void removeWildcard() {
-    wildcards[context].remove(wildcards[context].size() - 1);
+    wildcards[context.getOrder()].remove(wildcards[context.getOrder()].size() - 1);
   }
 
   /**
@@ -342,7 +344,7 @@ public class MatchState<T extends Object> {
    * @return the value of the current context
    */
   public String getContextValue() {
-    return contextValues[context];
+    return contextValues[context.getOrder()];
   }
 
   /**

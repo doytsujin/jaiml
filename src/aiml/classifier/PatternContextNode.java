@@ -19,6 +19,7 @@ import graphviz.Graphviz;
 import java.util.ListIterator;
 
 import aiml.classifier.node.PatternNode;
+import aiml.context.Context;
 
 /**
  * <p>
@@ -48,7 +49,7 @@ public class PatternContextNode extends ContextNode {
    * @param context
    *          the context ID
    */
-  public PatternContextNode(Classifier classifier, int context) {
+  public PatternContextNode(Classifier classifier, Context context) {
     super(classifier);
     this.context = context;
   }
@@ -89,7 +90,7 @@ public class PatternContextNode extends ContextNode {
    * @param subcontext
    *          the subcontext tree
    */
-  public PatternContextNode(Classifier classifier, int context,
+  public PatternContextNode(Classifier classifier, Context context,
       ContextNode subcontext) {
     super(classifier);
     this.context = context;

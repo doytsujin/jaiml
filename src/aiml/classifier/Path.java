@@ -71,7 +71,7 @@ public class Path {
    */
   public class Pattern {
     /** This pattern's context */
-    private int context;
+    private Context context;
 
     /** The actual pattern */
     private String pattern;
@@ -84,7 +84,7 @@ public class Path {
      * @param pattern
      *          the pattern
      */
-    public Pattern(int context, String pattern) {
+    public Pattern(Context context, String pattern) {
       this.context = context;
       this.pattern = pattern;
     }
@@ -94,7 +94,7 @@ public class Path {
      * 
      * @return the context of the pattern
      */
-    public int getContext() {
+    public Context getContext() {
       return context;
     }
 
@@ -114,7 +114,7 @@ public class Path {
      * @return a string representation of this Pattern object
      */
     public String toString() {
-      return contextInfo.getContext(context).getName() + "=\"" + pattern + "\"";
+      return context.getName() + "=\"" + pattern + "\"";
     }
   }
 
@@ -165,17 +165,17 @@ public class Path {
     //if (context.equals("input") && pattern.equals("64 F *"))
     //  System.out.println("["+context+"]\""+pattern+"\"");
     Context c = contextInfo.getContext(context);
-    Pattern p = new Pattern(c.getOrder(), pattern);
+    Pattern p = new Pattern(c, pattern);
     ListIterator<Pattern> i = contextQueue.listIterator();
     if (!i.hasNext()) {
       i.add(p);
     } else {
       while (i.hasNext()) {
         Pattern pi = i.next();
-        if (pi.context == p.context) {
+        if (pi.context.getOrder() == p.context.getOrder()) {
           throw new MultipleContextsException(c.getName());
         }
-        if (pi.context > p.context) {
+        if (pi.context.getOrder() > p.context.getOrder()) {
           i.previous();
           i.add(p);
           return;

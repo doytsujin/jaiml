@@ -88,7 +88,7 @@ public class StarElement extends EmptyElement {
 
   public String evaluate(MatchState m) {
     try {
-      return m.getWildcard(context.getOrder(), index).getValue();
+      return m.getWildcard(context, index).getValue();
     } catch (InvalidWildcardReferenceException e) {
       Logger.getLogger(StarElement.class.getName()).severe(e.getMessage());
       return "";

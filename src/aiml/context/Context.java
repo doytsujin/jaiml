@@ -48,7 +48,7 @@ public abstract class Context implements Comparable {
    * </p>
    * 
    * @param name
-   *                The name of this context.
+   *          The name of this context.
    */
   public Context(String name) {
     this.name = name;
@@ -79,7 +79,7 @@ public abstract class Context implements Comparable {
    * calls to setOrder() do not have an effect.
    * 
    * @param value
-   *                the order
+   *          the order
    */
   public void setOrder(int value) {
     if (value >= 0) {
@@ -93,13 +93,13 @@ public abstract class Context implements Comparable {
    * Compares Context objects according to their order.
    * 
    * @param c
-   *                Object
+   *          Object
    * @return -1 if this context has a lower order; 0 if they have the same
    *         order; 1 if this context has a bigger order
    */
   public int compareTo(Object c) {
     int corder = ((Context) c).getOrder();
-    return (order < corder ? -1 : (order == corder ? 0 : 1));
+    return (getOrder() < corder ? -1 : (getOrder() == corder ? 0 : 1));
   }
 
   /**

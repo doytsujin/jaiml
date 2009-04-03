@@ -20,6 +20,7 @@ import graphviz.GraphvizNode;
 import java.util.ListIterator;
 
 import aiml.classifier.node.PatternNode;
+import aiml.context.Context;
 
 /**
  * <p>
@@ -42,7 +43,7 @@ import aiml.classifier.node.PatternNode;
 public abstract class ContextNode implements GraphvizNode {
 
   /** The context this tree applies to */
-  int context;
+  Context context;
 
   /** The classifier this context node is a part of */
   Classifier classifier;
@@ -82,7 +83,7 @@ public abstract class ContextNode implements GraphvizNode {
     if (path.hasNext()) { //We're in the middle of the path
 
       Path.Pattern pattern = (Path.Pattern) path.next();
-      if (pattern.getContext() > context) {
+      if (pattern.getContext().getOrder() > context.getOrder()) {
         //add as next
         path.previous();
         if (next == null) {
@@ -90,7 +91,7 @@ public abstract class ContextNode implements GraphvizNode {
         }
         next = next.add(path, o);
         return this;
-      } else if (pattern.getContext() < context) {
+      } else if (pattern.getContext().getOrder() < context.getOrder()) {
         //add instead of self
         ContextNode cn = new PatternContextNode(classifier,
             pattern.getContext(), this);

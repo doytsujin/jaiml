@@ -19,12 +19,10 @@ import graphviz.Graphviz;
 import java.util.ListIterator;
 
 import aiml.classifier.node.PatternNode;
+import aiml.context.LeafContext;
 
 /**
  * This context encapsulates the data associated with each path.
- * 
- * Todo: Rename to LeafContextNode or TemplateContextNode, create superclass
- * ContextNode
  * 
  * @author Kim Sullivan
  * @version 1.0
@@ -41,7 +39,7 @@ public class LeafContextNode extends ContextNode {
    */
   public LeafContextNode(Classifier classifier, Object o) {
     super(classifier);
-    context = Integer.MAX_VALUE;
+    context = LeafContext.LEAF_CONTEXT;
     result = o;
   }
 
