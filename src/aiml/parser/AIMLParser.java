@@ -283,18 +283,33 @@ public class AIMLParser {
 
   public void load(String file) throws XmlPullParserException, IOException,
       AimlParserException {
-    parser.setInput(new FileReader(file));
-    parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",
-        file);
-    doAiml();
+    FileReader in = null;
+    try {
+      in = new FileReader(file);
+      parser.setInput(in);
+      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",
+          file);
+      doAiml();
+    } finally {
+      if (in != null) {
+        in.close();
+      }
+    }
   }
 
   public void load(String file, String encoding) throws XmlPullParserException,
       IOException, AimlParserException {
-    parser.setInput(new FileInputStream(file), encoding);
-    parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",
-        file);
-    doAiml();
+    FileInputStream inputStream = null;
+    try {
+      inputStream = new FileInputStream(file);
+      parser.setInput(inputStream, encoding);
+      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",
+          file);
+      doAiml();
+    } finally {
+      if (inputStream != null) {
+        inputStream.close();
+      }
+    }
   }
-
 }

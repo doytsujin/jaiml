@@ -113,22 +113,29 @@ public class Bot {
 
   public void load(String file) throws XmlPullParserException, IOException,
       BotSyntaxException, AimlParserException {
-    parser.setInput(new FileInputStream(file), "UTF-8");
+    FileInputStream inputStream = null;
     try {
-      parser.setProperty("http://xmlpull.org/v1/doc/properties.html#location",
-          file);
-    } catch (XmlPullParserException e) {
-    }
-    parser.require(XmlPullParser.START_DOCUMENT);
-    parser.next();
-    standalone = true;
-    doBot();
-    try {
-      parser.require(XmlPullParser.END_DOCUMENT);
-    } catch (BotSyntaxException e) {
-      throw new BotSyntaxException(
-          "Syntax error: no markup allowed after end of root element " +
-              parser.getPositionDescription());
+      inputStream = new FileInputStream(file);
+      parser.setInput(inputStream, "UTF-8");
+      try {
+        parser.setProperty(
+            "http://xmlpull.org/v1/doc/properties.html#location", file);
+      } catch (XmlPullParserException e) {
+      }
+      parser.require(XmlPullParser.START_DOCUMENT);
+      parser.next();
+      standalone = true;
+      doBot();
+      try {
+        parser.require(XmlPullParser.END_DOCUMENT);
+      } catch (BotSyntaxException e) {
+        throw new BotSyntaxException(
+            "Syntax error: no markup allowed after end of root element " +
+                parser.getPositionDescription());
+      }
+    } finally {
+      if (inputStream != null)
+        inputStream.close();
     }
   }
 
