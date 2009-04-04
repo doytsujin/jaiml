@@ -17,6 +17,7 @@ package aiml.script;
 import java.util.logging.Logger;
 
 import aiml.classifier.MatchState;
+import aiml.context.InputContext;
 import aiml.environment.Environment;
 
 public class SraiElement extends SimpleScriptElement {
@@ -25,9 +26,12 @@ public class SraiElement extends SimpleScriptElement {
 
     String newInput = content.evaluate(m);
     Environment environment = m.getEnvironment();
-    environment.pushInput(newInput);
+    InputContext inputContext = (InputContext) environment.getBot().getClassifier().getContextInfo().getContext(
+        "input");
+
+    inputContext.push(newInput, environment);
     MatchState result = environment.match();
-    environment.popInput();
+    inputContext.pop(environment);
     if (result != null) {
       return ((aiml.script.Script) result.getResult()).evaluate(result);
     } else {
