@@ -105,7 +105,7 @@ public class AIMLParser {
       } while (true);
     } catch (MultipleContextsException e) {
       throw new AimlSyntaxException(
-          "Syntax error, paralell contexts and/or context overloading not allowed. Context " +
+          "Specifing more than one context of the same name for a category is not allowed. Context " +
               e.getMessage() + " " + parser.getPositionDescription(), e);
     }
   }
