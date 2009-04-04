@@ -16,7 +16,7 @@ package aiml.context;
 
 import java.util.EmptyStackException;
 
-import aiml.context.data.DataSource;
+import aiml.context.data.InputDataSource;
 import aiml.environment.Environment;
 
 /**
@@ -34,9 +34,9 @@ import aiml.environment.Environment;
  * @version 1.0
  */
 
-public abstract class InputContext extends Context<String> {
+public class InputContext extends Context<String> {
 
-  public InputContext(String name, DataSource<String> dataSource) {
+  public InputContext(String name, InputDataSource<String> dataSource) {
     super(name, dataSource);
   }
 
@@ -46,7 +46,9 @@ public abstract class InputContext extends Context<String> {
    * @param input
    *          The value of the input.
    */
-  public abstract void push(String input, Environment e);
+  public void push(String input, Environment e) {
+    ((InputDataSource<String>) getDataSource()).push(input, e);
+  }
 
   /**
    * Pops a value from the stack.
@@ -54,6 +56,8 @@ public abstract class InputContext extends Context<String> {
    * @throws EmptyStackException
    *           - if the stack is empty
    */
-  public abstract void pop(Environment e) throws EmptyStackException;
+  public void pop(Environment e) throws EmptyStackException {
+    ((InputDataSource<String>) getDataSource()).pop(e);
+  }
 
 }

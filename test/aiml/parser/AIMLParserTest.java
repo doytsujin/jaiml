@@ -29,7 +29,8 @@ import aiml.bot.Bot;
 import aiml.classifier.Classifier;
 import aiml.context.Context;
 import aiml.context.ContextInfo;
-import aiml.context.EnvironmentInputContext;
+import aiml.context.InputContext;
+import aiml.context.data.EnvironmentInputSource;
 import aiml.context.data.StringSource;
 
 public class AIMLParserTest extends TestCase {
@@ -55,7 +56,8 @@ public class AIMLParserTest extends TestCase {
 
     ap = new AIMLParser(b);
     contextInfo = classifier.getContextInfo();
-    contextInfo.registerContext(new EnvironmentInputContext("input"));
+    contextInfo.registerContext(new InputContext("input",
+        new EnvironmentInputSource()));
     contextInfo.registerContext(new Context<String>("that", new StringSource()));
     contextInfo.registerContext(new Context<String>("topic", new StringSource()));
 

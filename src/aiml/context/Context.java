@@ -118,6 +118,10 @@ public class Context<T> implements Comparable {
     return dataSource.getValue(e);
   }
 
+  public DataSource<T> getDataSource() {
+    return dataSource;
+  }
+
   /* (non-Javadoc)
    * @see java.lang.Object#hashCode()
    */
