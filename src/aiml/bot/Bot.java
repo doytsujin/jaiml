@@ -37,6 +37,7 @@ import aiml.context.ContextInfo;
 import aiml.context.InputContext;
 import aiml.context.data.EnvironmentInputSource;
 import aiml.context.data.StringSource;
+import aiml.context.data.VariableSource;
 import aiml.environment.Environment;
 import aiml.parser.AIMLParser;
 import aiml.parser.AimlParserException;
@@ -194,7 +195,7 @@ public class Bot {
       contextInfo.registerContext(new Context<String>("that", new StringSource(
           "dummy that")));
       contextInfo.registerContext(new Context<String>("topic",
-          new StringSource("dummy topic")));
+          new VariableSource("topic")));
     }
 
     if (sentenceSplitter == null) {

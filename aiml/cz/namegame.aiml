@@ -11,6 +11,30 @@
 <meta name="language" content="cs"/>
 -->
 
+<topic name="cislo">
+<category>
+<pattern>*</pattern>
+<template><think><set name="topic"/></think>
+<random>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+<li>4</li>
+<li>5</li>
+<li>6</li>
+<li>7</li>
+</random>
+</template>
+</category>
+</topic>
+
+<category>
+<pattern>ŘEKNI MI ČÍSLO</pattern>
+<template><think><set name="topic">cislo</set></think>
+Jaké číslo?
+</template>
+</category>
+
 <category>
 <pattern>*</pattern>
 <template>
