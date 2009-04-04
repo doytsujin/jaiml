@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<aiml version="1.0">
+<aiml version="1.0j">
 
 <!-- This program is open source code released under -->
 <!-- the terms of the GNU General Public License -->
@@ -11,9 +11,10 @@
 <meta name="language" content="cs"/>
 -->
 
-<topic name="cislo">
+
 <category>
 <pattern>*</pattern>
+<context name="topic">CISLO</context>
 <template><think><set name="topic"/></think>
 <random>
 <li>1</li>
@@ -26,7 +27,6 @@
 </random>
 </template>
 </category>
-</topic>
 
 <category>
 <pattern>ŘEKNI MI ČÍSLO</pattern>
