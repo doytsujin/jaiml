@@ -73,12 +73,6 @@ public class AIMLParserTest extends TestCase {
     classifier.registerDefaultNodeHandlers();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    contextInfo.reset();
-  }
-
   private void loadFail(Reader in, Class<? extends Exception> exception)
       throws Exception {
     try {

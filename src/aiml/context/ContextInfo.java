@@ -140,14 +140,4 @@ public class ContextInfo {
     return contexts.size();
   }
 
-  /**
-   * Resets the entire ContextInfo structure. This can be used for example if a
-   * different matching order is desired. Unfortunately this means the whole
-   * matching tree is invalid, and must be regenerated (this is <i>not</i>
-   * ensured by a call to this method).
-   */
-  public void reset() {
-    contexts.clear();
-    contextNames.clear();
-  }
 }
