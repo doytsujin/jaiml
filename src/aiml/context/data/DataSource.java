@@ -15,6 +15,20 @@ package aiml.context.data;
 
 import aiml.environment.Environment;
 
+/**
+ * This interface reresents a source of data for a context.
+ * 
+ * @author Kim Sullivan
+ * 
+ * @param <T>
+ */
 public interface DataSource<T> {
+  /**
+   * Get the value of the data from the environment.
+   * 
+   * @param e
+   *          the environment
+   * @return the data
+   */
   public T getValue(Environment e);
 }

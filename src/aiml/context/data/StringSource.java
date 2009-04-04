@@ -15,14 +15,29 @@ package aiml.context.data;
 
 import aiml.environment.Environment;
 
+/**
+ * A simple data source that is backed by an immutable string.
+ * 
+ * @author Kim Sullivan
+ * 
+ */
 public class StringSource implements DataSource<String> {
 
   private String value;
 
+  /**
+   * Create a new datasource that returns an empty string
+   */
   public StringSource() {
     this("");
   }
 
+  /**
+   * Create a new datasource that returns the string <code>value</code>.
+   * 
+   * @param value
+   *          the value this data source returns
+   */
   public StringSource(String value) {
     this.value = value;
   }

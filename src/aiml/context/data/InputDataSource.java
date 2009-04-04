@@ -17,6 +17,14 @@ import java.util.EmptyStackException;
 
 import aiml.environment.Environment;
 
+/**
+ * An InputDataSource is a special DataSource that provides additional
+ * capabilities to a normal DataSource, to facilitate recursive calls.
+ * 
+ * @author Kim Sullivan
+ * 
+ * @param <T>
+ */
 public interface InputDataSource<T> extends DataSource<T> {
   /**
    * Pushes a new input on the stack.

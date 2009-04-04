@@ -17,6 +17,13 @@ import java.util.EmptyStackException;
 
 import aiml.environment.Environment;
 
+/**
+ * This input data source uses the stack provided in the environment to store
+ * the data.
+ * 
+ * @author Kim Sullivan
+ * 
+ */
 public class EnvironmentInputSource implements InputDataSource<String> {
 
   @Override
