@@ -155,4 +155,9 @@ public class Context<T> implements Comparable {
       return false;
     return true;
   }
+
+  @Override
+  public String toString() {
+    return String.valueOf(order);
+  }
 }

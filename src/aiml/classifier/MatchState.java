@@ -174,8 +174,8 @@ public class MatchState<T extends Object> {
      * @return a string representation of this wildcard
      */
     public String toString() {
-      return "WC{" + context.getOrder() + ":(" + getBeginIndex() + "," +
-          getLength() + ")=\"" + getValue() + "\"}";
+      return "WC{" + context + ":(" + getBeginIndex() + "," + getLength() +
+          ")=\"" + getValue() + "\"}";
     }
   }
 
