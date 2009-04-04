@@ -172,10 +172,10 @@ public class Path {
     } else {
       while (i.hasNext()) {
         Pattern pi = i.next();
-        if (pi.context.getOrder() == p.context.getOrder()) {
+        if (pi.context.compareTo(p.context) == 0) {
           throw new MultipleContextsException(c.getName());
         }
-        if (pi.context.getOrder() > p.context.getOrder()) {
+        if (pi.context.compareTo(p.context) > 0) {
           i.previous();
           i.add(p);
           return;

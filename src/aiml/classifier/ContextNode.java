@@ -84,7 +84,7 @@ public abstract class ContextNode implements GraphvizNode {
     if (path.hasNext()) { //We're in the middle of the path
 
       Path.Pattern pattern = (Path.Pattern) path.next();
-      if (pattern.getContext().getOrder() > context.getOrder()) {
+      if (context.compareTo(pattern.getContext()) < 0) {
         //add as next
         path.previous();
         if (next == null) {
@@ -92,7 +92,7 @@ public abstract class ContextNode implements GraphvizNode {
         }
         next = next.add(path, o);
         return this;
-      } else if (pattern.getContext().getOrder() < context.getOrder()) {
+      } else if (context.compareTo(pattern.getContext()) > 0) {
         //add instead of self
         ContextNode cn = new PatternContextNode(classifier,
             pattern.getContext(), this);
