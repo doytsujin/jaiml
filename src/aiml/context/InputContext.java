@@ -34,9 +34,9 @@ import aiml.environment.Environment;
  * @version 1.0
  */
 
-public abstract class InputContext<T> extends Context<T> {
+public abstract class InputContext extends Context<String> {
 
-  public InputContext(String name, DataSource<T> dataSource) {
+  public InputContext(String name, DataSource<String> dataSource) {
     super(name, dataSource);
   }
 

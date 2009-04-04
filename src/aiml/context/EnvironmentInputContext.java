@@ -19,7 +19,7 @@ import java.util.EmptyStackException;
 import aiml.context.data.EnvironmentInputSource;
 import aiml.environment.Environment;
 
-public class EnvironmentInputContext extends InputContext<String> {
+public class EnvironmentInputContext extends InputContext {
 
   public EnvironmentInputContext(String name) {
     super(name, new EnvironmentInputSource());
