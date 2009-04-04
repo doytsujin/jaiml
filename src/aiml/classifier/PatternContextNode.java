@@ -50,8 +50,7 @@ public class PatternContextNode extends ContextNode {
    *          the context ID
    */
   public PatternContextNode(Classifier classifier, Context context) {
-    super(classifier);
-    this.context = context;
+    super(classifier, context);
   }
 
   /**
@@ -65,7 +64,7 @@ public class PatternContextNode extends ContextNode {
    *          Object
    */
   public PatternContextNode(Classifier classifier, ListIterator path, Object o) {
-    super(classifier);
+    super(classifier, null); //defer initialization of the context field until later
     if (!path.hasNext()) {
       throw new UnsupportedOperationException(
           "Can't add an empty path to a PatternContextNode");
@@ -92,8 +91,7 @@ public class PatternContextNode extends ContextNode {
    */
   public PatternContextNode(Classifier classifier, Context context,
       ContextNode subcontext) {
-    super(classifier);
-    this.context = context;
+    super(classifier, context);
     this.next = subcontext;
   }
 

@@ -56,8 +56,9 @@ public abstract class ContextNode implements GraphvizNode {
    */
   ContextNode next;
 
-  protected ContextNode(Classifier classifier) {
+  protected ContextNode(Classifier classifier, Context context) {
     this.classifier = classifier;
+    this.context = context;
   }
 
   /**

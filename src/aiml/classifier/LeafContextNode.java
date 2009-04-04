@@ -38,8 +38,7 @@ public class LeafContextNode extends ContextNode {
    *          the stored object
    */
   public LeafContextNode(Classifier classifier, Object o) {
-    super(classifier);
-    context = LeafContext.LEAF_CONTEXT;
+    super(classifier, LeafContext.LEAF_CONTEXT);
     result = o;
   }
 
