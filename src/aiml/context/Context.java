@@ -14,6 +14,7 @@
 
 package aiml.context;
 
+import aiml.context.data.DataSource;
 import aiml.environment.Environment;
 
 /**
@@ -26,9 +27,10 @@ import aiml.environment.Environment;
  * 
  * @author Kim Sullivan
  * @version 1.0
+ * @param <T>
  */
 
-public abstract class Context implements Comparable {
+public abstract class Context<T> implements Comparable {
   /** The name of this context */
   private String name;
 
@@ -37,6 +39,8 @@ public abstract class Context implements Comparable {
    * read many).
    */
   private int order = -1;
+
+  private DataSource<T> dataSource;
 
   /**
    * Creates a new context. The order can't be specified in the constructor,
@@ -50,8 +54,9 @@ public abstract class Context implements Comparable {
    * @param name
    *          The name of this context.
    */
-  public Context(String name) {
+  public Context(String name, DataSource<T> dataSource) {
     this.name = name;
+    this.dataSource = dataSource;
   }
 
   /**
@@ -109,7 +114,9 @@ public abstract class Context implements Comparable {
    * 
    * @return The value currently associated with the context.
    */
-  public abstract String getValue(Environment e);
+  public T getValue(Environment e) {
+    return dataSource.getValue(e);
+  }
 
   /* (non-Javadoc)
    * @see java.lang.Object#hashCode()

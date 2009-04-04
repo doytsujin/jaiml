@@ -14,7 +14,7 @@
 
 package aiml.context;
 
-import aiml.environment.Environment;
+import aiml.context.data.StringSource;
 
 /**
  * A simple context type, associates a string with the context's value.
@@ -23,45 +23,27 @@ import aiml.environment.Environment;
  * @version 1.0
  */
 
-public class StringContext extends Context {
-  private String value;
-
+public class StringContext extends Context<String> {
   /**
    * Constructs a new String context with an empty string as its value.
    * 
    * @param name
-   *                The name of the context
+   *          The name of the context
    */
   public StringContext(String name) {
-    super(name);
-    this.value = "";
+    super(name, new StringSource());
   }
 
   /**
    * Constructs a new String context with a value.
    * 
    * @param name
-   *                The name of the context
+   *          The name of the context
    * @param value
-   *                The value of the context
+   *          The value of the context
    */
   public StringContext(String name, String value) {
-    super(name);
-    this.value = value;
-  }
-
-  public String getValue(Environment e) {
-    return value;
-  }
-
-  /**
-   * Set the value associated with this string context
-   * 
-   * @param value
-   *                The value of the context
-   */
-  public void setValue(String value) {
-    this.value = value;
+    super(name, new StringSource(value));
   }
 
 }

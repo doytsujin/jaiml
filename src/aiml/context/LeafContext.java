@@ -24,12 +24,12 @@ import aiml.environment.Environment;
  * @author Kim Sullivan
  * 
  */
-public class LeafContext extends Context {
+public class LeafContext extends Context<Object> {
 
   public static LeafContext LEAF_CONTEXT = new LeafContext();
 
   private LeafContext() {
-    super(null);
+    super(null, null);
   }
 
   @Override

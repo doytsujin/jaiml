@@ -203,7 +203,7 @@ public class MatchState<T extends Object> {
    */
   private void initializeContexts(Environment e) {
     for (int i = 0; i < getContextInfo().getCount(); i++)
-      contextValues[i] = getContextInfo().getContext(i).getValue(e);
+      contextValues[i] = getContextInfo().getContext(i).getValue(e).toString();
   }
 
   /**

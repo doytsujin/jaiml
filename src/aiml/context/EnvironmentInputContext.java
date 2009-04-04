@@ -16,12 +16,13 @@ package aiml.context;
 
 import java.util.EmptyStackException;
 
+import aiml.context.data.EnvironmentInputSource;
 import aiml.environment.Environment;
 
-public class EnvironmentInputContext extends InputContext {
+public class EnvironmentInputContext extends InputContext<String> {
 
   public EnvironmentInputContext(String name) {
-    super(name);
+    super(name, new EnvironmentInputSource());
   }
 
   public void push(String input, Environment e) {
@@ -30,9 +31,5 @@ public class EnvironmentInputContext extends InputContext {
 
   public void pop(Environment e) throws EmptyStackException {
     e.popInput();
-  }
-
-  public String getValue(Environment e) {
-    return e.getInput();
   }
 }
