@@ -72,12 +72,16 @@ public class InterpreterDemo {
         for (String input : b.preprocessInput(line)) {
           e.pushInput(input);
           MatchState<Script> m = e.match();
+          String response;
           if (m != null) {
-            System.out.println(Formatter.collapseWhitespace(m.getResult().evaluate(
-                m)));
+            response = Formatter.collapseWhitespace(m.getResult().evaluate(m));
+
           } else {
-            System.out.println("no match found");
+            response = "no match found";
+
           }
+          System.out.println(response);
+          e.addBotResponse(response);
           e.popInput();
         }
       }

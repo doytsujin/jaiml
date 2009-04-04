@@ -24,4 +24,6 @@
 	</sentence-splitters>
   	<learn>aiml/cz/namegame.aiml</learn>
   	<learn>aiml/cz/names.aiml</learn>
+  	<learn>aiml/cz/historie.aiml</learn>
+  	
 </bot>

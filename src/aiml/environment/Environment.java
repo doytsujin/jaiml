@@ -14,6 +14,7 @@
 
 package aiml.environment;
 
+import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +51,11 @@ public class Environment {
   private Bot bot;
   private Map<String, String> variables = new HashMap<String, String>();
   private LinkedList<String> input = new LinkedList<String>();
+  /**
+   * Contains a list of previous bot responses, split to sentences, in reverse
+   * order.
+   */
+  private LinkedList<LinkedList<String>> responseHistory = new LinkedList<LinkedList<String>>();
   public static final String UNDEFINED_VARIABLE = "";
 
   public Environment(Bot bot) {
@@ -104,7 +110,37 @@ public class Environment {
     return bot;
   }
 
-  public String getThat(int i1, int i2) {
+  /**
+   * Add a whole bot response to the history
+   * 
+   * @param response
+   *          the response of the bot
+   */
+  public void addBotResponse(String response) {
+    LinkedList<String> sentences = new LinkedList<String>();
+    for (String sentence : bot.getSentenceSplitter().split(response)) {
+      sentences.addFirst(sentence);
+    }
+    responseHistory.addFirst(sentences);
+  }
+
+  /**
+   * Retrieve a sentence from conversation history. The <code>interaction</code>
+   * specifies
+   * 
+   * @param interaction
+   * @param sentence
+   * @return
+   */
+  public String getBotResponse(int interaction, int sentence) {
+    if (interaction < 0 || sentence < 0) {
+      throw new InvalidParameterException(
+          "Interaction and sentences must be positive integers");
+    }
+    if (responseHistory.size() > interaction &&
+        responseHistory.get(interaction).size() > sentence) {
+      return responseHistory.get(interaction).get(sentence);
+    }
     return "";
   }
 
