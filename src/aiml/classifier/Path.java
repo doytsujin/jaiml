@@ -38,17 +38,6 @@ import aiml.context.ContextInfo;
  * queue, which is exactly what this class does - provides acess to an ordered
  * list of context patterns
  * </p>
- * <p>
- * <i>Note to self:</i> Will have to implement the cloneable interface and make
- * deep copies of paths, because when reading AIML files, individual contexts
- * can come in- and out of scope. Also, the feature of having multiple contexts
- * of the same type for a category will have to be solved somehow.
- * </p>
- * <p>
- * <i>Note to self II:</i> This class will have to be reworked some time, for
- * more general contexts than just pattern strings... maybe replace "pattern"
- * with "condition" or "constraint" or something like that
- * </p>
  * 
  * @author Kim Sullivan
  * @version 1.0
@@ -71,7 +60,7 @@ public class Path {
    */
   public class Pattern {
     /** This pattern's context */
-    private Context context;
+    private Context<? extends Object> context;
 
     /** The actual pattern */
     private String pattern;
@@ -84,7 +73,7 @@ public class Path {
      * @param pattern
      *          the pattern
      */
-    public Pattern(Context context, String pattern) {
+    public Pattern(Context<? extends Object> context, String pattern) {
       this.context = context;
       this.pattern = pattern;
     }
@@ -94,7 +83,7 @@ public class Path {
      * 
      * @return the context of the pattern
      */
-    public Context getContext() {
+    public Context<? extends Object> getContext() {
       return context;
     }
 
@@ -164,7 +153,7 @@ public class Path {
       throws MultipleContextsException {
     //if (context.equals("input") && pattern.equals("64 F *"))
     //  System.out.println("["+context+"]\""+pattern+"\"");
-    Context c = contextInfo.getContext(context);
+    Context<? extends Object> c = contextInfo.getContext(context);
     Pattern p = new Pattern(c, pattern);
     ListIterator<Pattern> i = contextQueue.listIterator();
     if (!i.hasNext()) {
@@ -218,7 +207,7 @@ public class Path {
    * 
    * @return the unmodifiable iterator
    */
-  public ListIterator iterator() {
+  public ListIterator<Pattern> iterator() {
     return Collections.unmodifiableList(contextQueue).listIterator();
   }
 
