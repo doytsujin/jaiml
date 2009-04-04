@@ -43,7 +43,7 @@ import aiml.context.Context;
 public abstract class ContextNode implements GraphvizNode {
 
   /** The context this tree applies to */
-  Context context;
+  Context<? extends Object> context;
 
   /** The classifier this context node is a part of */
   Classifier classifier;
@@ -56,7 +56,7 @@ public abstract class ContextNode implements GraphvizNode {
    */
   ContextNode next;
 
-  protected ContextNode(Classifier classifier, Context context) {
+  protected ContextNode(Classifier classifier, Context<? extends Object> context) {
     this.classifier = classifier;
     this.context = context;
   }
