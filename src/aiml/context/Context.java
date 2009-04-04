@@ -30,7 +30,7 @@ import aiml.environment.Environment;
  * @param <T>
  */
 
-public abstract class Context<T> implements Comparable {
+public class Context<T> implements Comparable {
   /** The name of this context */
   private String name;
 

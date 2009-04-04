@@ -27,9 +27,10 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.bot.Bot;
 import aiml.classifier.Classifier;
+import aiml.context.Context;
 import aiml.context.ContextInfo;
 import aiml.context.EnvironmentInputContext;
-import aiml.context.StringContext;
+import aiml.context.data.StringSource;
 
 public class AIMLParserTest extends TestCase {
 
@@ -55,20 +56,20 @@ public class AIMLParserTest extends TestCase {
     ap = new AIMLParser(b);
     contextInfo = classifier.getContextInfo();
     contextInfo.registerContext(new EnvironmentInputContext("input"));
-    contextInfo.registerContext(new StringContext("that"));
-    contextInfo.registerContext(new StringContext("topic"));
+    contextInfo.registerContext(new Context<String>("that", new StringSource()));
+    contextInfo.registerContext(new Context<String>("topic", new StringSource()));
 
-    contextInfo.registerContext(new StringContext("alpha"));
-    contextInfo.registerContext(new StringContext("beta"));
-    contextInfo.registerContext(new StringContext("gama"));
-    contextInfo.registerContext(new StringContext("delta"));
+    contextInfo.registerContext(new Context<String>("alpha", new StringSource()));
+    contextInfo.registerContext(new Context<String>("beta", new StringSource()));
+    contextInfo.registerContext(new Context<String>("gama", new StringSource()));
+    contextInfo.registerContext(new Context<String>("delta", new StringSource()));
 
-    contextInfo.registerContext(new StringContext("foo"));
-    contextInfo.registerContext(new StringContext("bar"));
+    contextInfo.registerContext(new Context<String>("foo", new StringSource()));
+    contextInfo.registerContext(new Context<String>("bar", new StringSource()));
 
-    contextInfo.registerContext(new StringContext("ichi"));
-    contextInfo.registerContext(new StringContext("ni"));
-    contextInfo.registerContext(new StringContext("san"));
+    contextInfo.registerContext(new Context<String>("ichi", new StringSource()));
+    contextInfo.registerContext(new Context<String>("ni", new StringSource()));
+    contextInfo.registerContext(new Context<String>("san", new StringSource()));
 
     classifier.registerDefaultNodeHandlers();
   }

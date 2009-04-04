@@ -32,9 +32,10 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import aiml.classifier.Classifier;
+import aiml.context.Context;
 import aiml.context.ContextInfo;
 import aiml.context.EnvironmentInputContext;
-import aiml.context.StringContext;
+import aiml.context.data.StringSource;
 import aiml.environment.Environment;
 import aiml.parser.AIMLParser;
 import aiml.parser.AimlParserException;
@@ -188,8 +189,10 @@ public class Bot {
       // TODO provide actual implementations of topics...
       ContextInfo contextInfo = classifier.getContextInfo();
       contextInfo.registerContext(new EnvironmentInputContext("input"));
-      contextInfo.registerContext(new StringContext("that", "dummy that"));
-      contextInfo.registerContext(new StringContext("topic", "dummy topic"));
+      contextInfo.registerContext(new Context<String>("that", new StringSource(
+          "dummy that")));
+      contextInfo.registerContext(new Context<String>("topic",
+          new StringSource("dummy topic")));
     }
 
     if (sentenceSplitter == null) {
