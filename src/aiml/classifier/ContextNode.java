@@ -16,9 +16,6 @@ package aiml.classifier;
 
 import graphviz.Graphviz;
 import graphviz.GraphvizNode;
-
-import java.util.ListIterator;
-
 import aiml.classifier.node.PatternNode;
 import aiml.context.Context;
 
@@ -74,7 +71,7 @@ public abstract class ContextNode implements GraphvizNode {
    * @return the resulting context tree, with all modifications applied and the
    *         correct ordering.
    */
-  public ContextNode add(ListIterator path, Object o)
+  public ContextNode add(Path.Iterator path, Object o)
       throws DuplicatePathException {
     /*check the context order, if it's OK to add the current path to this context
      *or if we need to add a new context somewhere.
@@ -83,10 +80,9 @@ public abstract class ContextNode implements GraphvizNode {
      */
     if (path.hasNext()) { //We're in the middle of the path
 
-      Path.Pattern pattern = (Path.Pattern) path.next();
+      Path.Pattern pattern = path.peek();
       if (context.compareTo(pattern.getContext()) < 0) {
         //add as next
-        path.previous();
         if (next == null) {
           next = new PatternContextNode(classifier, pattern.getContext());
         }
@@ -96,11 +92,11 @@ public abstract class ContextNode implements GraphvizNode {
         //add instead of self
         ContextNode cn = new PatternContextNode(classifier,
             pattern.getContext(), this);
-        path.previous();
         return cn.add(path, o); //actually, just cn should be sufficient, but let's not make any assumptions
       } else {
         //add the pattern into the current tree.
         PatternNode leaf = addPattern(pattern);
+        path.next();
         leaf.addContext(path, o);
         return this;
       }

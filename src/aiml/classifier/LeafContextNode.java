@@ -15,9 +15,6 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
-
-import java.util.ListIterator;
-
 import aiml.classifier.node.PatternNode;
 import aiml.context.LeafContext;
 
@@ -81,7 +78,7 @@ public class LeafContextNode extends ContextNode {
    * @return the resulting context tree, with all modifications applied and the
    *         correct ordering
    */
-  public ContextNode add(ListIterator path, Object o)
+  public ContextNode add(Path.Iterator path, Object o)
       throws DuplicatePathException {
     if (!path.hasNext()) {
       throw new DuplicatePathException();

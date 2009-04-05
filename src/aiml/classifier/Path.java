@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 
 import aiml.context.Context;
 import aiml.context.ContextInfo;
+import aiml.util.PeekIterator;
 
 /**
  * <p>
@@ -58,7 +59,7 @@ public class Path {
    * @author Kim Sullivan
    * @version 1.0
    */
-  public class Pattern {
+  public static class Pattern {
     /** This pattern's context */
     private Context<? extends Object> context;
 
@@ -104,6 +105,18 @@ public class Path {
      */
     public String toString() {
       return context.getName() + "=\"" + pattern + "\"";
+    }
+  }
+
+  /**
+   * Represents a <code>PeekIterator&lt;Pattern&gt;</code>.
+   * 
+   * @author Kim Sullivan
+   * 
+   */
+  public static class Iterator extends PeekIterator<Pattern> {
+    public Iterator(Iterable<Pattern> iterable) {
+      super(iterable);
     }
   }
 
@@ -207,8 +220,8 @@ public class Path {
    * 
    * @return the unmodifiable iterator
    */
-  public ListIterator<Pattern> iterator() {
-    return Collections.unmodifiableList(contextQueue).listIterator();
+  public Iterator iterator() {
+    return new Iterator(Collections.unmodifiableList(contextQueue));
   }
 
   /**

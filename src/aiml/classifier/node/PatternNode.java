@@ -16,13 +16,11 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import graphviz.GraphvizNode;
-
-import java.util.ListIterator;
-
 import aiml.classifier.ContextNode;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.LeafContextNode;
 import aiml.classifier.MatchState;
+import aiml.classifier.Path;
 import aiml.classifier.PatternContextNode;
 
 /**
@@ -166,7 +164,7 @@ public abstract class PatternNode implements GraphvizNode {
    * @param o
    *          Object
    */
-  public void addContext(ListIterator path, Object o)
+  public void addContext(Path.Iterator path, Object o)
       throws DuplicatePathException {
     if (subContext != null) {
       subContext = subContext.add(path, o);

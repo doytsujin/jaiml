@@ -15,9 +15,6 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
-
-import java.util.ListIterator;
-
 import aiml.classifier.node.PatternNode;
 import aiml.context.Context;
 
@@ -63,15 +60,13 @@ public class PatternContextNode extends ContextNode {
    * @param o
    *          Object
    */
-  public PatternContextNode(Classifier classifier, ListIterator path, Object o) {
+  public PatternContextNode(Classifier classifier, Path.Iterator path, Object o) {
     super(classifier, null); //defer initialization of the context field until later
     if (!path.hasNext()) {
       throw new UnsupportedOperationException(
           "Can't add an empty path to a PatternContextNode");
     }
-    Path.Pattern pattern = (Path.Pattern) path.next();
-    context = pattern.getContext();
-    path.previous();
+    context = path.peek().getContext();
     try {
       add(path, o);
     } catch (DuplicatePathException e) {
