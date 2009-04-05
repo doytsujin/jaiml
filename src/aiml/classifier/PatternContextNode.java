@@ -15,6 +15,7 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
+import aiml.classifier.Path.Iterator;
 import aiml.classifier.node.PatternNode;
 import aiml.context.Context;
 
@@ -61,17 +62,21 @@ public class PatternContextNode extends ContextNode {
    *          Object
    */
   public PatternContextNode(Classifier classifier, Path.Iterator path, Object o) {
-    super(classifier, null); //defer initialization of the context field until later
-    if (!path.hasNext()) {
-      throw new UnsupportedOperationException(
-          "Can't add an empty path to a PatternContextNode");
-    }
-    context = path.peek().getContext();
+    super(classifier, path.peek().getContext());
     try {
       add(path, o);
     } catch (DuplicatePathException e) {
       assert false : "Duplicate path exception after adding a single path to a newly created empty tree - should never happen";
     }
+  }
+
+  @Override
+  public ContextNode add(Iterator path, Object o) throws DuplicatePathException {
+    if (!path.hasNext()) {
+      throw new UnsupportedOperationException(
+          "Can't add an empty path to a PatternContextNode");
+    }
+    return super.add(path, o);
   }
 
   /**
