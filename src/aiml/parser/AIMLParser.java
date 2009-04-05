@@ -60,7 +60,8 @@ public class AIMLParser {
     parser.require("root element must be 'aiml'", XmlPullParser.START_TAG,
         "aiml");
     String version = parser.requireAttrib("version");
-    if (!version.equals("1.0") && !version.equals("1.0.1"))
+    if (!version.equals("1.0") && !version.equals("1.0.1") &&
+        !version.equals("1.0j"))
       throw new InvalidAimlVersionException(
           "Unsupported AIML version, refusing forward compatible processing mode" +
               parser.getPositionDescription());
