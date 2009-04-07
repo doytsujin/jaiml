@@ -15,6 +15,7 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
+import aiml.classifier.Path.Iterator;
 import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
@@ -80,14 +81,16 @@ public class Classifier {
    */
   public void add(Path path, Object o) throws DuplicatePathException {
     assert (getPNF().getCount() > 0) : "You have to register node types";
+    Iterator patterns = path.iterator();
     if (tree == null) {
       if (path.getLength() != 0) {
-        tree = new PatternContextNode(this, path.iterator(), o);
+        tree = patterns.peek().getContext().createClassifierNode(this,
+            patterns, o);
       } else {
         tree = new LeafContextNode(this, o);
       }
     } else {
-      tree = tree.add(path.iterator(), o);
+      tree = tree.add(patterns, o);
     }
     count++; // this is OK, because if the path isn't added, an exception gets
     // thrown before we reach this

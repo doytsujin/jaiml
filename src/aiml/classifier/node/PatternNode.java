@@ -21,7 +21,6 @@ import aiml.classifier.DuplicatePathException;
 import aiml.classifier.LeafContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Path;
-import aiml.classifier.PatternContextNode;
 
 /**
  * <p>
@@ -170,8 +169,8 @@ public abstract class PatternNode implements GraphvizNode {
       subContext = subContext.add(path, o);
     } else {
       if (path.hasNext()) {
-        subContext = new PatternContextNode(parentContext.getClassifier(),
-            path, o);
+        subContext = path.peek().getContext().createClassifierNode(
+            parentContext.getClassifier(), path, o);
       } else {
         subContext = new LeafContextNode(parentContext.getClassifier(), o);
       }

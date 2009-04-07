@@ -14,6 +14,10 @@
 
 package aiml.context;
 
+import aiml.classifier.Classifier;
+import aiml.classifier.ContextNode;
+import aiml.classifier.Path;
+import aiml.classifier.PatternContextNode;
 import aiml.context.data.DataSource;
 import aiml.environment.Environment;
 
@@ -120,6 +124,11 @@ public class Context<T> implements Comparable {
 
   public DataSource<T> getDataSource() {
     return dataSource;
+  }
+
+  public ContextNode createClassifierNode(Classifier classifier,
+      Path.Iterator path, Object o) {
+    return new PatternContextNode(classifier, path, o);
   }
 
   /* (non-Javadoc)
