@@ -42,16 +42,6 @@ public class PatternContextNode extends ContextNode {
   private PatternNode tree;
 
   /**
-   * Create a new context tree with no subcontexts.
-   * 
-   * @param context
-   *          the context ID
-   */
-  public PatternContextNode(Classifier classifier, Context context) {
-    super(classifier, context);
-  }
-
-  /**
    * Create a new context tree from the current pattern in the path. Adds all
    * it's substructures (subcontexts and pattern trees), together with the final
    * object.

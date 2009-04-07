@@ -84,9 +84,10 @@ public abstract class ContextNode implements GraphvizNode {
       if (context.compareTo(pattern.getContext()) < 0) {
         //add as next
         if (next == null) {
-          next = new PatternContextNode(classifier, pattern.getContext());
+          next = new PatternContextNode(classifier, path, o);
+        } else {
+          next = next.add(path, o);
         }
-        next = next.add(path, o);
         return this;
       } else if (context.compareTo(pattern.getContext()) > 0) {
         //add instead of self
