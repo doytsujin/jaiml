@@ -15,22 +15,14 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
-import aiml.classifier.Path.Iterator;
+import aiml.classifier.PaternSequence.PatternIterator;
 import aiml.classifier.node.PatternNode;
 import aiml.context.Context;
 
 /**
  * <p>
- * This class represents a node in the tree of contexts. Each context imposes
- * another constraint on the state of the matching system.
- * </p>
- * <p>
- * Currently, the only types of contexts in AIML are pattern type contexts, and
- * even though the design of the context tree tries to be as general as
- * possible, there are some places that will need redesigning once more types of
- * contexts are to be supported (this applies mainly to the add() method and the
- * way paths are currently handled - jumping back and forth with using a
- * ListIterator doesn't seem too elegant)
+ * This class represents a node in the tree of contexts. Each context node
+ * imposes another constraint on the state of the matching system.
  * </p>
  * 
  * @author Kim Sullivan
@@ -42,31 +34,33 @@ public class PatternContextNode extends ContextNode {
   private PatternNode tree;
 
   /**
-   * Create a new context tree from the current pattern in the path. Adds all
-   * it's substructures (subcontexts and pattern trees), together with the final
-   * object.
+   * Create a new context tree from the current pattern in the sequence. Adds
+   * all it's substructures (subcontexts and pattern trees), together with the
+   * final object.
    * 
-   * @param path
-   *          the path
+   * @param patterns
+   *          the remaining patterns in the sequence
    * @param o
    *          Object
    */
-  public PatternContextNode(Classifier classifier, Path.Iterator path, Object o) {
-    super(classifier, path.peek().getContext());
+  public PatternContextNode(Classifier classifier,
+      PaternSequence.PatternIterator patterns, Object o) {
+    super(classifier, patterns.peek().getContext());
     try {
-      add(path, o);
+      add(patterns, o);
     } catch (DuplicatePathException e) {
-      assert false : "Duplicate path exception after adding a single path to a newly created empty tree - should never happen";
+      assert false : "Duplicate path exception after adding a single sequence to a newly created empty tree - should never happen";
     }
   }
 
   @Override
-  public ContextNode add(Iterator path, Object o) throws DuplicatePathException {
-    if (!path.hasNext()) {
+  public ContextNode add(PatternIterator patterns, Object o)
+      throws DuplicatePathException {
+    if (!patterns.hasNext()) {
       throw new UnsupportedOperationException(
-          "Can't add an empty path to a PatternContextNode");
+          "Can't add an empty sequence of patterns to a PatternContextNode");
     }
-    return super.add(path, o);
+    return super.add(patterns, o);
   }
 
   /**
@@ -95,7 +89,7 @@ public class PatternContextNode extends ContextNode {
    * @param pattern
    *          Pattern
    */
-  public PatternNode addPattern(Path.Pattern pattern) {
+  public PatternNode addPattern(PaternSequence.Pattern pattern) {
     //add the pattern into the current tree.
     String s = pattern.getPattern();
     if (tree == null) {

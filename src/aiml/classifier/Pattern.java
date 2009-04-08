@@ -25,7 +25,8 @@ import com.ibm.icu.text.Transliterator;
  * shouldn't I be passing an instance of a secial pattern class (that
  * encapsulates the depth and the pattern string, and provides lexical
  * analysis), instead of a string and depth? How does this class relate to the
- * Path.Pattern inner class? And who killed the gardner?
+ * {@link aiml.classifier.PatternSequence.Pattern PatternSequence.Pattern} inner
+ * class?
  * </p>
  * 
  * @author Kim Sullivan

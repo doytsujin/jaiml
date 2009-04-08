@@ -16,7 +16,7 @@ package aiml.context;
 
 import aiml.classifier.Classifier;
 import aiml.classifier.ContextNode;
-import aiml.classifier.Path;
+import aiml.classifier.PaternSequence;
 import aiml.classifier.PatternContextNode;
 import aiml.context.data.DataSource;
 import aiml.environment.Environment;
@@ -126,9 +126,20 @@ public class Context<T> implements Comparable {
     return dataSource;
   }
 
+  /**
+   * Returns a new ContextNode specific to this Context type.
+   * 
+   * @param classifier
+   *          the classifier where the node is to be added
+   * @param patterns
+   *          a pattern sequence
+   * @param o
+   *          the object to add to the leaf node
+   * @return a new ContextNode instance
+   */
   public ContextNode createClassifierNode(Classifier classifier,
-      Path.Iterator path, Object o) {
-    return new PatternContextNode(classifier, path, o);
+      PaternSequence.PatternIterator patterns, Object o) {
+    return new PatternContextNode(classifier, patterns, o);
   }
 
   /* (non-Javadoc)

@@ -12,7 +12,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 /**
  * <p>Contains all functionality and classes interpret the AIML language. For
  * the end user, these particular classes may be considered the API to use the
@@ -20,13 +19,13 @@
  * <dl>
  * <dt>{@link aiml.classifier.Classifier aiml.classifier.Classifier}</dt>
  * <dd>The matching/classification functionality</dd>
- * <dt>{@link aiml.classifier.Path aiml.classifier.Path}</dt>
- * <dd>Represents the path, or "category context". Create objects of this class to
- * set the conditions for a particular match.</dd>
+ * <dt>{@link aiml.classifier.PaternSequence aiml.classifier.PaternSequence}</dt>
+ * <dd>Represents a sequence of patterns, or "category context". Create objects of
+ * this class to set the conditions for a particular match.</dd>
  * <dt>{@link aiml.context.ContextInfo aiml.context.ContextInfo}</dt>
  * <dd>Maintans information about all known contexts. Encapsulates the "state
  * of the world". You must initialize this structure with enough context sources
- * before adding paths to the Classifier!</dd>
+ * before adding pattern sequences to the Classifier!</dd>
  * <dt>{@link aiml.context.Context aiml.context.Context}</dt>
  * <dd>Encapsulates a particular state variable used in matching. Inherit this to
  * provide sources of data for your matching environment. </dd>

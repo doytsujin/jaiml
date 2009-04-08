@@ -15,7 +15,7 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
-import aiml.classifier.Path.Iterator;
+import aiml.classifier.PaternSequence.PatternIterator;
 import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
 import aiml.classifier.node.StringNode;
@@ -71,19 +71,20 @@ public class Classifier {
   }
 
   /**
-   * Add a path to the matching tree.
+   * Add the sequence of patterns to the classifier trie.
    * 
-   * @param path
-   *          the path to be added
+   * @param sequence
+   *          the sequence to be added
    * @param o
    *          the object to be stored
    * @throws DuplicatePathException
    */
-  public void add(Path path, Object o) throws DuplicatePathException {
+  public void add(PaternSequence sequence, Object o)
+      throws DuplicatePathException {
     assert (getPNF().getCount() > 0) : "You have to register node types";
-    Iterator patterns = path.iterator();
+    PatternIterator patterns = sequence.iterator();
     if (tree == null) {
-      if (path.getLength() != 0) {
+      if (patterns.hasNext()) {
         tree = patterns.peek().getContext().createClassifierNode(this,
             patterns, o);
       } else {
@@ -92,7 +93,7 @@ public class Classifier {
     } else {
       tree = tree.add(patterns, o);
     }
-    count++; // this is OK, because if the path isn't added, an exception gets
+    count++; // this is OK, because if the sequence isn't added, an exception gets
     // thrown before we reach this
   }
 

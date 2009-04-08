@@ -20,7 +20,7 @@ import aiml.classifier.ContextNode;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.LeafContextNode;
 import aiml.classifier.MatchState;
-import aiml.classifier.Path;
+import aiml.classifier.PaternSequence;
 
 /**
  * <p>
@@ -155,22 +155,23 @@ public abstract class PatternNode implements GraphvizNode {
 
   /**
    * <p>
-   * Adds a new subcontext.
+   * Adds the remaining patterns in the sequence as a sub-context to this
+   * pattern node.
    * </p>
    * 
-   * @param path
-   *          ListIterator
+   * @param patterns
+   *          the remaining patterns in the sequence
    * @param o
    *          Object
    */
-  public void addContext(Path.Iterator path, Object o)
+  public void addContext(PaternSequence.PatternIterator patterns, Object o)
       throws DuplicatePathException {
     if (subContext != null) {
-      subContext = subContext.add(path, o);
+      subContext = subContext.add(patterns, o);
     } else {
-      if (path.hasNext()) {
-        subContext = path.peek().getContext().createClassifierNode(
-            parentContext.getClassifier(), path, o);
+      if (patterns.hasNext()) {
+        subContext = patterns.peek().getContext().createClassifierNode(
+            parentContext.getClassifier(), patterns, o);
       } else {
         subContext = new LeafContextNode(parentContext.getClassifier(), o);
       }

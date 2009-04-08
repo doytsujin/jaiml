@@ -26,7 +26,7 @@ import aiml.classifier.Pattern;
 /**
  * <p>
  * This very simple implementation of a Pattern node is backed by a map where
- * all the patterns are stored. It does not perform any path compression or
+ * all the patterns are stored. It does not perform any path compaction or
  * wildcard matching (apart from being case-insensitive).
  * </p>
  * <p>

@@ -15,6 +15,7 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
+import aiml.classifier.PaternSequence.PatternIterator;
 import aiml.classifier.node.PatternNode;
 import aiml.context.LeafContext;
 
@@ -61,29 +62,30 @@ public class LeafContextNode extends ContextNode {
    * @param pattern
    *          Pattern
    */
-  public PatternNode addPattern(Path.Pattern pattern) {
+  public PatternNode addPattern(PaternSequence.Pattern pattern) {
     throw new UnsupportedOperationException(
         "Can't add a pattern to a leaf context");
   }
 
   /**
-   * Add the path to itself. If there are no patterns in this path to add, throw
-   * a DuplicatePathException.
+   * Add a pattern sequence, from the current pattern onwards. A leaf context
+   * node represents a terminating node, and if the current sequence is already
+   * at the end, the function raises a DuplicatePathException.
    * 
-   * @param path
-   *          the path
+   * @param patterns
+   *          a pattern sequence
    * @param o
-   *          the object
+   *          the object to be added to this tree
    * @throws DuplicatePathException
    * @return the resulting context tree, with all modifications applied and the
    *         correct ordering
    */
-  public ContextNode add(Path.Iterator path, Object o)
+  public ContextNode add(PatternIterator patterns, Object o)
       throws DuplicatePathException {
-    if (!path.hasNext()) {
+    if (!patterns.hasNext()) {
       throw new DuplicatePathException();
     }
-    return super.add(path, o);
+    return super.add(patterns, o);
   }
 
   public String toString() {

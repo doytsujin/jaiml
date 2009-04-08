@@ -35,7 +35,7 @@ import aiml.bot.Bot;
 import aiml.bot.InvalidPropertyException;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
-import aiml.classifier.Path;
+import aiml.classifier.PaternSequence;
 import aiml.script.Block;
 import aiml.script.Formatter;
 import aiml.script.Script;
@@ -45,7 +45,7 @@ public class AIMLParser {
   Logger log = Logger.getLogger(AIMLParser.class.getName());
   CheckingParser parser;
   Bot bot;
-  Path currentPath;
+  PaternSequence currentSequence;
 
   public AIMLParser(Bot bot) throws XmlPullParserException {
     parser = new CheckingParser(
@@ -67,7 +67,7 @@ public class AIMLParser {
               parser.getPositionDescription());
 
     parser.nextTag();
-    currentPath = new Path(bot.getClassifier().getContextInfo());
+    currentSequence = new PaternSequence(bot.getClassifier().getContextInfo());
     doCategoryList();
     parser.require(XmlPullParser.END_TAG, "aiml");
     parser.next();
@@ -114,26 +114,26 @@ public class AIMLParser {
   private void doTopic() throws IOException, XmlPullParserException,
       AimlParserException, MultipleContextsException {
     parser.require(XmlPullParser.START_TAG, "topic");
-    currentPath.save();
+    currentSequence.save();
     String pattern = parser.requireAttrib("name");
-    currentPath.add("topic", pattern);
+    currentSequence.add("topic", pattern);
     parser.nextTag();
     doCategoryList();
     parser.require(XmlPullParser.END_TAG, "topic");
     parser.nextTag();
-    currentPath.restore();
+    currentSequence.restore();
   }
 
   private void doContextGroup() throws IOException, XmlPullParserException,
       AimlParserException, MultipleContextsException {
     parser.require(XmlPullParser.START_TAG, "contextgroup");
     parser.nextTag();
-    currentPath.save();
+    currentSequence.save();
     doContextList();
     doCategoryList();
     parser.require(XmlPullParser.END_TAG, "contextgroup");
     parser.nextTag();
-    currentPath.restore();
+    currentSequence.restore();
   }
 
   private void doContextList() throws XmlPullParserException, IOException,
@@ -147,7 +147,7 @@ public class AIMLParser {
       MultipleContextsException, AimlParserException {
     parser.require(XmlPullParser.START_TAG, "category");
     parser.nextTag();
-    currentPath.save();
+    currentSequence.save();
     if (parser.isEvent(XmlPullParser.START_TAG, "pattern")) {
       doPatternC();
     }
@@ -161,14 +161,14 @@ public class AIMLParser {
     Script s = doTemplate();
     parser.require(XmlPullParser.END_TAG, "category");
     try {
-      bot.getClassifier().add(currentPath, s);
-      log.info("added category " + currentPath + "{" + s + "}");
+      bot.getClassifier().add(currentSequence, s);
+      log.info("added category " + currentSequence + "{" + s + "}");
     } catch (DuplicatePathException e) {
-      log.warning("Duplicate category " + currentPath + " " +
+      log.warning("Duplicate category " + currentSequence + " " +
           parser.getPositionDescription());
     }
     parser.nextTag();
-    currentPath.restore();
+    currentSequence.restore();
   }
 
   private Script doTemplate() throws IOException, XmlPullParserException,
@@ -187,7 +187,7 @@ public class AIMLParser {
     String name = parser.requireAttrib("name");
     parser.next();
     String pattern = doPattern();
-    currentPath.add(name, pattern);
+    currentSequence.add(name, pattern);
     parser.require(XmlPullParser.END_TAG, "context");
     parser.nextTag();
   }
@@ -255,7 +255,7 @@ public class AIMLParser {
     parser.require(XmlPullParser.START_TAG, "that");
     parser.next();
     String pattern = doPattern();
-    currentPath.add("that", pattern);
+    currentSequence.add("that", pattern);
     parser.require(XmlPullParser.END_TAG, "that");
     parser.nextTag();
   }
@@ -265,7 +265,7 @@ public class AIMLParser {
     parser.require(XmlPullParser.START_TAG, "pattern");
     parser.next();
     String pattern = doPattern();
-    currentPath.add("input", pattern);
+    currentSequence.add("input", pattern);
     parser.require(XmlPullParser.END_TAG, "pattern");
     parser.nextTag();
   }

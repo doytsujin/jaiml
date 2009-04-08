@@ -25,30 +25,21 @@ import aiml.util.PeekIterator;
 
 /**
  * <p>
- * This class keeps a collection of context definitions that represent a single
- * category. In AIML, this is often referred to as the "context of the category"
- * (in opposition to a single context like the input, or topic). It uses the
- * "deprecated" name Path instead of something like CategoryContext, mainly
- * because I feel there are already too much classes containing the name
- * "context".
- * </p>
- * 
- * <p>
- * This class keeps a collection of the patterns of a category. Due to the
- * ordered nature of contexts, I think it is best to keep them in a priority
- * queue, which is exactly what this class does - provides acess to an ordered
- * list of context patterns
+ * This class keeps an ordered collection of context definitions ("patterns")
+ * that represent a single category. In AIML, this is often referred to as the
+ * "context of the category" (in opposition to a single context like the input,
+ * or topic).
  * </p>
  * 
  * @author Kim Sullivan
  * @version 1.0
  */
 
-public class Path {
+public class PaternSequence {
   /** An internal linked list to represent the priority queue */
   private LinkedList<Pattern> contextQueue = new LinkedList<Pattern>();
 
-  /** An internal stack of previous path states (used for loading) */
+  /** An internal stack of previous sequence states (used for loading) */
   private LinkedList<LinkedList<Pattern>> historyStack = new LinkedList<LinkedList<Pattern>>();
 
   private ContextInfo contextInfo;
@@ -114,48 +105,49 @@ public class Path {
    * @author Kim Sullivan
    * 
    */
-  public static class Iterator extends PeekIterator<Pattern> {
-    public Iterator(Iterable<Pattern> iterable) {
+  public static class PatternIterator extends PeekIterator<Pattern> {
+    public PatternIterator(Iterable<Pattern> iterable) {
       super(iterable);
     }
   }
 
   /**
-   * The default constructor that creates a new empty path. Other overloaded
-   * constructors are not provided, because in real-world situations the path
-   * will be built incrementally as the <context> tags will be read.
+   * The default constructor that creates a new empty sequence. Other overloaded
+   * constructors are not provided, because in real-world situations the
+   * sequence will be built incrementally as the &lt;context&gt; tags will be
+   * read.
    * 
    * @param contextInfo
    *          TODO
    */
-  public Path(ContextInfo contextInfo) {
+  public PaternSequence(ContextInfo contextInfo) {
     this.contextInfo = contextInfo;
   }
 
   /**
    * <p>
-   * Adds a whole bunch of patterns to the path.
+   * Adds a whole bunch of patterns to the sequence.
    * </p>
    * <p>
    * The array takes the form of:
    * <code>new String[][] {{"contextname","pattern"},{"othercontext","differentpattern"},...}</code>
    * </p>
    * 
-   * @param path
+   * @param contexts
    *          an array of name-pattern pairs
    * @throws MultipleContextsException
    */
-  public void add(String[][] path) throws MultipleContextsException {
-    for (int i = 0; i < path.length; i++) {
-      add(path[i][0], path[i][1]);
+  public void add(String[][] contexts) throws MultipleContextsException {
+    for (int i = 0; i < contexts.length; i++) {
+      add(contexts[i][0], contexts[i][1]);
     }
   }
 
   /**
-   * Adds a single context pattern to the path.
+   * Adds a single context pattern to the sequence.
    * 
    * @param context
-   *          the context
+   *          the name of a context
    * @param pattern
    *          the pattern
    * @throws MultipleContextsException
@@ -189,8 +181,8 @@ public class Path {
   }
 
   /**
-   * Saves the current path onto a stack (used for loading nested context
-   * groups)
+   * Saves the current pattern sequence onto a stack (used for loading nested
+   * context groups)
    */
   @SuppressWarnings("unchecked")
   public void save() {
@@ -198,7 +190,7 @@ public class Path {
   }
 
   /**
-   * Restores the last path.
+   * Restores the previous pattern sequence.
    * 
    * @throws NoSuchElementException
    */
@@ -207,9 +199,9 @@ public class Path {
   }
 
   /**
-   * Returns a string representation of this path.
+   * Returns a string representation of this sequence.
    * 
-   * @return a string representation of this path
+   * @return a string representation of this sequence
    */
   public String toString() {
     return contextQueue.toString();
@@ -220,14 +212,14 @@ public class Path {
    * 
    * @return the unmodifiable iterator
    */
-  public Iterator iterator() {
-    return new Iterator(Collections.unmodifiableList(contextQueue));
+  public PatternIterator iterator() {
+    return new PatternIterator(Collections.unmodifiableList(contextQueue));
   }
 
   /**
-   * Returns the length of the path - the number of patterns.
+   * Returns the length of the sequence - the number of patterns.
    * 
-   * @return the length of the path
+   * @return the length of the sequence
    */
   public int getLength() {
     return contextQueue.size();
