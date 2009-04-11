@@ -17,6 +17,7 @@ import aiml.classifier.Classifier;
 import aiml.classifier.ContextNode;
 import aiml.classifier.PaternSequence;
 import aiml.classifier.PatternContextNode;
+import aiml.classifier.node.PatternNodeFactory;
 
 /**
  * The standard AIML matching behaviour. This class returns a PatternContextNode
@@ -26,7 +27,16 @@ import aiml.classifier.PatternContextNode;
  * 
  */
 public class PatternBehaviour implements MatchingBehaviour {
-
+  private PatternNodeFactory pnf;
+  
+  public PatternBehaviour(PatternNodeFactory pnf) {
+    this.pnf = pnf;
+  }
+  
+  public PatternNodeFactory getPNF() {
+    return pnf;
+  }
+  
   @Override
   public PatternContextNode createClassifierNode(Classifier classifier,
       PaternSequence.PatternIterator patterns, ContextNode next, Object o) {

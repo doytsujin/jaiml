@@ -192,7 +192,8 @@ public class Bot {
     } else {
       // TODO provide actual implementations of topics...
       ContextInfo contextInfo = classifier.getContextInfo();
-      MatchingBehaviour patternBehaviour = new PatternBehaviour();
+      MatchingBehaviour patternBehaviour = new PatternBehaviour(
+          classifier.getPNF());
       contextInfo.registerContext(new InputContext("input",
           new EnvironmentInputSource(), patternBehaviour));
       contextInfo.registerContext(new Context<String>("that",

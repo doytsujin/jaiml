@@ -130,6 +130,10 @@ public class Context<V> implements Comparable {
   public DataSource<V> getDataSource() {
     return dataSource;
   }
+  
+  public MatchingBehaviour getBehaviour() {
+    return matchingBehaviour;
+  }
 
   /**
    * Returns a new ContextNode specific to this Context type.
