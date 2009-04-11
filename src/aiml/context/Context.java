@@ -17,7 +17,8 @@ package aiml.context;
 import aiml.classifier.Classifier;
 import aiml.classifier.ContextNode;
 import aiml.classifier.PaternSequence;
-import aiml.classifier.PatternContextNode;
+import aiml.context.behaviour.MatchingBehaviour;
+import aiml.context.behaviour.PatternBehaviour;
 import aiml.context.data.DataSource;
 import aiml.environment.Environment;
 
@@ -44,7 +45,10 @@ public class Context<V> implements Comparable {
    */
   private int order = -1;
 
+  /** The data source */
   private DataSource<V> dataSource;
+  /** The behaviour */
+  private MatchingBehaviour matchingBehaviour;
 
   /**
    * Creates a new context. The order can't be specified in the constructor,
@@ -61,6 +65,7 @@ public class Context<V> implements Comparable {
   public Context(String name, DataSource<V> dataSource) {
     this.name = name;
     this.dataSource = dataSource;
+    this.matchingBehaviour = new PatternBehaviour();
   }
 
   /**
@@ -121,7 +126,7 @@ public class Context<V> implements Comparable {
   public V getValue(Environment e) {
     return dataSource.getValue(e);
   }
-
+  
   public DataSource<V> getDataSource() {
     return dataSource;
   }
@@ -142,7 +147,7 @@ public class Context<V> implements Comparable {
    */
   public ContextNode createClassifierNode(Classifier classifier,
       PaternSequence.PatternIterator patterns, ContextNode next, Object o) {
-    return new PatternContextNode(classifier, patterns, next, o);
+    return matchingBehaviour.createClassifierNode(classifier, patterns, next, o);
   }
 
   /* (non-Javadoc)
