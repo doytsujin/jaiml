@@ -135,11 +135,14 @@ public class Context<T> implements Comparable {
    *          a pattern sequence
    * @param o
    *          the object to add to the leaf node
+   * @param subContext
+   *          the subcontext node (if present, otherwise may be
+   *          <code>null</code>)
    * @return a new ContextNode instance
    */
   public ContextNode createClassifierNode(Classifier classifier,
-      PaternSequence.PatternIterator patterns, Object o) {
-    return new PatternContextNode(classifier, patterns, o);
+      PaternSequence.PatternIterator patterns, ContextNode subContext, Object o) {
+    return new PatternContextNode(classifier, patterns, subContext, o);
   }
 
   /* (non-Javadoc)

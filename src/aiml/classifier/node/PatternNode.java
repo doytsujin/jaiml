@@ -171,7 +171,7 @@ public abstract class PatternNode implements GraphvizNode {
     } else {
       if (patterns.hasNext()) {
         subContext = patterns.peek().getContext().createClassifierNode(
-            parentContext.getClassifier(), patterns, o);
+            parentContext.getClassifier(), patterns, null, o);
       } else {
         subContext = new LeafContextNode(parentContext.getClassifier(), o);
       }

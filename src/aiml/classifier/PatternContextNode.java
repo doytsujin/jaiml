@@ -17,7 +17,6 @@ package aiml.classifier;
 import graphviz.Graphviz;
 import aiml.classifier.PaternSequence.PatternIterator;
 import aiml.classifier.node.PatternNode;
-import aiml.context.Context;
 
 /**
  * <p>
@@ -40,19 +39,22 @@ public class PatternContextNode extends ContextNode {
    * 
    * @param patterns
    *          the remaining patterns in the sequence
+   * @param subContext
+   *          TODO
    * @param o
    *          Object
    */
   public PatternContextNode(Classifier classifier,
-      PaternSequence.PatternIterator patterns, Object o) {
+      PaternSequence.PatternIterator patterns, ContextNode subContext, Object o) {
     super(classifier, patterns.peek().getContext());
+    this.next = subContext;
     try {
       add(patterns, o);
     } catch (DuplicatePathException e) {
       assert false : "Duplicate path exception after adding a single sequence to a newly created empty tree - should never happen";
     }
   }
-
+  
   @Override
   public ContextNode add(PatternIterator patterns, Object o)
       throws DuplicatePathException {
@@ -61,22 +63,6 @@ public class PatternContextNode extends ContextNode {
           "Can't add an empty sequence of patterns to a PatternContextNode");
     }
     return super.add(patterns, o);
-  }
-
-  /**
-   * <p>
-   * Create a new context tree with a subcontext
-   * </p>
-   * 
-   * @param context
-   *          the context ID
-   * @param subcontext
-   *          the subcontext tree
-   */
-  public PatternContextNode(Classifier classifier, Context context,
-      ContextNode subcontext) {
-    super(classifier, context);
-    this.next = subcontext;
   }
 
   /**

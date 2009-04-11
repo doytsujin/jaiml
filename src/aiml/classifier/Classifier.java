@@ -86,7 +86,7 @@ public class Classifier {
     if (tree == null) {
       if (patterns.hasNext()) {
         tree = patterns.peek().getContext().createClassifierNode(this,
-            patterns, o);
+            patterns, null, o);
       } else {
         tree = new LeafContextNode(this, o);
       }
