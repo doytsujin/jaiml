@@ -30,6 +30,7 @@ import aiml.classifier.Classifier;
 import aiml.context.Context;
 import aiml.context.ContextInfo;
 import aiml.context.InputContext;
+import aiml.context.behaviour.PatternBehaviour;
 import aiml.context.data.EnvironmentInputSource;
 import aiml.context.data.StringSource;
 
@@ -55,23 +56,35 @@ public class AIMLParserTest extends TestCase {
     b.setProperty("baz", "bar");
 
     ap = new AIMLParser(b);
+    PatternBehaviour patternBehaviour = new PatternBehaviour();
     contextInfo = classifier.getContextInfo();
     contextInfo.registerContext(new InputContext("input",
-        new EnvironmentInputSource()));
-    contextInfo.registerContext(new Context<String>("that", new StringSource()));
-    contextInfo.registerContext(new Context<String>("topic", new StringSource()));
+        new EnvironmentInputSource(), patternBehaviour));
+    contextInfo.registerContext(new Context<String>("that", new StringSource(),
+        patternBehaviour));
+    contextInfo.registerContext(new Context<String>("topic",
+        new StringSource(), patternBehaviour));
 
-    contextInfo.registerContext(new Context<String>("alpha", new StringSource()));
-    contextInfo.registerContext(new Context<String>("beta", new StringSource()));
-    contextInfo.registerContext(new Context<String>("gama", new StringSource()));
-    contextInfo.registerContext(new Context<String>("delta", new StringSource()));
+    contextInfo.registerContext(new Context<String>("alpha",
+        new StringSource(), patternBehaviour));
+    contextInfo.registerContext(new Context<String>("beta", new StringSource(),
+        patternBehaviour));
+    contextInfo.registerContext(new Context<String>("gama", new StringSource(),
+        patternBehaviour));
+    contextInfo.registerContext(new Context<String>("delta",
+        new StringSource(), patternBehaviour));
 
-    contextInfo.registerContext(new Context<String>("foo", new StringSource()));
-    contextInfo.registerContext(new Context<String>("bar", new StringSource()));
+    contextInfo.registerContext(new Context<String>("foo", new StringSource(),
+        patternBehaviour));
+    contextInfo.registerContext(new Context<String>("bar", new StringSource(),
+        patternBehaviour));
 
-    contextInfo.registerContext(new Context<String>("ichi", new StringSource()));
-    contextInfo.registerContext(new Context<String>("ni", new StringSource()));
-    contextInfo.registerContext(new Context<String>("san", new StringSource()));
+    contextInfo.registerContext(new Context<String>("ichi", new StringSource(),
+        patternBehaviour));
+    contextInfo.registerContext(new Context<String>("ni", new StringSource(),
+        patternBehaviour));
+    contextInfo.registerContext(new Context<String>("san", new StringSource(),
+        patternBehaviour));
 
     classifier.registerDefaultNodeHandlers();
   }

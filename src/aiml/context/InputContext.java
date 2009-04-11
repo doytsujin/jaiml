@@ -16,6 +16,7 @@ package aiml.context;
 
 import java.util.EmptyStackException;
 
+import aiml.context.behaviour.MatchingBehaviour;
 import aiml.context.data.InputDataSource;
 import aiml.environment.Environment;
 
@@ -36,8 +37,9 @@ import aiml.environment.Environment;
 
 public class InputContext extends Context<String> {
 
-  public InputContext(String name, InputDataSource<String> dataSource) {
-    super(name, dataSource);
+  public InputContext(String name, InputDataSource<String> dataSource,
+      MatchingBehaviour matchingBehaviour) {
+    super(name, dataSource, matchingBehaviour);
   }
 
   /**

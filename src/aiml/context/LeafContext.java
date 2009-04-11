@@ -29,7 +29,7 @@ public class LeafContext extends Context<Object> {
   public static LeafContext LEAF_CONTEXT = new LeafContext();
 
   private LeafContext() {
-    super(null, null);
+    super(null, null, null);
   }
 
   @Override

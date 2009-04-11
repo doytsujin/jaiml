@@ -35,6 +35,8 @@ import aiml.classifier.Classifier;
 import aiml.context.Context;
 import aiml.context.ContextInfo;
 import aiml.context.InputContext;
+import aiml.context.behaviour.MatchingBehaviour;
+import aiml.context.behaviour.PatternBehaviour;
 import aiml.context.data.EnvironmentInputSource;
 import aiml.context.data.ResponseHistorySource;
 import aiml.context.data.VariableSource;
@@ -190,12 +192,13 @@ public class Bot {
     } else {
       // TODO provide actual implementations of topics...
       ContextInfo contextInfo = classifier.getContextInfo();
+      MatchingBehaviour patternBehaviour = new PatternBehaviour();
       contextInfo.registerContext(new InputContext("input",
-          new EnvironmentInputSource()));
+          new EnvironmentInputSource(), patternBehaviour));
       contextInfo.registerContext(new Context<String>("that",
-          new ResponseHistorySource()));
+          new ResponseHistorySource(), patternBehaviour));
       contextInfo.registerContext(new Context<String>("topic",
-          new VariableSource("topic")));
+          new VariableSource("topic"), patternBehaviour));
     }
 
     if (sentenceSplitter == null) {

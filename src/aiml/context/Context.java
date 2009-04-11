@@ -18,7 +18,6 @@ import aiml.classifier.Classifier;
 import aiml.classifier.ContextNode;
 import aiml.classifier.PaternSequence;
 import aiml.context.behaviour.MatchingBehaviour;
-import aiml.context.behaviour.PatternBehaviour;
 import aiml.context.data.DataSource;
 import aiml.environment.Environment;
 
@@ -62,10 +61,11 @@ public class Context<V> implements Comparable {
    * @param name
    *          The name of this context.
    */
-  public Context(String name, DataSource<V> dataSource) {
+  public Context(String name, DataSource<V> dataSource,
+      MatchingBehaviour matchingBehaviour) {
     this.name = name;
     this.dataSource = dataSource;
-    this.matchingBehaviour = new PatternBehaviour();
+    this.matchingBehaviour = matchingBehaviour;
   }
 
   /**
