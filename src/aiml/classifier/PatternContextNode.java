@@ -15,7 +15,9 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
-import aiml.classifier.PaternSequence.PatternIterator;
+
+import java.util.NoSuchElementException;
+
 import aiml.classifier.node.PatternNode;
 
 /**
@@ -36,33 +38,29 @@ public class PatternContextNode extends ContextNode {
    * Create a new context tree from the current pattern in the sequence. Adds
    * all it's substructures (subcontexts and pattern trees), together with the
    * final object.
+   * <p>
+   * Note that it's impossible to create a new PatternContextNode using an empty
+   * sequence of patterns (if <code>patterns.hasNext()</code> returns false). In
+   * such cases, a <code>NoSuchElementException</code> will be thrown.
    * 
    * @param patterns
    *          the remaining patterns in the sequence
-   * @param subContext
-   *          TODO
+   * @param next
+   *          the next context to try if this context node fails to match
    * @param o
    *          Object
+   * @throws NoSuchElementException
+   *           if the <code>patterns</code> parameter is an empty sequence
    */
   public PatternContextNode(Classifier classifier,
-      PaternSequence.PatternIterator patterns, ContextNode subContext, Object o) {
+      PaternSequence.PatternIterator patterns, ContextNode next, Object o) {
     super(classifier, patterns.peek().getContext());
-    this.next = subContext;
+    this.next = next;
     try {
       add(patterns, o);
     } catch (DuplicatePathException e) {
       assert false : "Duplicate path exception after adding a single sequence to a newly created empty tree - should never happen";
     }
-  }
-  
-  @Override
-  public ContextNode add(PatternIterator patterns, Object o)
-      throws DuplicatePathException {
-    if (!patterns.hasNext()) {
-      throw new UnsupportedOperationException(
-          "Can't add an empty sequence of patterns to a PatternContextNode");
-    }
-    return super.add(patterns, o);
   }
 
   /**
