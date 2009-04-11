@@ -15,9 +15,9 @@
 package aiml.classifier.node;
 
 import graphviz.Graphviz;
-import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
+import aiml.classifier.PatternContextNode;
 
 /**
  * A branch in the pattern matching tree. This pure branching node implements
@@ -49,7 +49,7 @@ public class BranchNode extends PatternNode {
   /**
    * Creates a new, empty branch node
    */
-  public BranchNode(ContextNode parent) {
+  public BranchNode(PatternContextNode parent) {
     super(parent);
   }
 
@@ -60,7 +60,7 @@ public class BranchNode extends PatternNode {
    * @param node
    *          the first subtree
    */
-  public BranchNode(ContextNode parent, PatternNode node) {
+  public BranchNode(PatternContextNode parent, PatternNode node) {
     super(parent);
     switch (node.getType()) {
     case PatternNode.UNDERSCORE:

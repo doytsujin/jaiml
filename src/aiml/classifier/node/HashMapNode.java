@@ -19,9 +19,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import aiml.classifier.Classifier;
-import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
+import aiml.classifier.PatternContextNode;
 
 /**
  * <p>
@@ -44,7 +44,7 @@ public class HashMapNode extends PatternNode {
   /**
    * Creates a new hash map pattern node
    */
-  public HashMapNode(ContextNode parent) {
+  public HashMapNode(PatternContextNode parent) {
     super(parent);
   }
 
@@ -129,8 +129,8 @@ public class HashMapNode extends PatternNode {
         return (depth != pattern.length());
       }
 
-      public PatternNode getInstance(ContextNode parentContext) {
-        return new HashMapNode(parentContext);
+      public PatternNode getInstance(PatternContextNode parentContextNode) {
+        return new HashMapNode(parentContextNode);
       }
 
     });

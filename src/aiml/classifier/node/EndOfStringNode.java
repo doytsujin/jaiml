@@ -16,8 +16,8 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import aiml.classifier.Classifier;
-import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
+import aiml.classifier.PatternContextNode;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ public class EndOfStringNode extends PatternNode {
   PatternNode next;
 
   /** Create a new end of string node */
-  public EndOfStringNode(ContextNode parent) {
+  public EndOfStringNode(PatternContextNode parent) {
     super(parent);
     type = PatternNode.STRING;
   }
@@ -47,7 +47,7 @@ public class EndOfStringNode extends PatternNode {
    * @param next
    *          the subtree
    */
-  public EndOfStringNode(ContextNode parent, PatternNode next) {
+  public EndOfStringNode(PatternContextNode parent, PatternNode next) {
     super(parent);
     this.next = next;
     type = PatternNode.STRING;
@@ -117,8 +117,8 @@ public class EndOfStringNode extends PatternNode {
         return (depth == pattern.length());
       }
 
-      public PatternNode getInstance(ContextNode parentContext) {
-        return new EndOfStringNode(parentContext);
+      public PatternNode getInstance(PatternContextNode parentContextNode) {
+        return new EndOfStringNode(parentContextNode);
       }
 
     });

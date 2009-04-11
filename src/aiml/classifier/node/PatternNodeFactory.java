@@ -16,7 +16,7 @@ package aiml.classifier.node;
 
 import java.util.ArrayList;
 
-import aiml.classifier.ContextNode;
+import aiml.classifier.PatternContextNode;
 
 /**
  * A factory class for pattern nodes. A call to <code>getInstance()</code> will
@@ -63,8 +63,8 @@ public class PatternNodeFactory {
   /**
    * Return an instance of a node class most appropriate for the pattern.
    * 
-   * @param parentContext
-   *          TODO
+   * @param parentContextNode
+   *          the parent ContextNode
    * @param depth
    *          the depth
    * @param pattern
@@ -72,11 +72,11 @@ public class PatternNodeFactory {
    * 
    * @return an appropriate instance of PatternNode
    */
-  public PatternNode getInstance(ContextNode parentContext, int depth,
+  public PatternNode getInstance(PatternContextNode parentContextNode, int depth,
       String pattern) {
     for (Creatable nodeType : nodeTypes) {
       if (nodeType.canCreate(depth, pattern)) {
-        return nodeType.getInstance(parentContext);
+        return nodeType.getInstance(parentContextNode);
       }
     }
     return null;

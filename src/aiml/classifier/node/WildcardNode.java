@@ -16,9 +16,9 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import aiml.classifier.Classifier;
-import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
+import aiml.classifier.PatternContextNode;
 
 /**
  * <p>
@@ -57,7 +57,7 @@ public class WildcardNode extends PatternNode {
    *          the wildcard type
    */
 
-  private WildcardNode(ContextNode parent, int type) {
+  private WildcardNode(PatternContextNode parent, int type) {
     super(parent);
     this.type = type;
   }
@@ -144,8 +144,8 @@ public class WildcardNode extends PatternNode {
         return (Pattern.isStar(depth, pattern));
       }
 
-      public PatternNode getInstance(ContextNode parentContext) {
-        return new WildcardNode(parentContext, PatternNode.STAR);
+      public PatternNode getInstance(PatternContextNode parentContextNode) {
+        return new WildcardNode(parentContextNode, PatternNode.STAR);
       }
 
     });
@@ -154,8 +154,8 @@ public class WildcardNode extends PatternNode {
         return (Pattern.isUnderscore(depth, pattern));
       }
 
-      public PatternNode getInstance(ContextNode parentContext) {
-        return new WildcardNode(parentContext, PatternNode.UNDERSCORE);
+      public PatternNode getInstance(PatternContextNode parentContextNode) {
+        return new WildcardNode(parentContextNode, PatternNode.UNDERSCORE);
       }
 
     });

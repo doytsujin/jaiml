@@ -14,7 +14,7 @@
 
 package aiml.classifier.node;
 
-import aiml.classifier.ContextNode;
+import aiml.classifier.PatternContextNode;
 
 /**
  * <p>
@@ -49,5 +49,5 @@ public interface Creatable {
    * 
    * @return PatternNode
    */
-  PatternNode getInstance(ContextNode parentContext);
+  PatternNode getInstance(PatternContextNode parentContextNode);
 }

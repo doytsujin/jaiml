@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import aiml.classifier.Classifier;
-import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
+import aiml.classifier.PatternContextNode;
 
 /**
  * A single character branch in the strings portion of the pattern tree. All by
@@ -43,12 +43,12 @@ public class StringBranchNode extends PatternNode {
   /**
    * Create a new empty string branch node. The type is PatternNode.STRING
    */
-  public StringBranchNode(ContextNode parent) {
+  public StringBranchNode(PatternContextNode parent) {
     super(parent);
     type = PatternNode.STRING;
   }
 
-  public StringBranchNode(ContextNode parent, StringNode node) {
+  public StringBranchNode(PatternContextNode parent, StringNode node) {
     super(parent);
     type = PatternNode.STRING;
     char c = node.getPattern().charAt(0); //this is safe, because a stringnode always represents at least 1 character
@@ -133,8 +133,8 @@ public class StringBranchNode extends PatternNode {
             depth, pattern));
       }
 
-      public PatternNode getInstance(ContextNode parentContext) {
-        return new StringBranchNode(parentContext);
+      public PatternNode getInstance(PatternContextNode parentContextNode) {
+        return new StringBranchNode(parentContextNode);
       }
 
     });

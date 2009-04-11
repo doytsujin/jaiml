@@ -21,6 +21,7 @@ import aiml.classifier.DuplicatePathException;
 import aiml.classifier.LeafContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.PaternSequence;
+import aiml.classifier.PatternContextNode;
 
 /**
  * <p>
@@ -69,7 +70,7 @@ public abstract class PatternNode implements GraphvizNode {
   /**
    * Points to the current context.
    */
-  protected ContextNode parentContext;
+  protected PatternContextNode parentContext;
 
   /**
    * A unique node identifier, used for node output
@@ -77,7 +78,7 @@ public abstract class PatternNode implements GraphvizNode {
   private static int gvMaxId = 0;
   private int gvId;
 
-  public PatternNode(ContextNode parent) {
+  public PatternNode(PatternContextNode parent) {
     this.parentContext = parent;
     gvId = gvMaxId++;
   }

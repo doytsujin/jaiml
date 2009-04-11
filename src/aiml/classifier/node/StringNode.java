@@ -16,9 +16,9 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import aiml.classifier.Classifier;
-import aiml.classifier.ContextNode;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
+import aiml.classifier.PatternContextNode;
 
 /**
  * A single string node. This represents a "compressed" part of the tree, with
@@ -43,7 +43,7 @@ public class StringNode extends PatternNode {
   /**
    * Create a new, empty string node.
    */
-  public StringNode(ContextNode parent) {
+  public StringNode(PatternContextNode parent) {
     super(parent);
     type = PatternNode.STRING;
   }
@@ -58,7 +58,7 @@ public class StringNode extends PatternNode {
    * @param next
    *          the subtree
    */
-  public StringNode(ContextNode parent, String pattern, PatternNode next) {
+  public StringNode(PatternContextNode parent, String pattern, PatternNode next) {
     super(parent);
     type = PatternNode.STRING;
     s = pattern;
@@ -227,8 +227,8 @@ public class StringNode extends PatternNode {
             depth, pattern));
       }
 
-      public PatternNode getInstance(ContextNode parentContext) {
-        return new StringNode(parentContext);
+      public PatternNode getInstance(PatternContextNode parentContextNode) {
+        return new StringNode(parentContextNode);
       }
 
     });
