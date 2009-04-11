@@ -131,7 +131,7 @@ public class AIMLParserTest extends TestCase {
   public void testCategoryList() throws Exception {
     InputStream in = null;
     try {
-      in = new FileInputStream("tests/categoryList-ok.aiml");
+      in = new FileInputStream("tests/categorylist-ok.aiml");
       ap.load(in, "UTF-8");
     } finally {
       if (in != null) {
@@ -144,7 +144,7 @@ public class AIMLParserTest extends TestCase {
   public void testCategoryListBadStart() throws Exception {
     InputStream in = null;
     try {
-      in = new FileInputStream("tests/categoryList-badstart.aiml");
+      in = new FileInputStream("tests/categorylist-badstart.aiml");
       loadFail(in, "UTF-8", AimlSyntaxException.class);
     } finally {
       if (in != null) {
@@ -156,7 +156,7 @@ public class AIMLParserTest extends TestCase {
   public void testCategoryListBadStart2() throws Exception {
     InputStream in = null;
     try {
-      in = new FileInputStream("tests/categoryList-badstart2.aiml");
+      in = new FileInputStream("tests/categorylist-badstart2.aiml");
       loadFail(in, "UTF-8", AimlSyntaxException.class);
     } finally {
       if (in != null) {
@@ -168,7 +168,7 @@ public class AIMLParserTest extends TestCase {
   public void testCategoryListBadEnd() throws Exception {
     InputStream in = null;
     try {
-      in = new FileInputStream("tests/categoryList-badend.aiml");
+      in = new FileInputStream("tests/categorylist-badend.aiml");
       loadFail(in, "UTF-8", AimlSyntaxException.class);
     } finally {
       if (in != null) {
