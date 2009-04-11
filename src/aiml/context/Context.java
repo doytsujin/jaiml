@@ -22,19 +22,19 @@ import aiml.context.data.DataSource;
 import aiml.environment.Environment;
 
 /**
- * This class represents information about a single context - it's name, order
- * and most importantly it provides a method to query the context's current
- * value. Classes that inherit from Context must implement the getValue() method
- * so that it returns meaningful values.
- * 
- * To do: Rename to ContextDeclaration Add a type Add multiuser functionality
+ * This class represents information about a single context. Apart from the
+ * context name and context order, a context has an associated
+ * {@link aiml.context.DataSource DataSource} and a behaviour that determines
+ * the kind of {@link aiml.classifier.ContextNode} used for matching this
+ * context.
  * 
  * @author Kim Sullivan
  * @version 1.0
- * @param <T>
+ * @param <V>
+ *          The type of values this context stores
  */
 
-public class Context<T> implements Comparable {
+public class Context<V> implements Comparable {
   /** The name of this context */
   private String name;
 
@@ -44,7 +44,7 @@ public class Context<T> implements Comparable {
    */
   private int order = -1;
 
-  private DataSource<T> dataSource;
+  private DataSource<V> dataSource;
 
   /**
    * Creates a new context. The order can't be specified in the constructor,
@@ -58,7 +58,7 @@ public class Context<T> implements Comparable {
    * @param name
    *          The name of this context.
    */
-  public Context(String name, DataSource<T> dataSource) {
+  public Context(String name, DataSource<V> dataSource) {
     this.name = name;
     this.dataSource = dataSource;
   }
@@ -78,7 +78,7 @@ public class Context<T> implements Comparable {
    * @return the order of this context
    */
   public int getOrder() {
-    // Maybe this should throw some kind of exception if the irder is -1, and
+    // Maybe this should throw some kind of exception if the order is -1, and
     // the Context hasn't been registered with ContextInfo yet...
     return order;
   }
@@ -118,11 +118,11 @@ public class Context<T> implements Comparable {
    * 
    * @return The value currently associated with the context.
    */
-  public T getValue(Environment e) {
+  public V getValue(Environment e) {
     return dataSource.getValue(e);
   }
 
-  public DataSource<T> getDataSource() {
+  public DataSource<V> getDataSource() {
     return dataSource;
   }
 
@@ -135,14 +135,14 @@ public class Context<T> implements Comparable {
    *          a pattern sequence
    * @param o
    *          the object to add to the leaf node
-   * @param subContext
-   *          the subcontext node (if present, otherwise may be
-   *          <code>null</code>)
+   * @param next
+   *          the next context node to try if this newly created context fails
+   *          to match (if present, otherwise may be <code>null</code>)
    * @return a new ContextNode instance
    */
   public ContextNode createClassifierNode(Classifier classifier,
-      PaternSequence.PatternIterator patterns, ContextNode subContext, Object o) {
-    return new PatternContextNode(classifier, patterns, subContext, o);
+      PaternSequence.PatternIterator patterns, ContextNode next, Object o) {
+    return new PatternContextNode(classifier, patterns, next, o);
   }
 
   /* (non-Javadoc)
