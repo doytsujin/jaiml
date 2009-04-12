@@ -56,8 +56,12 @@ public class AIMLParserTest extends TestCase {
     b.setProperty("baz", "bar");
 
     ap = new AIMLParser(b);
+    classifier.registerDefaultNodeHandlers();
+    
     PatternBehaviour patternBehaviour = new PatternBehaviour(
         classifier.getPNF());
+    
+    
     contextInfo = classifier.getContextInfo();
     contextInfo.registerContext(new InputContext("input",
         new EnvironmentInputSource(), patternBehaviour));
@@ -86,8 +90,6 @@ public class AIMLParserTest extends TestCase {
         patternBehaviour));
     contextInfo.registerContext(new Context<String>("san", new StringSource(),
         patternBehaviour));
-
-    classifier.registerDefaultNodeHandlers();
   }
 
   private void loadFail(Reader in, Class<? extends Exception> exception)

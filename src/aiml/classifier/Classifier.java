@@ -81,7 +81,6 @@ public class Classifier {
    */
   public void add(PaternSequence sequence, Object o)
       throws DuplicatePathException {
-    assert (getPNF().getCount() > 0) : "You have to register node types";
     PatternIterator patterns = sequence.iterator();
     if (tree == null) {
       if (patterns.hasNext()) {

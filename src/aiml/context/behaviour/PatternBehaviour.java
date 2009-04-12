@@ -30,6 +30,7 @@ public class PatternBehaviour implements MatchingBehaviour {
   private PatternNodeFactory pnf;
   
   public PatternBehaviour(PatternNodeFactory pnf) {
+    assert (pnf.getCount() > 0) : "You have to register node types";
     this.pnf = pnf;
   }
   
