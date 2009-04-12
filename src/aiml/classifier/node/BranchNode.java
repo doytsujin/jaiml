@@ -85,7 +85,7 @@ public class BranchNode extends PatternNode {
    */
   public PatternNode.AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
+    PatternNodeFactory patternNodeFactory = parentContext.getPNF();
     //this is a really ugly method... should I put the subnodes in an Array? is it OK to use
     //static final ints as hardcoded indexes?
     int t = Pattern.getType(depth, pattern);

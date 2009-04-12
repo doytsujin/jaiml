@@ -63,7 +63,7 @@ public class EndOfStringNode extends PatternNode {
    * @return AddResult
    */
   public AddResult add(int depth, String pattern) {
-    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
+    PatternNodeFactory patternNodeFactory = parentContext.getPNF();
     if (depth == pattern.length()) {
       //OK, we can "add" the end of the string;
       //System.out.println("AddEOS");

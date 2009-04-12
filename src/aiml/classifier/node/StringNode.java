@@ -76,7 +76,7 @@ public class StringNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
+    PatternNodeFactory patternNodeFactory = parentContext.getPNF();
     if (depth == pattern.length()) {
       PatternNode node = new EndOfStringNode(parentContext, this);
       result = node.add(depth, pattern);

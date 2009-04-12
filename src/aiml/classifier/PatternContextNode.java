@@ -19,6 +19,8 @@ import graphviz.Graphviz;
 import java.util.NoSuchElementException;
 
 import aiml.classifier.node.PatternNode;
+import aiml.classifier.node.PatternNodeFactory;
+import aiml.context.behaviour.PatternBehaviour;
 
 /**
  * <p>
@@ -55,6 +57,7 @@ public class PatternContextNode extends ContextNode {
   public PatternContextNode(Classifier classifier,
       PaternSequence.PatternIterator patterns, ContextNode next, Object o) {
     super(classifier, patterns.peek().getContext());
+    assert (this.context.getBehaviour() instanceof PatternBehaviour) : "The context of a pattern added to a PatternContextNode must be an instance of the PatternBehaviour class";      
     this.next = next;
     try {
       add(patterns, o);
@@ -75,9 +78,10 @@ public class PatternContextNode extends ContextNode {
    */
   public PatternNode addPattern(PaternSequence.Pattern pattern) {
     //add the pattern into the current tree.
+    assert (pattern.getContext().getBehaviour() instanceof PatternBehaviour) : "The context of a pattern added to a PatternContextNode must be an instance of the PatternBehaviour class";
     String s = pattern.getPattern();
     if (tree == null) {
-      tree = classifier.getPNF().getInstance(this, 0, s);
+      tree = getPNF().getInstance(this, 0, s);
     }
     PatternNode.AddResult result = tree.add(0, s);
     assert (result.newDepth == s.length()) : "A pattern node tree has failed to add a pattern completely";
@@ -108,6 +112,10 @@ public class PatternContextNode extends ContextNode {
       return true;
     }
 
+  }
+  
+  public PatternNodeFactory getPNF() {
+    return ((PatternBehaviour) context.getBehaviour()).getPNF();
   }
 
   /** Returns a string representation of this context node */

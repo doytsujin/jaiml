@@ -59,7 +59,7 @@ public class HashMapNode extends PatternNode {
    */
   public AddResult add(int depth, String pattern) {
     AddResult result;
-    PatternNodeFactory patternNodeFactory = parentContext.getClassifier().getPNF();
+    PatternNodeFactory patternNodeFactory = parentContext.getPNF();
     pattern = Pattern.normalize(pattern.substring(depth));
 
     PatternNode node = map.get(pattern);
