@@ -19,7 +19,6 @@ import graphviz.Graphviz;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
@@ -124,8 +123,7 @@ public class StringBranchNode extends PatternNode {
    * @param classifier
    *          TODO
    */
-  public static void register(Classifier classifier) {
-    PatternNodeFactory patternNodeFactory = classifier.getPNF();
+  public static void register(PatternNodeFactory patternNodeFactory) {
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
 

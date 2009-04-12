@@ -15,7 +15,6 @@
 package aiml.classifier.node;
 
 import graphviz.Graphviz;
-import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
@@ -137,8 +136,7 @@ public class WildcardNode extends PatternNode {
    * @param classifier
    *          TODO
    */
-  public static void register(Classifier classifier) {
-    PatternNodeFactory patternNodeFactory = classifier.getPNF();
+  public static void register(PatternNodeFactory patternNodeFactory) {
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (Pattern.isStar(depth, pattern));

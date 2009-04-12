@@ -15,7 +15,6 @@
 package aiml.classifier.node;
 
 import graphviz.Graphviz;
-import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.classifier.PatternContextNode;
 
@@ -110,8 +109,7 @@ public class EndOfStringNode extends PatternNode {
   /**
    * Register this node type in PatternNodeFactory.
    */
-  public static void register(Classifier classifier) {
-    PatternNodeFactory patternNodeFactory = classifier.getPNF();
+  public static void register(PatternNodeFactory patternNodeFactory) {
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (depth == pattern.length());

@@ -56,11 +56,8 @@ public class AIMLParserTest extends TestCase {
     b.setProperty("baz", "bar");
 
     ap = new AIMLParser(b);
-    classifier.registerDefaultNodeHandlers();
-    
-    PatternBehaviour patternBehaviour = new PatternBehaviour(
-        classifier.getPNF());
-    
+
+    PatternBehaviour patternBehaviour = PatternBehaviour.getDefaultBehaviour();  
     
     contextInfo = classifier.getContextInfo();
     contextInfo.registerContext(new InputContext("input",

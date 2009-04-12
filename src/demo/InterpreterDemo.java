@@ -39,7 +39,7 @@ public class InterpreterDemo {
       IOException, BotSyntaxException, AimlParserException {
     Logger.getLogger("aiml").setLevel(Level.WARNING);
     System.out.println("Demonstration program for the java aiml interpreter library");
-    System.out.println("(C) Kim Sullivan, 2006");
+    System.out.println("(C) Kim Sullivan, 2006, 2009");
     if (args.length == 0) {
       System.err.println("Error: you must specify a command line argument with the bot to load!");
       return;
@@ -53,7 +53,6 @@ public class InterpreterDemo {
 
     Classifier classifier = new Classifier();
 
-    classifier.registerDefaultNodeHandlers();
     Bot b = new Bot(classifier);
     System.out.println("Loading bot...");
     // b.setProperty("name","Really Complicated");

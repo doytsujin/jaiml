@@ -17,17 +17,44 @@ import aiml.classifier.Classifier;
 import aiml.classifier.ContextNode;
 import aiml.classifier.PaternSequence;
 import aiml.classifier.PatternContextNode;
+import aiml.classifier.node.EndOfStringNode;
 import aiml.classifier.node.PatternNodeFactory;
+import aiml.classifier.node.StringNode;
+import aiml.classifier.node.WildcardNode;
 
 /**
  * The standard AIML matching behaviour. This class returns a PatternContextNode
- * instance when asked to provide a classifier node.
+ * instance when asked to provide a classifier node. It also holds a reference
+ * to a PatternNodeFactory that knows how to create basic PatternNode instances.
  * 
  * @author Kim Sullivan
  * 
  */
 public class PatternBehaviour implements MatchingBehaviour {
   private PatternNodeFactory pnf;
+  
+  private static class Holder {
+    static PatternBehaviour defaultPatternBehaviour;
+    static {
+      PatternNodeFactory pnf = new PatternNodeFactory();
+      StringNode.register(pnf);
+      EndOfStringNode.register(pnf);
+      WildcardNode.register(pnf);
+      defaultPatternBehaviour = new PatternBehaviour(pnf);
+    }
+  }
+
+  /**
+   * Returns an instance with the default (hopefully most optimal) node handler
+   * classes registered in its pattern node factory.
+   * 
+   * @see aiml.classifier.node
+   * 
+   * @return the default pattern behaviour
+   */
+  public static PatternBehaviour getDefaultBehaviour() {
+    return Holder.defaultPatternBehaviour;
+  }
   
   public PatternBehaviour(PatternNodeFactory pnf) {
     assert (pnf.getCount() > 0) : "You have to register node types";

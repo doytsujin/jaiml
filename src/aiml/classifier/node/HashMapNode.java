@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import aiml.classifier.Classifier;
 import aiml.classifier.MatchState;
 import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
@@ -122,8 +121,7 @@ public class HashMapNode extends PatternNode {
    * @param classifier
    *          TODO
    */
-  public static void register(Classifier classifier) {
-    PatternNodeFactory patternNodeFactory = classifier.getPNF();
+  public static void register(PatternNodeFactory patternNodeFactory) {
     patternNodeFactory.registerNode(new Creatable() {
       public boolean canCreate(int depth, String pattern) {
         return (depth != pattern.length());

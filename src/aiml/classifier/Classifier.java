@@ -16,10 +16,6 @@ package aiml.classifier;
 
 import graphviz.Graphviz;
 import aiml.classifier.PaternSequence.PatternIterator;
-import aiml.classifier.node.EndOfStringNode;
-import aiml.classifier.node.PatternNodeFactory;
-import aiml.classifier.node.StringNode;
-import aiml.classifier.node.WildcardNode;
 import aiml.context.ContextInfo;
 import aiml.environment.Environment;
 
@@ -38,9 +34,6 @@ public class Classifier {
   /** The root context tree */
   private ContextNode tree;
 
-  /** The factory that creates pattern nodes */
-  private PatternNodeFactory patternNodeFactory;
-
   /** Information about context set up */
   private ContextInfo contextInfo;
 
@@ -51,7 +44,6 @@ public class Classifier {
    * Creates an instance of the aiml matcher.
    */
   public Classifier() {
-    patternNodeFactory = new PatternNodeFactory();
     contextInfo = new ContextInfo();
   }
 
@@ -96,10 +88,6 @@ public class Classifier {
     // thrown before we reach this
   }
 
-  public PatternNodeFactory getPNF() {
-    return patternNodeFactory;
-  }
-
   public ContextInfo getContextInfo() {
     return contextInfo;
   }
@@ -111,21 +99,6 @@ public class Classifier {
    */
   public int getCount() {
     return count;
-  }
-
-  /**
-   * <p>
-   * This is a convenience method to register the default (or hopefully most
-   * optimal) node handler classes. When using this method, you don't have to
-   * think about all the different aiml.classifier.node.* implementations.
-   * </p>
-   * 
-   * @see aiml.classifier.node
-   */
-  public void registerDefaultNodeHandlers() {
-    StringNode.register(this);
-    EndOfStringNode.register(this);
-    WildcardNode.register(this);
   }
 
   public Graphviz gvGraph(Graphviz graph) {
