@@ -85,11 +85,8 @@ public abstract class ContextNode implements GraphvizNode {
         return this;
       } else if (context.compareTo(pattern.getContext()) > 0) {
         //add instead of self
-        // return pattern.getContext().createClassifierNode(classifier,
-        // patterns, this, o);
-        ContextNode cn = pattern.getContext().createClassifierNode(classifier,
-            patterns, this, o);
-        return cn.add(patterns, o); //actually, just cn should be sufficient, but let's not make any assumptions
+        return pattern.getContext().createClassifierNode(classifier, patterns,
+            this, o);
       } else {
         //add the pattern into the current tree.
         PatternNode leaf = addPattern(pattern);
