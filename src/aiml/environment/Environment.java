@@ -18,6 +18,7 @@ import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -126,7 +127,9 @@ public class Environment {
 
   /**
    * Retrieve a sentence from conversation history. The <code>interaction</code>
-   * specifies
+   * specifies which interaction (counting backwards, 0 being the most recent
+   * response) and <code>sentence</code> the sentence from that interaction
+   * (also counting backwards, 0 being the most recent).
    * 
    * @param interaction
    * @param sentence
@@ -135,11 +138,37 @@ public class Environment {
   public String getBotResponse(int interaction, int sentence) {
     if (interaction < 0 || sentence < 0) {
       throw new InvalidParameterException(
-          "Interaction and sentences must be positive integers");
+          "Interaction and sentences must be non-negative integers");
     }
     if (responseHistory.size() > interaction &&
         responseHistory.get(interaction).size() > sentence) {
       return responseHistory.get(interaction).get(sentence);
+    }
+    return "";
+  }
+
+  /**
+   * Retrieve all sentences of a particular interaction. The
+   * <code>interaction</code> specifies which interaction (counting backwards, 0
+   * being the most recent response).
+   * 
+   * @param interaction
+   * @return
+   */
+  public String getBotResponse(int interaction) {
+    if (interaction < 0) {
+      throw new InvalidParameterException(
+          "Interaction and sentences must be non-negative integers");
+    }
+    if (responseHistory.size() > interaction) {
+      StringBuilder result = new StringBuilder();
+      LinkedList<String> sentenceList = responseHistory.get(interaction);
+      for (Iterator<String> iterator = sentenceList.descendingIterator(); iterator.hasNext();) {
+        String sentence = iterator.next();
+        result.append(sentence);
+
+      }
+      return result.toString();
     }
     return "";
   }
