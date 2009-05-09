@@ -10,11 +10,11 @@ public class ResponseHistorySource implements DataSource<String> {
   private int sentence;
 
   public ResponseHistorySource() {
-    this(0, 0);
+    this(1, 1);
   }
 
   public ResponseHistorySource(int interaction, int sentence) {
-    if (interaction < 0 || sentence < 0) {
+    if (interaction < 1 || sentence < 1) {
       throw new InvalidParameterException(
           "Interaction and sentences must be positive integers");
     }

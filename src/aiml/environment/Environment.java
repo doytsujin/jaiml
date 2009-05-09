@@ -135,42 +135,42 @@ public class Environment {
 
   /**
    * Retrieve a sentence from conversation history. The <code>interaction</code>
-   * specifies which interaction (counting backwards, 0 being the most recent
+   * specifies which interaction (counting backwards, 1 being the most recent
    * response) and <code>sentence</code> the sentence from that interaction
-   * (also counting backwards, 0 being the most recent).
+   * (also counting backwards, 1 being the most recent).
    * 
    * @param interaction
    * @param sentence
    * @return
    */
   public String getBotResponse(int interaction, int sentence) {
-    if (interaction < 0 || sentence < 0) {
+    if (interaction < 1 || sentence < 1) {
       throw new InvalidParameterException(
-          "Interaction and sentences must be non-negative integers");
+          "Interaction and sentences must be positive integers");
     }
-    if (responseHistory.size() > interaction &&
-        responseHistory.get(interaction).size() > sentence) {
-      return responseHistory.get(interaction).get(sentence);
+    if (responseHistory.size() >= interaction &&
+        responseHistory.get(interaction).size() >= sentence) {
+      return responseHistory.get(interaction - 1).get(sentence - 1);
     }
     return "";
   }
 
   /**
    * Retrieve all sentences of a particular interaction. The
-   * <code>interaction</code> specifies which interaction (counting backwards, 0
+   * <code>interaction</code> specifies which interaction (counting backwards, 1
    * being the most recent response).
    * 
    * @param interaction
    * @return
    */
   public String getBotResponse(int interaction) {
-    if (interaction < 0) {
+    if (interaction < 1) {
       throw new InvalidParameterException(
-          "Interaction and sentences must be non-negative integers");
+          "Interaction must be a positive integers");
     }
-    if (responseHistory.size() > interaction) {
+    if (responseHistory.size() >= interaction) {
       StringBuilder result = new StringBuilder();
-      LinkedList<String> sentenceList = responseHistory.get(interaction);
+      LinkedList<String> sentenceList = responseHistory.get(interaction - 1);
       for (Iterator<String> iterator = sentenceList.descendingIterator(); iterator.hasNext();) {
         String sentence = iterator.next();
         result.append(sentence);
