@@ -87,6 +87,14 @@ public class Environment {
     return "";
   }
 
+  /*"fake" method, the environment doesn't support input history */
+  public String getInput(int i) {
+    if (i == 1) {
+      return getInput();
+    }
+    return "";
+  }
+
   public String getInput() {
     return input.getFirst();
   }
