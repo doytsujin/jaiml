@@ -13,7 +13,6 @@
 
 
 <category>
-<pattern>*</pattern>
 <context name="topic">CISLO</context>
 <template><think><set name="topic"/></think>
 <random>
@@ -36,7 +35,6 @@ Jaké číslo?
 </category>
 
 <category>
-<pattern>*</pattern>
 <template>
 <random>
 <li>Tak tomu jsem bohužel nerozuměla.</li>
@@ -73,6 +71,21 @@ Jaké číslo?
 <category>
 <pattern>JMENUJEŠ SE <bot name="name"/></pattern>
 <template>Ano, jak tě to napadlo?</template>
+</category>
+
+<category>
+<pattern>JMENUJU *</pattern>
+<template><srai>Jmenuji <star/></srai></template>
+</category>
+
+<category>
+<pattern>_JMENUJU *</pattern>
+<template><srai><star index="1"/>jmenuji <star index="2"/></srai></template>
+</category>
+
+<category>
+<pattern>JÁ SE JMENUJI *</pattern>
+<template><srai>Jmenuji se <star/></srai></template>
 </category>
 
 </aiml>

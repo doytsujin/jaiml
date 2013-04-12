@@ -12,6 +12,12 @@
 -->
 
 <category>
+<that>JAK TĚ MÁM OSLOVOVAT</that>
+<template>
+Jmenuješ se <get name="name"/> a budu ti říkat <set name="name5"><formal><star/></formal></set>.</template>
+</category>
+
+<category>
 <pattern>JMENUJI SE *</pattern>
 <template>
 <think>

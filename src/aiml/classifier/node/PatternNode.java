@@ -20,8 +20,9 @@ import aiml.classifier.ContextNode;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.LeafContextNode;
 import aiml.classifier.MatchState;
-import aiml.classifier.PaternSequence;
+import aiml.classifier.NodeStatistics;
 import aiml.classifier.PatternContextNode;
+import aiml.classifier.PatternSequence;
 
 /**
  * <p>
@@ -165,7 +166,7 @@ public abstract class PatternNode implements GraphvizNode {
    * @param o
    *          Object
    */
-  public void addContext(PaternSequence.PatternIterator patterns, Object o)
+  public void addContext(PatternSequence.PatternIterator patterns, Object o)
       throws DuplicatePathException {
     if (subContext != null) {
       subContext = subContext.add(patterns, o);
@@ -239,5 +240,23 @@ public abstract class PatternNode implements GraphvizNode {
    */
   public void gvExternalGraph(Graphviz graph) {
     graph.connectGraph(this, subContext, "");
+  }
+
+  public void getNodeCount(NodeStatistics stats) {
+    getThisNodeStats(stats);
+    getInternalNodeCount(stats);
+    if (subContext != null) {
+      subContext.getNodeStats(stats);
+      stats.addBranches(1);
+    }
+
+  }
+
+  protected void getThisNodeStats(NodeStatistics stats) {
+    stats.addNodes(1);
+  }
+
+  protected void getInternalNodeCount(NodeStatistics stats) {
+    stats.addNodes(0);
   }
 }

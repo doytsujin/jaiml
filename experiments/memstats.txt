@@ -1,0 +1,137 @@
+These are the statistics collected for different branches and maps while extracting patterns from the AAA aiml set:
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (LinkedHashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 3839491 unused branches
+532742144 max, 109338624 total, 24544848 free, 84793776 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (HashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 3838963 unused branches
+532742144 max, 107573248 total, 32964232 free, 74609016 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (TreeMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 0 unused branches
+532742144 max, 63664128 total, 6201512 free, 57462616 used
+532742144 max, 63664128 total, 6201512 free, 57462616 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (NonOptimalNodemapper/LinkedHashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 1781939 unused branches
+532742144 max, 64204800 total, 2898888 free, 61305912 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (OneOptimalNodeMapper/LinkedHashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 485815 unused branches
+532742144 max, 58851328 total, 17796504 free, 41054824 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (TwoOptimalNodeMapper/LinkedHashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 661699 unused branches
+532742144 max, 59047936 total, 16705136 free, 42342800 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (ThreeOptimalNodeMapper/LinkedHashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 894463 unused branches
+532742144 max, 62615552 total, 21721944 free, 40893608 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (NonOptimalNodemapper/HashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 1781411 unused branches
+532742144 max, 61685760 total, 8042840 free, 53642920 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (OneOptimalNodemapper/HashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 485287 unused branches
+532742144 max, 61100032 total, 20578840 free, 40521192 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (TwoOptimalNodemapper/HashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 661171 unused branches
+532742144 max, 59424768 total, 18355792 free, 41068976 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (ThreeOptimalNodemapper/HashMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 893935 unused branches
+532742144 max, 62095360 total, 18854440 free, 43240920 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (NonOptimalNodemapper/TreeMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 0 unused branches
+532742144 max, 59944960 total, 13626784 free, 46318176 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (OneOptimalNodemapper/TreeMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 375746 unused branches
+532742144 max, 58626048 total, 19807912 free, 38818136 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (TwoOptimalNodemapper/TreeMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 618144 unused branches
+532742144 max, 61579264 total, 21046016 free, 40533248 used
+
+Using aiml.context.behaviour.AIMLPatternBehaviour (ThreeOptimalNodemapper/TreeMap)
+Loaded 45234 categories, 381631 nodes, 381630 forward branches, 108728 self-loops, 863375 unused branches
+532742144 max, 61976576 total, 21339752 free, 40636824 used
+
+
+
+Using aiml.context.behaviour.PatternBehaviour (Character LinkedHashMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 199570 unused branches
+532742144 max, 35155968 total, 7446808 free, 27709160 used
+
+Using aiml.context.behaviour.PatternBehaviour (Character HashMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 198562 unused branches
+532742144 max, 34500608 total, 7617616 free, 26882992 used
+532742144 max, 34500608 total, 7617616 free, 26882992 used
+
+Using aiml.context.behaviour.PatternBehaviour (Character TreeMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 5892 unused branches
+532742144 max, 34410496 total, 7134944 free, 27275552 used
+
+Using aiml.context.behaviour.PatternBehaviour (String LinkedHashMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 199570 unused branches
+532742144 max, 34885632 total, 5370856 free, 29514776 used
+
+Using aiml.context.behaviour.PatternBehaviour (String HashMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 198562 unused branches
+532742144 max, 34734080 total, 5251096 free, 29482984 used
+
+Using aiml.context.behaviour.PatternBehaviour (String TreeMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 5892 unused branches
+532742144 max, 35266560 total, 6340616 free, 28925944 used
+
+Using aiml.context.behaviour.PatternBehaviour (NonOptimalNodemaster/LHM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 199570 unused branches
+532742144 max, 34795520 total, 6315232 free, 28480288 used
+
+Using aiml.context.behaviour.PatternBehaviour (OneOptimalNodemaster/LHM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 214280 unused branches
+532742144 max, 35016704 total, 6333576 free, 28683128 used
+
+Using aiml.context.behaviour.PatternBehaviour (TwoOptimalNodemaster/LHM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 97380 unused branches
+532742144 max, 34398208 total, 7402216 free, 26995992 used
+
+Using aiml.context.behaviour.PatternBehaviour (ThreeOptimalNodemaster/LHM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 74830 unused branches
+532742144 max, 34754560 total, 9119016 free, 25635544 used
+
+Using aiml.context.behaviour.PatternBehaviour (NonOptimalNodemaster/HM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 198562 unused branches
+532742144 max, 34381824 total, 6809616 free, 27572208 used
+
+Using aiml.context.behaviour.PatternBehaviour (OneOptimalNodemaster/HM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 213272 unused branches
+532742144 max, 34533376 total, 6472504 free, 28060872 used
+
+Using aiml.context.behaviour.PatternBehaviour (TwoOptimalNodemaster/HM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 96372 unused branches
+532742144 max, 34287616 total, 7874552 free, 26413064 used
+
+Using aiml.context.behaviour.PatternBehaviour (ThreeOptimalNodemaster/HM)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 73822 unused branches
+532742144 max, 34410496 total, 8154816 free, 26255680 used
+
+Using aiml.context.behaviour.PatternBehaviour (NonOptimalNodemaster/TreeMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 5892 unused branches
+532742144 max, 34619392 total, 8167696 free, 26451696 used
+
+Using aiml.context.behaviour.PatternBehaviour (OneOptimalNodemaster/TreeMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 20602 unused branches
+532742144 max, 34422784 total, 6869920 free, 27552864 used
+
+Using aiml.context.behaviour.PatternBehaviour (TwoOptimalNodemaster/TreeMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 26538 unused branches
+532742144 max, 34795520 total, 9270696 free, 25524824 used
+
+Using aiml.context.behaviour.PatternBehaviour (ThreeOptimalNodemaster/TreeMap)
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 36280 unused branches
+532742144 max, 34525184 total, 7729088 free, 26796096 used

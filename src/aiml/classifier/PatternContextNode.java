@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 
 import aiml.classifier.node.PatternNode;
 import aiml.classifier.node.PatternNodeFactory;
+import aiml.context.Context;
 import aiml.context.behaviour.PatternBehaviour;
 
 /**
@@ -35,6 +36,13 @@ import aiml.context.behaviour.PatternBehaviour;
 public class PatternContextNode extends ContextNode {
   /** The subtree of pattern nodes */
   private PatternNode tree;
+
+  /**
+   * A minimal constructor that subclasses can use
+   */
+  protected PatternContextNode(Classifier classifier, Context context) {
+    super(classifier, context);
+  }
 
   /**
    * Create a new context tree from the current pattern in the sequence. Adds
@@ -55,9 +63,9 @@ public class PatternContextNode extends ContextNode {
    *           if the <code>patterns</code> parameter is an empty sequence
    */
   public PatternContextNode(Classifier classifier,
-      PaternSequence.PatternIterator patterns, ContextNode next, Object o) {
+      PatternSequence.PatternIterator patterns, ContextNode next, Object o) {
     super(classifier, patterns.peek().getContext());
-    assert (this.context.getBehaviour() instanceof PatternBehaviour) : "The context of a pattern added to a PatternContextNode must be an instance of the PatternBehaviour class";      
+    assert (this.context.getBehaviour() instanceof PatternBehaviour) : "The context of a pattern added to a PatternContextNode must be an instance of the PatternBehaviour class";
     this.next = next;
     try {
       add(patterns, o);
@@ -76,10 +84,10 @@ public class PatternContextNode extends ContextNode {
    * @param pattern
    *          Pattern
    */
-  public PatternNode addPattern(PaternSequence.Pattern pattern) {
+  public PatternNode addPattern(PatternSequence.Pattern pattern) {
     //add the pattern into the current tree.
     assert (pattern.getContext().getBehaviour() instanceof PatternBehaviour) : "The context of a pattern added to a PatternContextNode must be an instance of the PatternBehaviour class";
-    String s = pattern.getPattern();
+    String s = Pattern.normalize(pattern.getPattern());
     if (tree == null) {
       tree = getPNF().getInstance(this, 0, s);
     }
@@ -99,10 +107,10 @@ public class PatternContextNode extends ContextNode {
    *         match failed
    */
   public boolean match(MatchState match) {
-    match.addContext(context);
+    match.enterContext(context);
 
     if (!tree.match(match)) {
-      match.dropContext();
+      match.leaveContext();
       if (next != null) {
         return next.match(match);
       } else {
@@ -113,7 +121,7 @@ public class PatternContextNode extends ContextNode {
     }
 
   }
-  
+
   public PatternNodeFactory getPNF() {
     return ((PatternBehaviour) context.getBehaviour()).getPNF();
   }
@@ -138,6 +146,15 @@ public class PatternContextNode extends ContextNode {
     if (tree != null) {
       graph.edge(gvNodeID(), tree.gvNodeID());
       tree.gvGraph(graph);
+    }
+  }
+
+  @Override
+  protected void getInternalNodeStats(NodeStatistics stats) {
+    super.getInternalNodeStats(stats);
+    if (tree != null) {
+      tree.getNodeCount(stats);
+      stats.addBranches(1);
     }
   }
 

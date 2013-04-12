@@ -72,14 +72,16 @@ public class PatternNodeFactory {
    * 
    * @return an appropriate instance of PatternNode
    */
-  public PatternNode getInstance(PatternContextNode parentContextNode, int depth,
-      String pattern) {
+  public PatternNode getInstance(PatternContextNode parentContextNode,
+      int depth, String pattern) {
     for (Creatable nodeType : nodeTypes) {
       if (nodeType.canCreate(depth, pattern)) {
         return nodeType.getInstance(parentContextNode);
       }
     }
-    return null;
+    throw new RuntimeException(
+        "Can't find a suitable pattern node implementation for \"" +
+            pattern.substring(depth) + "\"");
   }
 
 }

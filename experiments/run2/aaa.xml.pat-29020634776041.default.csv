@@ -1,0 +1,11 @@
+nodes entered,nodes looped,nodes backtracked,contexts entered,contexts left,
+3555447,2057694,2797587,119455,72781,
+nodes,branches,self-loops,branch overhead,
+133144,133143,19787,198562
+patterns,45234
+words,561093
+characters,3647305
+time,202269718359
+behaviour,aiml.context.behaviour.CompactPatternBehaviour
+map,java.util.HashMap
+mapType,HashMap

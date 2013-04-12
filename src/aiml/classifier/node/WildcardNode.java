@@ -16,6 +16,7 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import aiml.classifier.MatchState;
+import aiml.classifier.NodeStatistics;
 import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
 
@@ -102,13 +103,20 @@ public class WildcardNode extends PatternNode {
    * child pattern nodes.
    */
   public boolean match(MatchState match) {
+    match.enterNode();
     MatchState.Wildcard w = match.addWildcard();
     if (next != null) { //there are subnodes we have to try
+      boolean first = true;
       while (match.depth < match.getContextValue().length()) {
         match.depth++;
         w.grow();
         if (next.match(match)) {
-          return true;
+          return match.leaveNode(true);
+        }
+        if (first) {
+          first = false;
+        } else {
+          match.reenterNode();
         }
       }
     } // if (next!=null)
@@ -119,13 +127,13 @@ public class WildcardNode extends PatternNode {
 
     if (subContext != null) {
       if (subContext.match(match)) {
-        return true;
+        return match.leaveNode(true);
       }
     }
 
     match.depth -= w.getLength();
     match.removeWildcard();
-    return false;
+    return match.leaveNode(false);
 
   }
 
@@ -190,4 +198,18 @@ public class WildcardNode extends PatternNode {
     graph.connectGraph(this, subContext, Graphviz.ALPHABET);
   }
 
+  @Override
+  protected void getThisNodeStats(NodeStatistics stats) {
+    super.getThisNodeStats(stats);
+    stats.addLoop(1);
+  }
+
+  @Override
+  protected void getInternalNodeCount(NodeStatistics stats) {
+    super.getInternalNodeCount(stats);
+    if (next != null) {
+      next.getNodeCount(stats);
+      stats.addBranches(1);
+    }
+  }
 }

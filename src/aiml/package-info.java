@@ -19,7 +19,7 @@
  * <dl>
  * <dt>{@link aiml.classifier.Classifier aiml.classifier.Classifier}</dt>
  * <dd>The matching/classification functionality</dd>
- * <dt>{@link aiml.classifier.PaternSequence aiml.classifier.PaternSequence}</dt>
+ * <dt>{@link aiml.classifier.PatternSequence aiml.classifier.PaternSequence}</dt>
  * <dd>Represents a sequence of patterns, or "category context". Create objects of
  * this class to set the conditions for a particular match.</dd>
  * <dt>{@link aiml.context.ContextInfo aiml.context.ContextInfo}</dt>

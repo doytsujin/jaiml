@@ -49,6 +49,7 @@ public class MatchState<T extends Object> {
    * backtracking.
    */
   private LinkedList<Context> contextStack = new LinkedList<Context>();
+  private LinkedList<Integer> depthStack = new LinkedList<Integer>();
 
   /** The current depth in the context */
   public int depth;
@@ -58,6 +59,8 @@ public class MatchState<T extends Object> {
    * variables during matching.
    */
   String contextValues[];
+  /** A lazily initialized chache of normalized context values */
+  private String normalizedContextValues[];
 
   /**
    * An array of lists, each list represents wildcards from a context
@@ -68,6 +71,11 @@ public class MatchState<T extends Object> {
    * This contains the result of the matching.
    */
   private T result;
+
+  /** Contains information about wether the match was succesfull */
+  private boolean matchSuccesful;
+
+  private MatchStatistics matchStatistics = new MatchStatistics();
 
   /**
    * <p>
@@ -136,8 +144,23 @@ public class MatchState<T extends Object> {
       endIndex += length;
     }
 
+    /**
+     * Make the wildcard match the rest of the context
+     */
     public void growRest() {
       endIndex = contextValues[context.getOrder()].length();
+    }
+
+    /**
+     * Specify the new end position of the wildcard.
+     * 
+     * @param depth
+     *          the new end
+     */
+    public void growTo(int depth) {
+      assert (depth > endIndex) : "Growing a wildcard mustn't shrink it (new end index must be larger than the current)";
+      endIndex = depth;
+
     }
 
     /**
@@ -185,6 +208,7 @@ public class MatchState<T extends Object> {
   public MatchState(Environment e) {
     this.e = e;
     contextValues = new String[getContextInfo().getCount()];
+    normalizedContextValues = new String[getContextInfo().getCount()];
     wildcards = new List[getContextInfo().getCount()];
     if (getContextInfo().getCount() <= 0) {
       throw new NoContextPresentException();
@@ -207,33 +231,70 @@ public class MatchState<T extends Object> {
   }
 
   /**
-   * Adds a new context to the match state.
+   * This method is called whenever a new context is entered.
    * 
    * @param context
    *          The new context
    */
-  public void addContext(Context context) {
+  public void enterContext(Context context) {
+    matchStatistics.addContextEnter();
     contextStack.addLast(this.context);
+    depthStack.addLast(this.depth);
     this.context = context;
     depth = 0;
   }
 
   /**
-   * <p>
-   * Drops the current context and restores the last. The reason why this isn't
-   * called removeContext() is that the context's cached value is retained.
-   * </p>
-   * 
-   * <p>
-   * <i>Note to self III:</i> More a side note, really...a Context classes
-   * backed by an array might be interesting in some cases.
-   * </p>
+   * Called whenever the current context is left when backtracking. Drops the
+   * current context and restores the last.
    */
-  public void dropContext() {
+  public void leaveContext() {
     // shouldn't this be error-checked? The default NoSuchElementException is
     // probably enough though...
+    matchStatistics.addContextLeave();
     this.context = contextStack.removeLast();
-    depth = getContextValue().length();
+    this.depth = depthStack.removeLast();
+  }
+
+  /**
+   * This method is called whenever a node is entered for a first time.
+   */
+  public void enterNode() {
+
+    matchStatistics.addNodeEnter();
+  }
+
+  /**
+   * This method is called whenever a node is re-entered (due to a self loop)
+   */
+  public void reenterNode() {
+    matchStatistics.addNodeLoop();
+  }
+
+  /**
+   * This method is called whenever a node is left. The <code>success</code> is
+   * <b>true</b> if the node is left as a result of a sucesful match and
+   * <code>false</code> if it is left during backtracking.
+   * 
+   * @param success
+   *          signifies if the node has been left during backtracking or after a
+   *          succesfull match
+   * @return returns the input parameter
+   */
+  public boolean leaveNode(boolean success) {
+    if (!success) {
+      matchStatistics.addNodeLeave();
+    }
+    return success;
+  }
+
+  /**
+   * Returns statistical information about the current match
+   * 
+   * @return match statistics
+   */
+  public MatchStatistics getMatchStatistics() {
+    return matchStatistics;
   }
 
   /**
@@ -287,8 +348,7 @@ public class MatchState<T extends Object> {
     if (isValidWildcard(context, index)) {
       return wildcards[context.getOrder()].get(index - 1);
     }
-    if (wildcards[context.getOrder()] == null &&
-        isDontCareWildcard(context, index)) {
+    if (isDontCareWildcard(context, index)) {
       //lazily bind implicit wildcards (from don't care contexts)
       Wildcard wc = addWildcard(context, 0);
       wc.growRest();
@@ -343,7 +403,10 @@ public class MatchState<T extends Object> {
    * @return the value of the current context
    */
   public String getContextValue() {
-    return contextValues[context.getOrder()];
+    if (normalizedContextValues[context.getOrder()] == null) {
+      normalizedContextValues[context.getOrder()] = Pattern.normalize(contextValues[context.getOrder()]);
+    }
+    return normalizedContextValues[context.getOrder()];
   }
 
   /**
@@ -353,6 +416,7 @@ public class MatchState<T extends Object> {
    *          the result object
    */
   public void setResult(T o) {
+    matchSuccesful = true;
     result = o;
   }
 
@@ -363,6 +427,16 @@ public class MatchState<T extends Object> {
    */
   public T getResult() {
     return result;
+  }
+
+  /**
+   * Returns information about a successful match
+   * 
+   * @return <code>true</code> if the match was successful and the result object
+   *         is valid
+   */
+  public boolean isSuccess() {
+    return matchSuccesful;
   }
 
   /**

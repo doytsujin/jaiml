@@ -16,7 +16,7 @@ package aiml.classifier;
 
 import graphviz.Graphviz;
 import graphviz.GraphvizNode;
-import aiml.classifier.PaternSequence.PatternIterator;
+import aiml.classifier.PatternSequence.PatternIterator;
 import aiml.classifier.node.PatternNode;
 import aiml.context.Context;
 
@@ -73,7 +73,7 @@ public abstract class ContextNode implements GraphvizNode {
      */
     if (patterns.hasNext()) { //We're in the middle of the sequence
 
-      PaternSequence.Pattern pattern = patterns.peek();
+      PatternSequence.Pattern pattern = patterns.peek();
       if (context.compareTo(pattern.getContext()) < 0) {
         //add as next
         if (next == null) {
@@ -114,10 +114,17 @@ public abstract class ContextNode implements GraphvizNode {
    * @param pattern
    *          Pattern
    */
-  public abstract PatternNode addPattern(PaternSequence.Pattern pattern);
+  public abstract PatternNode addPattern(PatternSequence.Pattern pattern);
 
   public Classifier getClassifier() {
     return classifier;
+  }
+
+  /**
+   * Retrieves the context this node represents
+   */
+  public Context<? extends Object> getContext() {
+    return context;
   }
 
   /**
@@ -161,6 +168,25 @@ public abstract class ContextNode implements GraphvizNode {
       graph.edge(gvNodeID(), next.gvNodeID());
       next.gvGraph(graph);
     }
+  }
+
+  public void getNodeStats(NodeStatistics stats) {
+
+    getThisNodeStats(stats);
+    getInternalNodeStats(stats);
+    if (next != null) {
+      next.getNodeStats(stats);
+      stats.addBranches(1);
+    }
+  }
+
+  private void getThisNodeStats(NodeStatistics stats) {
+    stats.addNodes(1);
+
+  }
+
+  protected void getInternalNodeStats(NodeStatistics stats) {
+    stats.addNodes(0);
   }
 
 }

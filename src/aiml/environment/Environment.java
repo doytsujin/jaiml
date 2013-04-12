@@ -149,7 +149,7 @@ public class Environment {
           "Interaction and sentences must be positive integers");
     }
     if (responseHistory.size() >= interaction &&
-        responseHistory.get(interaction).size() >= sentence) {
+        responseHistory.get(interaction - 1).size() >= sentence) {
       return responseHistory.get(interaction - 1).get(sentence - 1);
     }
     return "";

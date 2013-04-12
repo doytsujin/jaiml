@@ -16,7 +16,7 @@ package aiml.context;
 
 import aiml.classifier.Classifier;
 import aiml.classifier.ContextNode;
-import aiml.classifier.PaternSequence;
+import aiml.classifier.PatternSequence;
 import aiml.context.behaviour.MatchingBehaviour;
 import aiml.context.data.DataSource;
 import aiml.environment.Environment;
@@ -150,7 +150,7 @@ public class Context<V> implements Comparable {
    * @return a new ContextNode instance
    */
   public ContextNode createClassifierNode(Classifier classifier,
-      PaternSequence.PatternIterator patterns, ContextNode next, Object o) {
+      PatternSequence.PatternIterator patterns, ContextNode next, Object o) {
     return matchingBehaviour.createClassifierNode(classifier, patterns, next, o);
   }
 

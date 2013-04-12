@@ -16,12 +16,15 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import aiml.classifier.MatchState;
+import aiml.classifier.NodeStatistics;
 import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
+import aiml.context.behaviour.PatternBehaviour;
+import aiml.util.MapInspector;
 
 /**
  * A single character branch in the strings portion of the pattern tree. All by
@@ -37,7 +40,7 @@ public class StringBranchNode extends PatternNode {
   /**
    * a map to store the branches
    */
-  private HashMap<Character, PatternNode> map = new HashMap<Character, PatternNode>();
+  private Map<Character, PatternNode> map;
 
   /**
    * Create a new empty string branch node. The type is PatternNode.STRING
@@ -45,11 +48,11 @@ public class StringBranchNode extends PatternNode {
   public StringBranchNode(PatternContextNode parent) {
     super(parent);
     type = PatternNode.STRING;
+    map = (Map<Character, PatternNode>) ((PatternBehaviour) parent.getContext().getBehaviour()).newMap();
   }
 
   public StringBranchNode(PatternContextNode parent, StringNode node) {
-    super(parent);
-    type = PatternNode.STRING;
+    this(parent);
     char c = node.getPattern().charAt(0); //this is safe, because a stringnode always represents at least 1 character
     map.put(c, node.removePrefix(1));
 
@@ -80,7 +83,7 @@ public class StringBranchNode extends PatternNode {
       return result;
     }
 
-    char c = Pattern.normalize(pattern.charAt(depth));
+    char c = pattern.charAt(depth);
     PatternNode node = map.get(c);
     depth++;
     if (node == null) {
@@ -95,25 +98,26 @@ public class StringBranchNode extends PatternNode {
 
   public boolean match(MatchState match) {
     //Match
+    match.enterNode();
     char c;
     try {
-      c = Pattern.normalize(match.getContextValue().charAt(match.depth));
+      c = match.getContextValue().charAt(match.depth);
     } catch (StringIndexOutOfBoundsException e) {
-      return false; //the current context is an empty string
+      return match.leaveNode(false); //the current context is an empty string
     }
     PatternNode node = map.get(c);
     //match is "done" check result:
     if (node != null) {
       match.depth++;
       if (node.match(match)) {
-        return true;
+        return match.leaveNode(true);
       } else {
         //restore the previous match state
         match.depth--;
-        return false;
+        return match.leaveNode(false);
       }
     } else {
-      return false;
+      return match.leaveNode(false);
     }
   }
 
@@ -151,8 +155,19 @@ public class StringBranchNode extends PatternNode {
 
   @Override
   public void gvInternalGraph(Graphviz graph) {
-    for (Entry<Character, PatternNode> branch : map.entrySet()) {
+    for (Entry<?, PatternNode> branch : map.entrySet()) {
       graph.connectGraph(this, branch.getValue(), ("'" + branch.getKey() + "'"));
+    }
+  }
+
+  @Override
+  protected void getInternalNodeCount(NodeStatistics stats) {
+    super.getInternalNodeCount(stats);
+    stats.addMapCount(1);
+    stats.addBranches(map.size());
+    stats.addBranchOverhead(MapInspector.getOverhead(map));
+    for (Entry<?, PatternNode> branch : map.entrySet()) {
+      branch.getValue().getNodeCount(stats);
     }
   }
 }

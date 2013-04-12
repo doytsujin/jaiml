@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import aiml.classifier.MatchState;
-import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
 
 /**
@@ -59,7 +58,7 @@ public class HashMapNode extends PatternNode {
   public AddResult add(int depth, String pattern) {
     AddResult result;
     PatternNodeFactory patternNodeFactory = parentContext.getPNF();
-    pattern = Pattern.normalize(pattern.substring(depth));
+    pattern = pattern.substring(depth);
 
     PatternNode node = map.get(pattern);
     depth += pattern.length();
@@ -86,20 +85,21 @@ public class HashMapNode extends PatternNode {
    */
   public boolean match(MatchState match) {
     //Match
-    String s = Pattern.normalize(match.getContextValue().substring(match.depth));
+    match.enterNode();
+    String s = match.getContextValue().substring(match.depth);
     PatternNode node = map.get(s);
     //match is "done" check result:
     if (node != null) {
       match.depth += s.length();
       if (node.match(match)) {
-        return true;
+        return match.leaveNode(true);
       } else {
         //restore the previous match state
         match.depth -= s.length();
-        return false;
+        return match.leaveNode(false);
       }
     } else {
-      return false;
+      return match.leaveNode(false);
     }
   }
 

@@ -16,6 +16,7 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import aiml.classifier.MatchState;
+import aiml.classifier.NodeStatistics;
 import aiml.classifier.PatternContextNode;
 
 /**
@@ -89,14 +90,15 @@ public class EndOfStringNode extends PatternNode {
    * @return boolean
    */
   public boolean match(MatchState match) {
+    match.enterNode();
     if (match.depth == match.getContextValue().length()) {
       //we have a winner, at least for now
-      return subContext.match(match);
+      return match.leaveNode(subContext.match(match));
     } else {
       if (next != null) {
-        return next.match(match);
+        return match.leaveNode(next.match(match));
       } else {
-        return false;
+        return match.leaveNode(false);
       }
     }
   }
@@ -130,6 +132,15 @@ public class EndOfStringNode extends PatternNode {
   @Override
   public void gvExternalGraph(Graphviz graph) {
     graph.connectGraph(this, subContext, Graphviz.EPSILON);
+  }
+
+  @Override
+  protected void getInternalNodeCount(NodeStatistics stats) {
+    super.getInternalNodeCount(stats);
+    if (next != null) {
+      next.getNodeCount(stats);
+      stats.addBranches(1);
+    }
   }
 
 }

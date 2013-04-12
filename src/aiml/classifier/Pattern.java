@@ -170,6 +170,42 @@ public class Pattern {
   }
 
   /**
+   * Retrieves the first position after the end of the current word. If thhis
+   * word is the last word, returns the length of the pattern.
+   * 
+   * @param depth
+   *          the depth
+   * @param pattern
+   *          the pattern
+   * @return the position after the current word ends
+   */
+  public static int thisWordEnd(int depth, String pattern) {
+    int pos = pattern.indexOf(' ', depth);
+    if (pos == -1) {
+      return pattern.length();
+    }
+    return pos;
+  }
+
+  /**
+   * Returns depth of the next word in the pattern. If there are no more words,
+   * returns the length of the pattern.
+   * 
+   * @param depth
+   *          the depth
+   * @param pattern
+   *          the pattern
+   * @return the position of the firs character of the next word.
+   */
+  public static int nextWord(int depth, String pattern) {
+    int pos = thisWordEnd(depth, pattern);
+    while (pos < pattern.length() && pattern.charAt(pos) == ' ') {
+      pos++;
+    }
+    return pos;
+  }
+
+  /**
    * Returns the length of the common prefix of the two strings a and b.
    * 
    * @param a

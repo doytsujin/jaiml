@@ -15,7 +15,7 @@
 package aiml.classifier;
 
 import graphviz.Graphviz;
-import aiml.classifier.PaternSequence.PatternIterator;
+import aiml.classifier.PatternSequence.PatternIterator;
 import aiml.classifier.node.PatternNode;
 import aiml.context.LeafContext;
 
@@ -62,7 +62,7 @@ public class LeafContextNode extends ContextNode {
    * @param pattern
    *          Pattern
    */
-  public PatternNode addPattern(PaternSequence.Pattern pattern) {
+  public PatternNode addPattern(PatternSequence.Pattern pattern) {
     throw new UnsupportedOperationException(
         "Can't add a pattern to a leaf context");
   }

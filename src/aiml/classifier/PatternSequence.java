@@ -35,7 +35,7 @@ import aiml.util.PeekIterator;
  * @version 1.0
  */
 
-public class PaternSequence {
+public class PatternSequence implements Iterable<PatternSequence.Pattern> {
   /** An internal linked list to represent the priority queue */
   private LinkedList<Pattern> contextQueue = new LinkedList<Pattern>();
 
@@ -95,7 +95,10 @@ public class PaternSequence {
      * @return a string representation of this Pattern object
      */
     public String toString() {
-      return context.getName() + "=\"" + pattern + "\"";
+      StringBuilder sb = new StringBuilder();
+      sb.append('[').append(context.getName()).append(']');
+      sb.append(pattern);
+      return sb.toString();
     }
   }
 
@@ -120,8 +123,20 @@ public class PaternSequence {
    * @param contextInfo
    *          TODO
    */
-  public PaternSequence(ContextInfo contextInfo) {
+  public PatternSequence(ContextInfo contextInfo) {
     this.contextInfo = contextInfo;
+  }
+
+  /**
+   * Create a new PatternSequence as a copy from the given sequence. The new
+   * sequence is the same, except the history stack is empty.
+   * 
+   * @param sequence
+   *          the original sequence
+   */
+  public PatternSequence(PatternSequence sequence) {
+    this.contextInfo = sequence.contextInfo;
+    this.contextQueue = (LinkedList<Pattern>) sequence.contextQueue.clone();
   }
 
   /**
@@ -156,28 +171,55 @@ public class PaternSequence {
    */
   public void add(String context, String pattern)
       throws MultipleContextsException {
-    //if (context.equals("input") && pattern.equals("64 F *"))
-    //  System.out.println("["+context+"]\""+pattern+"\"");
-    Context<? extends Object> c = contextInfo.getContext(context);
-    Pattern p = new Pattern(c, pattern);
+    add((Context<? extends Object>) contextInfo.getContext(context), pattern);
+
+  }
+
+  /**
+   * Adds a single context pattern to the sequence.
+   * 
+   * @param context
+   *          the context
+   * @param pattern
+   *          the pattern
+   * @throws MultipleContextsException
+   * 
+   * @throws MultipleContextsException
+   */
+  public void add(Context<? extends Object> context, String pattern)
+      throws MultipleContextsException {
+    Pattern p = new Pattern(context, pattern);
+    add(p);
+  }
+
+  /**
+   * Adds a single context pattern to the sequence.
+   * 
+   * @param pattern
+   *          the pattern
+   * @throws MultipleContextsException
+   * 
+   * @throws MultipleContextsException
+   */
+
+  public void add(Pattern pattern) throws MultipleContextsException {
     ListIterator<Pattern> i = contextQueue.listIterator();
     if (!i.hasNext()) {
-      i.add(p);
+      i.add(pattern);
     } else {
       while (i.hasNext()) {
         Pattern pi = i.next();
-        if (pi.context.compareTo(p.context) == 0) {
-          throw new MultipleContextsException(c.getName());
+        if (pi.context.compareTo(pattern.context) == 0) {
+          throw new MultipleContextsException(pattern.context.getName());
         }
-        if (pi.context.compareTo(p.context) > 0) {
+        if (pi.context.compareTo(pattern.context) > 0) {
           i.previous();
-          i.add(p);
+          i.add(pattern);
           return;
         }
       }
-      i.add(p);
+      i.add(pattern);
     }
-
   }
 
   /**
@@ -204,7 +246,11 @@ public class PaternSequence {
    * @return a string representation of this sequence
    */
   public String toString() {
-    return contextQueue.toString();
+    StringBuilder result = new StringBuilder();
+    for (Pattern p : contextQueue) {
+      result.append(p);
+    }
+    return result.toString();
   }
 
   /**
@@ -213,7 +259,22 @@ public class PaternSequence {
    * @return the unmodifiable iterator
    */
   public PatternIterator iterator() {
-    return new PatternIterator(Collections.unmodifiableList(contextQueue));
+    LinkedList<Pattern> filledList = new LinkedList<Pattern>();
+    PatternIterator patterns = new PatternIterator(contextQueue);
+
+    for (int order = 0; order < contextInfo.getCount(); order++) {
+      Context context = contextInfo.getContext(order);
+      if (!patterns.hasNext() ||
+          context.compareTo(patterns.peek().getContext()) < 0) {
+        if (context.getBehaviour().hasDefaultPattern()) {
+          filledList.add(new Pattern(context,
+              context.getBehaviour().getDefaultPattern()));
+        }
+      } else {
+        filledList.add(patterns.next());
+      }
+    }
+    return new PatternIterator(Collections.unmodifiableList(filledList));
   }
 
   /**

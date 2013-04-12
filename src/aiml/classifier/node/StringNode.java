@@ -16,6 +16,7 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import aiml.classifier.MatchState;
+import aiml.classifier.NodeStatistics;
 import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
 
@@ -95,9 +96,9 @@ public class StringNode extends PatternNode {
     int nextw = Pattern.nextWildcard(depth, pattern);
     String thissegment;
     if (nextw == -1) {
-      thissegment = Pattern.normalize(pattern.substring(depth));
+      thissegment = pattern.substring(depth);
     } else {
-      thissegment = Pattern.normalize(pattern.substring(depth, nextw));
+      thissegment = pattern.substring(depth, nextw);
 
     }
 
@@ -149,29 +150,30 @@ public class StringNode extends PatternNode {
   }
 
   public boolean match(MatchState match) {
-    String cValue = Pattern.normalize(match.getContextValue());
+    match.enterNode();
+    String cValue = match.getContextValue();
     int plength = Pattern.prefixLength(cValue.substring(match.depth), s);
     //String thissegment = cValue.substring(match.depth, match.depth + s.length());
     if (plength == s.length()) { //match, so try it
       match.depth += plength;
       if (match.depth == cValue.length()) { //this context value is done, match subcontext
         if (subContext != null && subContext.match(match)) {
-          return true;
+          return match.leaveNode(true);
         } else { //subcontext match fail
           match.depth -= plength;
-          return false;
+          return match.leaveNode(false);
         }
       } else { //this context value is not done, match subtrees
         if (next != null && next.match(match)) {
-          return true;
+          return match.leaveNode(true);
         } else {
           match.depth -= plength;
-          return false;
+          return match.leaveNode(false);
 
         }
       }
     } else { //no match in the first place
-      return false;
+      return match.leaveNode(false);
     }
   }
 
@@ -206,9 +208,14 @@ public class StringNode extends PatternNode {
     if (s.length() > 0) {
       return this;
     }
-    EndOfStringNode node = new EndOfStringNode(parentContext, next);
-    node.subContext = subContext;
-    return node;
+    if (subContext == null) {
+      return next;
+    } else {
+      EndOfStringNode node = new EndOfStringNode(parentContext, next);
+      node.subContext = subContext;
+      return node;
+    }
+
   }
 
   /**
@@ -256,4 +263,12 @@ public class StringNode extends PatternNode {
     graph.connectGraph(this, subContext, ("'" + s + "'"));
   }
 
+  @Override
+  protected void getInternalNodeCount(NodeStatistics stats) {
+    super.getInternalNodeCount(stats);
+    if (next != null) {
+      next.getNodeCount(stats);
+      stats.addBranches(1);
+    }
+  }
 }

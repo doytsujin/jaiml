@@ -1,0 +1,11 @@
+nodes entered,nodes looped,nodes backtracked,contexts entered,contexts left,
+146854,129131,0,50511,0,
+nodes,branches,self-loops,branch overhead,
+141573,141572,32788,172591,
+patterns,16837
+words,160741
+characters,1081290
+time,2317554596
+behaviour,aiml.context.behaviour.AIMLPatternBehaviour
+map,org.aitools.programd.graph.OneOptimalNodemaster
+mapType,1HashMap

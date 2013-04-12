@@ -1,0 +1,11 @@
+nodes entered,nodes looped,nodes backtracked,contexts entered,contexts left,
+3546312,2049712,2788449,119455,72781,
+nodes,branches,self-loops,branch overhead,
+133144,133143,19787,26538,
+patterns,45234
+words,559052
+characters,3639359
+time,8593868117
+behaviour,aiml.context.behaviour.CompactPatternBehaviour
+map,org.aitools.programd.graph.TwoOptimalNodemaster
+mapType,2TreeMap

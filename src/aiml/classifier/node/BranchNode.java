@@ -16,6 +16,7 @@ package aiml.classifier.node;
 
 import graphviz.Graphviz;
 import aiml.classifier.MatchState;
+import aiml.classifier.NodeStatistics;
 import aiml.classifier.Pattern;
 import aiml.classifier.PatternContextNode;
 
@@ -131,22 +132,23 @@ public class BranchNode extends PatternNode {
    * wildcard pattern, then an exact string, and finally a star wildcard.
    */
   public boolean match(MatchState match) {
+    match.enterNode();
     if (underscore != null) {
       if (underscore.match(match)) {
-        return true;
+        return match.leaveNode(true);
       }
     }
     if (string != null) {
       if (string.match(match)) {
-        return true;
+        return match.leaveNode(true);
       }
     }
     if (star != null) {
       if (star.match(match)) {
-        return true;
+        return match.leaveNode(true);
       }
     }
-    return false;
+    return match.leaveNode(false);
   }
 
   @Override
@@ -181,6 +183,29 @@ public class BranchNode extends PatternNode {
     graph.connectGraph(this, underscore, Graphviz.EPSILON);
     graph.connectGraph(this, string, Graphviz.EPSILON);
     graph.connectGraph(this, star, Graphviz.EPSILON);
+  }
+
+  @Override
+  protected void getInternalNodeCount(NodeStatistics stats) {
+    super.getInternalNodeCount(stats);
+    if (underscore != null) {
+      underscore.getNodeCount(stats);
+      stats.addBranches(1);
+    } else {
+      stats.addBranchOverhead(1);
+    }
+    if (string != null) {
+      string.getNodeCount(stats);
+      stats.addBranches(1);
+    } else {
+      stats.addBranchOverhead(1);
+    }
+    if (star != null) {
+      star.getNodeCount(stats);
+      stats.addBranches(1);
+    } else {
+      stats.addBranchOverhead(1);
+    }
   }
 
 }

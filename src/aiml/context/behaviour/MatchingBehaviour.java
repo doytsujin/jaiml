@@ -15,7 +15,7 @@ package aiml.context.behaviour;
 
 import aiml.classifier.Classifier;
 import aiml.classifier.ContextNode;
-import aiml.classifier.PaternSequence.PatternIterator;
+import aiml.classifier.PatternSequence.PatternIterator;
 
 /**
  * Describes a matching behaviour of a context.
@@ -24,8 +24,7 @@ import aiml.classifier.PaternSequence.PatternIterator;
  * 
  */
 public interface MatchingBehaviour {
-  
-  
+
   /**
    * Returns a new ContextNode specific to this Context type.
    * 
@@ -42,5 +41,23 @@ public interface MatchingBehaviour {
    */
   public ContextNode createClassifierNode(Classifier classifier,
       PatternIterator patterns, ContextNode next, Object o);
+
+  /**
+   * Returns true if this context has a default pattern that must be used even
+   * if the AIML file doesn't specify anything. This prevents the context from
+   * being skipped if we don't care about its value.
+   * 
+   * @return <code>true</code> if this behaviour has a default pattern
+   */
+  public boolean hasDefaultPattern();
+
+  /**
+   * This method returns the default pattern, if this behaviour requires it.
+   * Returns <code>null</code> if this behaviour doesn't have a default pattern.
+   * 
+   * @return the default pattern, or <code>null</code> if there is no default
+   *         pattern.
+   */
+  public String getDefaultPattern();
 
 }

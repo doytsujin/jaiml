@@ -35,7 +35,7 @@ import aiml.bot.Bot;
 import aiml.bot.InvalidPropertyException;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MultipleContextsException;
-import aiml.classifier.PaternSequence;
+import aiml.classifier.PatternSequence;
 import aiml.script.Block;
 import aiml.script.Formatter;
 import aiml.script.Script;
@@ -45,7 +45,7 @@ public class AIMLParser {
   Logger log = Logger.getLogger(AIMLParser.class.getName());
   CheckingParser parser;
   Bot bot;
-  PaternSequence currentSequence;
+  PatternSequence currentSequence;
 
   public AIMLParser(Bot bot) throws XmlPullParserException {
     parser = new CheckingParser(
@@ -67,7 +67,7 @@ public class AIMLParser {
               parser.getPositionDescription());
 
     parser.nextTag();
-    currentSequence = new PaternSequence(bot.getClassifier().getContextInfo());
+    currentSequence = new PatternSequence(bot.getClassifier().getContextInfo());
     doCategoryList();
     parser.require(XmlPullParser.END_TAG, "aiml");
     parser.next();

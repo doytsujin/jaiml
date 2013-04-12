@@ -215,15 +215,26 @@ public class Bot {
   private void doLearn() throws XmlPullParserException, IOException,
       BotSyntaxException, AimlParserException {
     while (parser.isEvent(XmlPullParser.START_TAG, "learn")) {
-      File file = new File(parser.nextText());
+      String fileName = parser.nextText();
       parser.require(XmlPullParser.END_TAG, "learn");
-      if (!file.exists() || !file.isFile()) {
-        logger.warning("file " + file + " does not exist");
+      File file = new File(fileName);
+      if (fileName.matches(".*(\\*|\\?).*")) {
+        logger.warning("Wildcards not supported \"" + fileName + "\" " +
+            parser.getPositionDescription());
       } else {
-        logger.info("Loading file " + file);
-        new AIMLParser(this).load(file.getPath(), "UTF-8");
+        learnFile(file);
       }
       parser.nextTag();
+    }
+  }
+
+  private void learnFile(File file) throws XmlPullParserException, IOException,
+      AimlParserException {
+    if (!file.exists() || !file.isFile()) {
+      logger.warning("file " + file + " does not exist");
+    } else {
+      logger.info("Loading file " + file);
+      new AIMLParser(this).load(file.getPath(), "UTF-8");
     }
   }
 

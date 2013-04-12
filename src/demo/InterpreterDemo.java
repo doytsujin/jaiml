@@ -35,6 +35,24 @@ import aiml.script.Formatter;
 import aiml.script.Script;
 
 public class InterpreterDemo {
+  private static final Runtime runtime = Runtime.getRuntime();
+
+  private static void memStat() {
+    System.out.print(runtime.maxMemory());
+    System.out.print(" max, ");
+
+    System.out.print(runtime.totalMemory());
+    System.out.print(" total, ");
+
+    System.out.print(runtime.freeMemory());
+    System.out.print(" free, ");
+
+    System.out.print(runtime.totalMemory() - runtime.freeMemory());
+    System.out.print(" used");
+
+    System.out.println();
+  }
+
   public static void main(String[] args) throws XmlPullParserException,
       IOException, BotSyntaxException, AimlParserException {
     Logger.getLogger("aiml").setLevel(Level.WARNING);
@@ -57,27 +75,32 @@ public class InterpreterDemo {
     System.out.println("Loading bot...");
     // b.setProperty("name","Really Complicated");
     b.load(args[0]);
-    System.out.println("done, loaded " + classifier.getCount() + " categories.");
+    System.out.println("done, loaded " + classifier.getCount() +
+        " categories, " + classifier.getNodeStats());
+    memStat();
     System.out.println("Enter text to match, or /exit to quit");
 
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     System.out.print("> ");
     String line = in.readLine();
     Environment e = b.createEnvironment();
-    while (!line.equals("/exit")) {
+    while (line != null && !line.equals("/exit")) {
       if (line.equals("/gv")) {
         System.out.println(classifier.gvGraph(new Graphviz()));
+      } else if (line.equals("/stats")) {
+        System.out.println("Classifier statistics: " +
+            classifier.getNodeStats());
       } else {
         for (String input : b.preprocessInput(line)) {
           e.pushInput(input);
           MatchState<Script> m = e.match();
-          String response;
-          if (m != null) {
-            response = Formatter.collapseWhitespace(m.getResult().evaluate(m));
+          System.out.println(m.getMatchStatistics());
 
+          String response;
+          if (m.isSuccess()) {
+            response = Formatter.collapseWhitespace(m.getResult().evaluate(m));
           } else {
             response = "no match found";
-
           }
           System.out.println(response);
           e.addBotResponse(response);
