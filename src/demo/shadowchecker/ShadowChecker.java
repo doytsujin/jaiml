@@ -35,8 +35,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import aiml.bot.Bot;
 import aiml.bot.BotSyntaxException;
-import aiml.category.CategoryEvent;
-import aiml.category.CategoryListener;
 import aiml.classifier.Classifier;
 import aiml.classifier.DuplicatePathException;
 import aiml.classifier.MatchState;
@@ -48,7 +46,6 @@ import aiml.classifier.PatternSequence;
 import aiml.classifier.PatternSequence.PatternIterator;
 import aiml.classifier.node.PatternNode;
 import aiml.context.Context;
-import aiml.context.ContextInfo;
 import aiml.context.behaviour.AIMLPatternBehaviour;
 import aiml.context.behaviour.CompactPatternBehaviour;
 import aiml.context.behaviour.PatternBehaviour;
@@ -417,40 +414,25 @@ public class ShadowChecker {
     Logger.getLogger("aiml").setLevel(Level.SEVERE);
 
     classifier = new Classifier();
-    classifier.addCategoryListener(new CategoryListener() {
-      private boolean first = true;
-
-      @Override
-      public void categoryAdded(CategoryEvent categoryEvent) {
-        if (first) {
-          ContextInfo ci = classifier.getContextInfo();
-          for (int i = 0; i < ci.getCount(); i++) {
-            out.print('[');
-            out.print(ci.getContext(i).getName());
-            out.print("][/]");
-          }
-          out.println();
-          first = false;
-        }
-        for (PatternSequence.Pattern p : categoryEvent.getSequence()) {
-          out.print(p);
-          out.print("[/]");
-        }
-        out.println();
-        if (classifier.getCount() % 1000 == 0) {
-          memStat();
-        }
-      }
-    });
 
     Bot b = new Bot(classifier);
+    long start = System.nanoTime();
     b.load(botFilename);
+    long end = System.nanoTime();
+    System.out.println("Parse time: " + (end - start));
 
     System.out.println("Done.");
     System.out.println("Using " +
         PatternBehaviour.getDefaultBehaviour().getClass().getName());
     System.out.println("Loaded " + classifier.getCount() + " categories, " +
         classifier.getNodeStats());
+
+    for (int i = 0; i != 10; i++) {
+      System.out.println("Garbage run " + i);
+      memStat();
+      System.gc();
+    }
+    System.out.println("Finally");
     memStat();
 
   }

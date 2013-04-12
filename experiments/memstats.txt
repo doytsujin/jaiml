@@ -135,3 +135,95 @@ Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops
 Using aiml.context.behaviour.PatternBehaviour (ThreeOptimalNodemaster/TreeMap)
 Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 36280 unused branches
 532742144 max, 34525184 total, 7729088 free, 26796096 used
+
+
+--------------------------------------------------------------------------------
+Normal AST
+Parse time: 16933284826
+Done.
+Using aiml.context.behaviour.CompactPatternBehaviour
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 198562 unused branches, 14710 maps
+Garbage run 0
+532742144 max, 35131392 total, 6191864 free, 28939528 used
+Garbage run 1
+532742144 max, 47452160 total, 20964296 free, 26487864 used
+Garbage run 2
+532742144 max, 47452160 total, 20964296 free, 26487864 used
+Garbage run 3
+532742144 max, 47452160 total, 20964296 free, 26487864 used
+Garbage run 4
+532742144 max, 47452160 total, 20964296 free, 26487864 used
+Garbage run 5
+532742144 max, 47452160 total, 20965376 free, 26486784 used
+Garbage run 6
+532742144 max, 47452160 total, 20965376 free, 26486784 used
+Garbage run 7
+532742144 max, 47452160 total, 20965376 free, 26486784 used
+Garbage run 8
+532742144 max, 47452160 total, 20965376 free, 26486784 used
+Garbage run 9
+532742144 max, 47452160 total, 20965376 free, 26486784 used
+Finally
+532742144 max, 47452160 total, 20965264 free, 26486896 used
+532742144 max, 47452160 total, 20965264 free, 26486896 used
+
+Strings
+Parse time: 14850766962
+Done.
+Using aiml.context.behaviour.CompactPatternBehaviour
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 198562 unused branches, 14710 maps
+Garbage run 0
+532742144 max, 34107392 total, 12927584 free, 21179808 used
+Garbage run 1
+532742144 max, 34107392 total, 15109048 free, 18998344 used
+Garbage run 2
+532742144 max, 34107392 total, 15109048 free, 18998344 used
+Garbage run 3
+532742144 max, 34107392 total, 15109048 free, 18998344 used
+Garbage run 4
+532742144 max, 34107392 total, 15109048 free, 18998344 used
+Garbage run 5
+532742144 max, 34107392 total, 15109768 free, 18997624 used
+Garbage run 6
+532742144 max, 34107392 total, 15109768 free, 18997624 used
+Garbage run 7
+532742144 max, 34107392 total, 15109768 free, 18997624 used
+Garbage run 8
+532742144 max, 34107392 total, 15109768 free, 18997624 used
+Garbage run 9
+532742144 max, 34107392 total, 15109768 free, 18997624 used
+Finally
+532742144 max, 34107392 total, 15109656 free, 18997736 used
+532742144 max, 34107392 total, 15109656 free, 18997736 used
+
+Empty
+Parse time: 15171130704
+Done.
+Using aiml.context.behaviour.CompactPatternBehaviour
+Loaded 45234 categories, 133144 nodes, 133143 forward branches, 19787 self-loops, 198562 unused branches, 14710 maps
+Garbage run 0
+532742144 max, 18104320 total, 5031520 free, 13072800 used
+Garbage run 1
+532742144 max, 23404544 total, 10353136 free, 13051408 used
+Garbage run 2
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Garbage run 3
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Garbage run 4
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Garbage run 5
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Garbage run 6
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Garbage run 7
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Garbage run 8
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Garbage run 9
+532742144 max, 23404544 total, 11058960 free, 12345584 used
+Finally
+532742144 max, 23404544 total, 11058848 free, 12345696 used
+532742144 max, 23404544 total, 11058848 free, 12345696 used
+
+18997736    12345696
+26486896    12345696
